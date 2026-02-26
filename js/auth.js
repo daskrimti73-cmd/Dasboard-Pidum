@@ -472,7 +472,7 @@ function togglePassword() {
 
 // ---- Kembali ke Portal ----
 function logout() {
-    window.location.href = '../index.html';
+    window.location.href = 'https://daskrimti73-cmd.github.io/admin-portal/';
 }
 
 // ---- Get logged in username ----
