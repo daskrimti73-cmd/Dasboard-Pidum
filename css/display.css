@@ -15,53 +15,6 @@ body {
     min-height: 100vh;
 }
 
-/* ---- Header Merah Kejaksaan ---- */
-.display-header-red {
-    background: linear-gradient(135deg, #8B1538 0%, #6B0F2A 100%);
-    padding: 20px 0;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-.header-red-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 40px;
-}
-
-.header-logo-section {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.logo-kejaksaan {
-    width: 60px;
-    height: 60px;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23FFD700" stroke="%23FFF" stroke-width="3"/><path d="M50 20 L60 45 L85 45 L65 60 L75 85 L50 70 L25 85 L35 60 L15 45 L40 45 Z" fill="%238B1538"/></svg>');
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
-.header-title-section {
-    color: white;
-}
-
-.header-subtitle {
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 2px;
-    opacity: 0.9;
-    margin-bottom: 2px;
-}
-
-.header-main-title {
-    font-size: 20px;
-    font-weight: 700;
-    line-height: 1.3;
-    letter-spacing: 0.5px;
-}
-
 /* ---- Filter Wrapper ---- */
 .display-filter-wrapper {
     max-width: 1200px;
