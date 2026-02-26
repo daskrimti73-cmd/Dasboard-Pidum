@@ -288,6 +288,12 @@ function applyViewMode() {
     // Hide toggle sidebar button
     document.querySelectorAll('.toggle-btn').forEach(el => el.style.display = 'none');
 
+    // Hide header badge (redundant in WordPress iframe)
+    document.querySelectorAll('.header-badge').forEach(el => el.style.display = 'none');
+
+    // Hide entire top-header in view mode (not needed in iframe)
+    document.querySelectorAll('.top-header').forEach(el => el.style.display = 'none');
+
     // Hide save section
     document.querySelectorAll('.save-section').forEach(el => el.style.display = 'none');
 
