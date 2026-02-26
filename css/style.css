@@ -497,36 +497,9 @@ a {
     justify-content: center;
 }
 
-.data-card::before {
-    content: '';
-    position: absolute;
-    top: -30px;
-    right: -30px;
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    transition: var(--transition);
-}
-
-.data-card::after {
-    content: '';
-    position: absolute;
-    bottom: -20px;
-    right: 20px;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.08);
-}
-
 .data-card:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-hover);
-}
-
-.data-card:hover::before {
-    transform: scale(1.2);
 }
 
 .data-card .card-label {
