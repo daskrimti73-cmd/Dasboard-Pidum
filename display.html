@@ -1,14 +1,98 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pidana Umum - Kejaksaan Tinggi Kepulauan Riau</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/display.css">
+    <style>
+        /* Admin-only back bar */
+        .admin-back-bar {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 9999;
+            background: linear-gradient(90deg, #1e293b 0%, #334155 100%);
+            padding: 10px 24px;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .admin-back-bar.visible {
+            display: flex;
+        }
+
+        .admin-back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 18px;
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .admin-back-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+
+        .admin-back-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* Push content down when admin bar is visible */
+        body.has-admin-bar {
+            padding-top: 48px;
+        }
+    </style>
 </head>
+
 <body>
 
+    <!-- Admin-only back bar (only visible for logged-in admin) -->
+    <div class="admin-back-bar" id="adminBackBar">
+        <a class="admin-back-btn" href="index.html">
+            <i class="fas fa-arrow-left"></i>
+            Kembali ke Dashboard
+        </a>
+        <span class="admin-back-label">Mode Admin</span>
+    </div>
+
+    <script>
+        // Show back bar only for admin
+        (function () {
+            try {
+                var session = localStorage.getItem('cms_auth_session');
+                if (session) {
+                    var data = JSON.parse(session);
+                    if (data && data.loggedIn) {
+                        document.getElementById('adminBackBar').classList.add('visible');
+                        document.body.classList.add('has-admin-bar');
+                    }
+                }
+            } catch (e) { }
+        })();
+    </script>
     <!-- Filter Section (separate from banner) -->
     <div class="display-filter-wrapper">
         <div class="filter-section">
@@ -25,7 +109,7 @@
                     <label>SATUAN KERJA 1</label>
                     <select id="filterSatker1">
                         <option value="">SATUAN KERJA (SATKER)</option>
-                            <option value="kejati-kepri">Kejaksaan Tinggi Kepulauan Riau</option>
+                        <option value="kejati-kepri">Kejaksaan Tinggi Kepulauan Riau</option>
                         <option value="kejari-tanjungpinang">Kejari Tanjungpinang</option>
                         <option value="kejari-batam">Kejari Batam</option>
                         <option value="kejari-karimun">Kejari Karimun</option>
@@ -40,7 +124,7 @@
                     <label>SATUAN KERJA 2</label>
                     <select id="filterSatker2">
                         <option value="">SATUAN KERJA (SATKER) 2</option>
-                            <option value="kejati-kepri">Kejaksaan Tinggi Kepulauan Riau</option>
+                        <option value="kejati-kepri">Kejaksaan Tinggi Kepulauan Riau</option>
                         <option value="kejari-tanjungpinang">Kejari Tanjungpinang</option>
                         <option value="kejari-batam">Kejari Batam</option>
                         <option value="kejari-karimun">Kejari Karimun</option>
@@ -108,21 +192,24 @@
     <div class="display-content">
         <div class="cards-grid">
             <!-- Row 1 -->
-            <a href="#" class="display-card card-pra-penuntutan" id="link-pra-penuntutan" onclick="goToDetail('pra-penuntutan.html', event)">
+            <a href="#" class="display-card card-pra-penuntutan" id="link-pra-penuntutan"
+                onclick="goToDetail('pra-penuntutan.html', event)">
                 <div class="card-circle c1"></div>
                 <div class="card-circle c2"></div>
                 <div class="card-label">PRA PENUNTUTAN</div>
                 <div class="card-number" id="display-pra-penuntutan">0</div>
             </a>
 
-            <a href="#" class="display-card card-penuntutan" id="link-penuntutan" onclick="goToDetail('penuntutan.html', event)">
+            <a href="#" class="display-card card-penuntutan" id="link-penuntutan"
+                onclick="goToDetail('penuntutan.html', event)">
                 <div class="card-circle c1"></div>
                 <div class="card-circle c2"></div>
                 <div class="card-label">PENUNTUTAN</div>
                 <div class="card-number" id="display-penuntutan">0</div>
             </a>
 
-            <a href="#" class="display-card card-upaya-hukum" id="link-upaya-hukum" onclick="goToDetail('upaya-hukum.html', event)">
+            <a href="#" class="display-card card-upaya-hukum" id="link-upaya-hukum"
+                onclick="goToDetail('upaya-hukum.html', event)">
                 <div class="card-circle c1"></div>
                 <div class="card-circle c2"></div>
                 <div class="card-label">UPAYA HUKUM</div>
@@ -130,7 +217,8 @@
             </a>
 
             <!-- Row 2 -->
-            <a href="#" class="display-card card-eksekusi" id="link-eksekusi" onclick="goToDetail('eksekusi.html', event)">
+            <a href="#" class="display-card card-eksekusi" id="link-eksekusi"
+                onclick="goToDetail('eksekusi.html', event)">
                 <div class="card-circle c1"></div>
                 <div class="card-circle c2"></div>
                 <div class="card-label">EKSEKUSI</div>
@@ -144,7 +232,8 @@
                 <div class="card-number" id="display-wna">0</div>
             </a>
 
-            <a href="#" class="display-card card-hukuman-mati" id="link-hukuman-mati" onclick="goToDetail('hukuman-mati.html', event)">
+            <a href="#" class="display-card card-hukuman-mati" id="link-hukuman-mati"
+                onclick="goToDetail('hukuman-mati.html', event)">
                 <div class="card-circle c1"></div>
                 <div class="card-circle c2"></div>
                 <div class="card-label">HUKUMAN MATI</div>
@@ -178,7 +267,7 @@
                     const list = JSON.parse(saved);
                     if (Array.isArray(list) && list.length > 0) return list.sort((a, b) => b - a);
                 }
-            } catch (e) {}
+            } catch (e) { }
             return [new Date().getFullYear()];
         }
         function populateDisplayTahun() {
@@ -293,4 +382,5 @@
     </script>
 
 </body>
+
 </html>

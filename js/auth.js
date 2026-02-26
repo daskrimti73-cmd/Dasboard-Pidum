@@ -22,7 +22,7 @@ function getTahunList() {
             const list = JSON.parse(saved);
             if (Array.isArray(list) && list.length > 0) return list.sort((a, b) => b - a);
         }
-    } catch (e) {}
+    } catch (e) { }
     // Default: current year
     const defaultList = [new Date().getFullYear()];
     localStorage.setItem(TAHUN_KEY, JSON.stringify(defaultList));
@@ -81,7 +81,7 @@ function getSatker1List() {
             const list = JSON.parse(saved);
             if (Array.isArray(list) && list.length > 0) return list;
         }
-    } catch (e) {}
+    } catch (e) { }
     // Default: Kejati Kepri only
     const defaultList = [
         { value: 'kejati-kepri', label: 'Kejaksaan Tinggi Kepulauan Riau' }
@@ -97,7 +97,7 @@ function getSatker2List() {
             const list = JSON.parse(saved);
             if (Array.isArray(list) && list.length > 0) return list;
         }
-    } catch (e) {}
+    } catch (e) { }
     // Default: Kejati Kepri only
     const defaultList = [
         { value: 'kejati-kepri', label: 'Kejaksaan Tinggi Kepulauan Riau' }
@@ -119,19 +119,19 @@ function saveSatker2List(list) {
 function addSatker1(label) {
     const trimmed = label.trim();
     if (!trimmed) return false;
-    
+
     const list = getSatker1List();
-    
+
     // Check if already exists
     if (list.some(s => s.label.toLowerCase() === trimmed.toLowerCase())) {
         return false;
     }
-    
+
     // Generate value from label (lowercase, replace spaces with dash)
     const value = trimmed.toLowerCase()
         .replace(/\s+/g, '-')
         .replace(/[^a-z0-9-]/g, '');
-    
+
     list.push({ value, label: trimmed });
     saveSatker1List(list);
     return true;
@@ -140,19 +140,19 @@ function addSatker1(label) {
 function addSatker2(label) {
     const trimmed = label.trim();
     if (!trimmed) return false;
-    
+
     const list = getSatker2List();
-    
+
     // Check if already exists
     if (list.some(s => s.label.toLowerCase() === trimmed.toLowerCase())) {
         return false;
     }
-    
+
     // Generate value from label (lowercase, replace spaces with dash)
     const value = trimmed.toLowerCase()
         .replace(/\s+/g, '-')
         .replace(/[^a-z0-9-]/g, '');
-    
+
     list.push({ value, label: trimmed });
     saveSatker2List(list);
     return true;
@@ -163,7 +163,7 @@ function deleteSatker1(value) {
     // Keep at least Kejati Kepri
     if (list.length <= 1) return false;
     if (value === 'kejati-kepri') return false; // Cannot delete Kejati Kepri
-    
+
     list = list.filter(item => item.value !== value);
     saveSatker1List(list);
     return true;
@@ -174,7 +174,7 @@ function deleteSatker2(value) {
     // Keep at least Kejati Kepri
     if (list.length <= 1) return false;
     if (value === 'kejati-kepri') return false; // Cannot delete Kejati Kepri
-    
+
     list = list.filter(item => item.value !== value);
     saveSatker2List(list);
     return true;
@@ -195,7 +195,7 @@ function populateSatkerDropdowns() {
         });
         if (currentVal1) select1.value = currentVal1;
     }
-    
+
     // Populate Satker 2
     const satkers2 = getSatker2List();
     const select2 = document.getElementById('filterSatker2');
@@ -218,33 +218,52 @@ function isViewMode() {
     return params.get('mode') === 'view';
 }
 
-// ---- Check if user is logged in ----
+// ---- Check if user is logged in (Auto-grant — login removed from flow) ----
 function isLoggedIn() {
     // View mode bypasses auth (public read-only)
     if (isViewMode()) return true;
 
     const session = localStorage.getItem(AUTH_KEY);
-    if (!session) return false;
-    
+    if (!session) {
+        // Auto-grant: create session automatically
+        const autoSession = {
+            username: 'admin',
+            loginTime: new Date().getTime(),
+            loggedIn: true
+        };
+        localStorage.setItem(AUTH_KEY, JSON.stringify(autoSession));
+        return true;
+    }
+
     try {
         const data = JSON.parse(session);
-        // Check if session is still valid (24 hours)
+        // Check if session is still valid (24 hours) — auto-renew
         const now = new Date().getTime();
         if (now - data.loginTime > 24 * 60 * 60 * 1000) {
-            localStorage.removeItem(AUTH_KEY);
-            return false;
+            // Auto-renew session
+            const renewed = {
+                username: data.username || 'admin',
+                loginTime: now,
+                loggedIn: true
+            };
+            localStorage.setItem(AUTH_KEY, JSON.stringify(renewed));
         }
         return true;
     } catch (e) {
-        return false;
+        return true;
     }
 }
 
-// ---- Require auth - redirect to login if not logged in ----
+// ---- Require auth — always grant (login removed from flow) ----
 function requireAuth() {
     if (!isLoggedIn()) {
-        window.location.href = 'login.html';
-        return false;
+        // isLoggedIn() already auto-grants, so this is a fallback
+        const autoSession = {
+            username: 'admin',
+            loginTime: new Date().getTime(),
+            loggedIn: true
+        };
+        localStorage.setItem(AUTH_KEY, JSON.stringify(autoSession));
     }
     return true;
 }
@@ -385,21 +404,21 @@ function setSelectValueSafe(id, value) {
 // ---- Handle login form submission ----
 function handleLogin(event) {
     event.preventDefault();
-    
+
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
     const errorMsg = document.getElementById('errorMsg');
     const btnLogin = document.getElementById('btnLogin');
-    
+
     // Clear previous error
     errorMsg.textContent = '';
-    
+
     // Validate
     if (!username || !password) {
         errorMsg.innerHTML = '<i class="fas fa-exclamation-circle"></i> Username dan password harus diisi';
         return false;
     }
-    
+
     // Check credentials
     if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
         // Save session
@@ -409,29 +428,29 @@ function handleLogin(event) {
             loggedIn: true
         };
         localStorage.setItem(AUTH_KEY, JSON.stringify(session));
-        
+
         // Show loading
         btnLogin.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
         btnLogin.disabled = true;
-        
+
         // Redirect to admin dashboard
         setTimeout(() => {
             window.location.href = 'index.html';
         }, 800);
     } else {
         errorMsg.innerHTML = '<i class="fas fa-exclamation-circle"></i> Username atau password salah!';
-        
+
         // Shake animation
         const card = document.querySelector('.login-card');
         card.style.animation = 'none';
         card.offsetHeight;
         card.style.animation = 'shake 0.5s ease';
-        
+
         setTimeout(() => {
             card.style.animation = '';
         }, 500);
     }
-    
+
     return false;
 }
 
@@ -439,7 +458,7 @@ function handleLogin(event) {
 function togglePassword() {
     const input = document.getElementById('password');
     const icon = document.getElementById('eyeIcon');
-    
+
     if (input.type === 'password') {
         input.type = 'text';
         icon.classList.remove('fa-eye');
@@ -451,12 +470,9 @@ function togglePassword() {
     }
 }
 
-// ---- Logout ----
+// ---- Kembali ke Portal ----
 function logout() {
-    if (confirm('Apakah Anda yakin ingin keluar?')) {
-        localStorage.removeItem(AUTH_KEY);
-        window.location.href = 'login.html';
-    }
+    window.location.href = '../index.html';
 }
 
 // ---- Get logged in username ----
@@ -477,7 +493,7 @@ function checkLoginPage() {
 }
 
 // Add shake animation style
-(function() {
+(function () {
     const style = document.createElement('style');
     style.textContent = `
         @keyframes shake {

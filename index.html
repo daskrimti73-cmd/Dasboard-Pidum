@@ -1,47 +1,129 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Kejaksaan RI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="js/auth.js"></script>
-    <script>if (!isLoggedIn()) { window.location.href = 'login.html'; }</script>
+    <script>
+        // Auto-grant access — login page removed from flow
+        if (!isLoggedIn()) {
+            var session = { username: 'admin', loginTime: new Date().getTime(), loggedIn: true };
+            localStorage.setItem('cms_auth_session', JSON.stringify(session));
+        }
+    </script>
 </head>
+
 <body>
 
     <!-- Sidebar -->
     <nav class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div class="logo"></div>
-            <h3>Dashboard<br>Kejaksaan RI</h3>
-            <div class="subtitle">Case Management System</div>
+        <div style="
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        ">
+            <div style="
+                width: 40px; height: 40px; flex-shrink: 0;
+                background: linear-gradient(135deg, #c8a855, #a68b3f);
+                border-radius: 50%;
+                display: flex; align-items: center; justify-content: center;
+                box-shadow: 0 4px 12px rgba(200,168,85,0.25);
+                border: 2px solid rgba(200,168,85,0.3);
+            ">
+                <i class="fas fa-landmark" style="font-size:16px; color:#fff;"></i>
+            </div>
+            <div style="display:flex; flex-direction:column;">
+                <span
+                    style="font-family:'Inter',sans-serif; font-size:13px; font-weight:800; color:#f8fafc; line-height:1.3;">Kejati
+                    Kepri</span>
+                <span style="font-size:10px; font-weight:500; color:rgba(255,255,255,0.35); letter-spacing:0.3px;">CMS
+                    Dashboard</span>
+            </div>
         </div>
+
+        <!-- Status indicator -->
+        <div style="
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            margin: 12px 12px 4px;
+            background: rgba(5,150,105,0.06);
+            border: 1px solid rgba(5,150,105,0.1);
+            border-radius: 12px;
+        ">
+            <div style="
+                width: 7px; height: 7px; border-radius: 50%;
+                background: #059669;
+                box-shadow: 0 0 8px rgba(5,150,105,0.2);
+                animation: cmsPulse 2s ease-in-out infinite;
+            "></div>
+            <span style="font-size: 11px; font-weight: 600; color: #059669;">Online</span>
+            <span id="cmsClock"
+                style="margin-left: auto; font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.35); font-variant-numeric: tabular-nums;"></span>
+        </div>
+        <style>
+            @keyframes cmsPulse {
+
+                0%,
+                100% {
+                    opacity: 1;
+                }
+
+                50% {
+                    opacity: 0.6;
+                }
+            }
+        </style>
+
         <div class="sidebar-nav">
+            <!-- Menu Utama -->
+            <div
+                style="font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.35); padding:18px 20px 8px;">
+                Menu Utama</div>
             <a href="index.html" class="nav-item active">
                 <span class="nav-icon"><i class="fas fa-home"></i></span>
                 <span class="nav-text">Home</span>
             </a>
+
+            <!-- Halaman -->
+            <div style="height:1px; background:rgba(255,255,255,0.04); margin:6px 16px;"></div>
+            <div
+                style="font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.35); padding:18px 20px 8px;">
+                Halaman</div>
             <a href="pidum.html" class="nav-item">
                 <span class="nav-icon"><i class="fas fa-gavel"></i></span>
                 <span class="nav-text">Pidana Umum</span>
             </a>
-            <!--
-            Menu lainnya bisa ditambahkan di sini nanti:
-            <a href="#" class="nav-item">
-                <span class="nav-icon"><i class="fas fa-balance-scale"></i></span>
-                <span class="nav-text">Pidana Khusus</span>
+        </div>
+
+        <!-- Footer -->
+        <div style="padding:12px; border-top:1px solid rgba(255,255,255,0.05);">
+            <a href="../index.html" style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                padding: 10px 14px;
+                font-size: 12px;
+                color: rgba(255,255,255,0.35);
+                text-decoration: none;
+                border-radius: 12px;
+                transition: all 0.2s ease;
+            " onmouseover="this.style.background='rgba(255,255,255,0.04)'; this.style.color='rgba(255,255,255,0.7)';"
+                onmouseout="this.style.background='none'; this.style.color='rgba(255,255,255,0.35)';">
+                <i class="fas fa-arrow-left"></i>
+                Kembali ke Portal
             </a>
-            <a href="#" class="nav-item">
-                <span class="nav-icon"><i class="fas fa-users"></i></span>
-                <span class="nav-text">Pembinaan</span>
-            </a>
-            <a href="#" class="nav-item">
-                <span class="nav-icon"><i class="fas fa-file-contract"></i></span>
-                <span class="nav-text">Perdata Dan TUN</span>
-            </a>
-            -->
         </div>
     </nav>
 
@@ -53,30 +135,127 @@
                 <i class="fas fa-bars"></i>
             </button>
             <span class="header-greeting" id="greeting"></span>
-            <span class="header-badge">KEJAKSAAN TINGGI KEPULAUAN RIAU</span>
-            <button class="btn-logout" onclick="logout()" title="Keluar">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </button>
         </header>
 
         <!-- Page Content -->
         <div class="page-content">
             <div class="home-welcome">
-                <div class="welcome-box animate-in">
-                    <div style="margin-bottom: 20px;">
-                        <i class="fas fa-chart-line" style="font-size: 48px; color: var(--accent-gold); opacity: 0.7;"></i>
-                    </div>
-                    <h2>Selamat Datang di Dashboard</h2>
-                    <p>Silahkan klik menu di samping untuk mengakses data dashboard. Pilih kategori yang ingin Anda lihat atau kelola datanya.</p>
-                    <div style="margin-top: 30px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-                        <a href="pidum.html" class="btn btn-primary" style="display: inline-flex; text-decoration: none;">
-                            <i class="fas fa-gavel"></i>
-                            Buka Admin Pidana Umum
-                        </a>
-                        <a href="display.html" class="btn btn-secondary" style="display: inline-flex; text-decoration: none;" target="_blank">
-                            <i class="fas fa-eye"></i>
-                            Lihat Halaman Publik
-                        </a>
+                <div class="animate-in" style="
+                    background: #ffffff;
+                    border-radius: 20px;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+                    border: 1px solid #e2e8f0;
+                    max-width: 660px;
+                    width: 100%;
+                    overflow: hidden;
+                ">
+                    <!-- Accent shimmer line -->
+                    <div style="
+                        height: 4px;
+                        background: linear-gradient(90deg, #c9a84c, #f0d78c, #c9a84c);
+                        background-size: 200% 100%;
+                        animation: shimmerCMS 3s ease-in-out infinite;
+                    "></div>
+                    <style>
+                        @keyframes shimmerCMS {
+
+                            0%,
+                            100% {
+                                background-position: 0% 50%;
+                            }
+
+                            50% {
+                                background-position: 100% 50%;
+                            }
+                        }
+                    </style>
+
+                    <div style="padding: 56px 48px; text-align: center;">
+                        <!-- Icon -->
+                        <div style="
+                            width: 72px;
+                            height: 72px;
+                            margin: 0 auto 28px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            background: linear-gradient(135deg, rgba(201,168,76,0.12), rgba(201,168,76,0.05));
+                            border: 1px solid rgba(201,168,76,0.15);
+                            border-radius: 16px;
+                        ">
+                            <i class="fas fa-chart-line" style="font-size: 30px; color: #c9a84c;"></i>
+                        </div>
+
+                        <!-- Title -->
+                        <h2 style="
+                            font-family: 'Inter', sans-serif;
+                            font-size: 26px;
+                            font-weight: 800;
+                            color: #0f172a;
+                            margin-bottom: 12px;
+                            letter-spacing: -0.4px;
+                        ">Selamat Datang di Dashboard</h2>
+
+                        <!-- Description -->
+                        <p style="
+                            font-size: 14px;
+                            color: #64748b;
+                            line-height: 1.8;
+                            margin-bottom: 36px;
+                            max-width: 440px;
+                            margin-left: auto;
+                            margin-right: auto;
+                        ">
+                            Silahkan klik menu di samping untuk mengakses data dashboard.
+                            Pilih kategori yang ingin Anda lihat atau kelola datanya.
+                        </p>
+
+                        <!-- Buttons (stacked like hub.html) -->
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
+                            <a href="pidum.html" style="
+                                display: inline-flex;
+                                align-items: center;
+                                justify-content: center;
+                                gap: 9px;
+                                padding: 14px 36px;
+                                font-size: 13px;
+                                font-weight: 700;
+                                border-radius: 12px;
+                                text-decoration: none;
+                                font-family: 'Inter', sans-serif;
+                                min-width: 260px;
+                                background: linear-gradient(135deg, #059669, #047857);
+                                color: #fff;
+                                box-shadow: 0 4px 16px rgba(5,150,105,0.2);
+                                transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+                                border: none;
+                            " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 28px rgba(5,150,105,0.35)';"
+                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 16px rgba(5,150,105,0.2)';">
+                                <i class="fas fa-file-arrow-up"></i>
+                                Buka Admin Panel
+                            </a>
+                            <a href="display.html" target="_blank" style="
+                                display: inline-flex;
+                                align-items: center;
+                                justify-content: center;
+                                gap: 9px;
+                                padding: 14px 36px;
+                                font-size: 13px;
+                                font-weight: 700;
+                                border-radius: 12px;
+                                text-decoration: none;
+                                font-family: 'Inter', sans-serif;
+                                min-width: 260px;
+                                background: transparent;
+                                color: #64748b;
+                                border: 2px solid #e2e8f0;
+                                transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+                            " onmouseover="this.style.borderColor='#059669'; this.style.color='#059669'; this.style.background='rgba(5,150,105,0.04)'; this.style.transform='translateY(-2px)';"
+                                onmouseout="this.style.borderColor='#e2e8f0'; this.style.color='#64748b'; this.style.background='transparent'; this.style.transform='translateY(0)';">
+                                <i class="fas fa-eye"></i>
+                                Lihat Halaman Publik
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -89,6 +268,18 @@
     <script src="js/app.js"></script>
     <script>
         setGreeting();
+
+        // Live clock for sidebar
+        function updateCmsClock() {
+            var el = document.getElementById('cmsClock');
+            if (el) {
+                var now = new Date();
+                el.textContent = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            }
+        }
+        updateCmsClock();
+        setInterval(updateCmsClock, 1000);
     </script>
 </body>
+
 </html>

@@ -1,0 +1,108 @@
+===========================================
+KODE SIAP PAKAI UNTUK WORDPRESS KEJATI
+===========================================
+
+URL Dashboard Display:
+https://daskrimti73-cmd.github.io/Dasboard-Pidum/display.html
+
+===========================================
+CARA 1: IFRAME LANGSUNG (PALING MUDAH)
+===========================================
+
+1. Login WordPress Admin
+2. Buka Pages > Add New (atau edit halaman)
+3. Klik tombol + > pilih "Custom HTML"
+4. Paste kode ini:
+
+<div style="width: 100%; height: 100vh; min-height: 800px;">
+    <iframe 
+        src="https://daskrimti73-cmd.github.io/Dasboard-Pidum/display.html"
+        style="width: 100%; height: 100%; border: none;"
+        title="Dashboard Pidana Umum Kejaksaan Tinggi Kepulauan Riau"
+        loading="lazy">
+    </iframe>
+</div>
+
+5. Publish
+
+===========================================
+CARA 2: SHORTCODE (LEBIH FLEKSIBEL)
+===========================================
+
+LANGKAH 1: Tambah ke functions.php
+-----------------------------------
+1. WordPress Admin > Appearance > Theme File Editor
+2. Pilih functions.php
+3. Scroll ke bawah, paste kode ini:
+
+// Shortcode Dashboard Pidum
+function kejati_dashboard_display_shortcode($atts) {
+    $atts = shortcode_atts(array(
+        'height' => '800px',
+        'width' => '100%'
+    ), $atts);
+    
+    $output = '<div style="width: ' . esc_attr($atts['width']) . '; height: ' . esc_attr($atts['height']) . '; min-height: 600px;">';
+    $output .= '<iframe src="https://daskrimti73-cmd.github.io/Dasboard-Pidum/display.html" ';
+    $output .= 'style="width: 100%; height: 100%; border: none;" ';
+    $output .= 'title="Dashboard Pidana Umum" loading="lazy"></iframe>';
+    $output .= '</div>';
+    
+    return $output;
+}
+add_shortcode('dashboard_pidum', 'kejati_dashboard_display_shortcode');
+
+4. Klik Update File
+
+LANGKAH 2: Gunakan Shortcode
+-----------------------------
+Di halaman/post WordPress, ketik:
+
+[dashboard_pidum]
+
+Atau dengan custom height:
+
+[dashboard_pidum height="1000px"]
+
+===========================================
+CARA 3: MENU LINK (BUKA TAB BARU)
+===========================================
+
+1. WordPress Admin > Appearance > Menus
+2. Klik "Custom Links"
+3. URL: https://daskrimti73-cmd.github.io/Dasboard-Pidum/display.html
+4. Link Text: Dashboard Pidana Umum
+5. Centang "Open link in a new tab"
+6. Add to Menu
+7. Save Menu
+
+===========================================
+REKOMENDASI
+===========================================
+
+Untuk website Kejati, gunakan CARA 2 (Shortcode) karena:
+✓ Mudah digunakan
+✓ Bisa diatur tinggi/lebar
+✓ Bisa digunakan di banyak halaman
+✓ Profesional
+
+===========================================
+TROUBLESHOOTING
+===========================================
+
+Jika iframe tidak muncul:
+1. Cek plugin security (disable sementara untuk test)
+2. Cek theme restrictions
+3. Pastikan WordPress versi terbaru
+
+===========================================
+KONTAK SUPPORT
+===========================================
+
+Jika ada masalah, hubungi admin dashboard atau
+cek dokumentasi lengkap di file:
+- WORDPRESS-EMBED-DISPLAY.md
+- template-dashboard-display.php
+- wordpress-shortcode-display.php
+
+===========================================
