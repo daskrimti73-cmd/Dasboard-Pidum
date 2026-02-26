@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,14 +12,21 @@
     <script src="js/auth.js"></script>
     <script>if (!isLoggedIn()) { window.location.href = 'login.html'; }</script>
 </head>
+
 <body>
 
     <!-- Sidebar -->
     <nav class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div class="logo"></div>
-            <h3>Dashboard<br>Kejaksaan RI</h3>
-            <div class="subtitle">Case Management System</div>
+        <div
+            style="display:flex;align-items:center;gap:14px;padding:20px;border-bottom:1px solid rgba(255,255,255,0.05);">
+            <div
+                style="width:40px;height:40px;flex-shrink:0;background:linear-gradient(135deg,#c8a855,#a68b3f);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(200,168,85,0.25);border:2px solid rgba(200,168,85,0.3);">
+                <i class="fas fa-landmark" style="font-size:16px;color:#fff;"></i></div>
+            <div style="display:flex;flex-direction:column;"><span
+                    style="font-family:'Inter',sans-serif;font-size:13px;font-weight:800;color:#f8fafc;line-height:1.3;">Kejati
+                    Kepri</span><span
+                    style="font-size:10px;font-weight:500;color:rgba(255,255,255,0.35);letter-spacing:0.3px;">CMS
+                    Dashboard</span></div>
         </div>
         <div class="sidebar-nav">
             <a href="index.html" class="nav-item">
@@ -41,7 +49,8 @@
             </button>
             <span class="header-greeting" id="greeting"></span>
             <span class="header-badge">KEJAKSAAN TINGGI KEPULAUAN RIAU</span>
-            <button class="btn-logout" onclick="logout()" title="Kembali ke Portal"><i class="fas fa-arrow-left"></i> Kembali ke Portal</button>
+            <button class="btn-logout" onclick="logout()" title="Kembali ke Portal"><i class="fas fa-arrow-left"></i>
+                Kembali ke Portal</button>
         </header>
 
         <!-- Page Content -->
@@ -164,14 +173,14 @@
                         <div class="card-label">Denda</div>
                         <div class="card-value">
                             <input type="text" id="eks-denda" placeholder="0" inputmode="numeric"
-                                   oninput="formatCurrencyInput(this); onDataInput()">
+                                oninput="formatCurrencyInput(this); onDataInput()">
                         </div>
                     </div>
                     <div class="data-card card-eks-biaya animate-in">
                         <div class="card-label">Biaya Perkara</div>
                         <div class="card-value">
                             <input type="text" id="eks-biaya" placeholder="0" inputmode="numeric"
-                                   oninput="formatCurrencyInput(this); onDataInput()">
+                                oninput="formatCurrencyInput(this); onDataInput()">
                         </div>
                     </div>
                 </div>
@@ -239,7 +248,8 @@
                 <!-- Monthly Input Accordions -->
                 <div class="monthly-detail">
                     <div class="monthly-header" onclick="toggleAccordion('p48')">
-                        <h4><i class="fas fa-calendar-alt"></i> Input Data P-48 Per Bulan <small>(untuk grafik tren)</small></h4>
+                        <h4><i class="fas fa-calendar-alt"></i> Input Data P-48 Per Bulan <small>(untuk grafik
+                                tren)</small></h4>
                         <i class="fas fa-chevron-down toggle-icon" id="toggleP48"></i>
                     </div>
                     <div class="monthly-body" id="monthlyP48" style="display:none;">
@@ -249,7 +259,8 @@
 
                 <div class="monthly-detail">
                     <div class="monthly-header" onclick="toggleAccordion('ba17')">
-                        <h4><i class="fas fa-calendar-alt"></i> Input Data BA-17 Per Bulan <small>(untuk grafik tren)</small></h4>
+                        <h4><i class="fas fa-calendar-alt"></i> Input Data BA-17 Per Bulan <small>(untuk grafik
+                                tren)</small></h4>
                         <i class="fas fa-chevron-down toggle-icon" id="toggleBa17"></i>
                     </div>
                     <div class="monthly-body" id="monthlyBa17" style="display:none;">
@@ -259,7 +270,8 @@
 
                 <div class="monthly-detail">
                     <div class="monthly-header" onclick="toggleAccordion('denda')">
-                        <h4><i class="fas fa-calendar-alt"></i> Input Data Denda Per Bulan <small>(untuk grafik tren)</small></h4>
+                        <h4><i class="fas fa-calendar-alt"></i> Input Data Denda Per Bulan <small>(untuk grafik
+                                tren)</small></h4>
                         <i class="fas fa-chevron-down toggle-icon" id="toggleDenda"></i>
                     </div>
                     <div class="monthly-body" id="monthlyDenda" style="display:none;">
@@ -269,7 +281,8 @@
 
                 <div class="monthly-detail">
                     <div class="monthly-header" onclick="toggleAccordion('biaya')">
-                        <h4><i class="fas fa-calendar-alt"></i> Input Data Biaya Perkara Per Bulan <small>(untuk grafik tren)</small></h4>
+                        <h4><i class="fas fa-calendar-alt"></i> Input Data Biaya Perkara Per Bulan <small>(untuk grafik
+                                tren)</small></h4>
                         <i class="fas fa-chevron-down toggle-icon" id="toggleBiaya"></i>
                     </div>
                     <div class="monthly-body" id="monthlyBiaya" style="display:none;">
@@ -280,7 +293,8 @@
                 <!-- Direktorat Input Accordions -->
                 <div class="monthly-detail">
                     <div class="monthly-header" onclick="toggleAccordion('p48Dir')">
-                        <h4><i class="fas fa-building"></i> Input Data P-48 Per Tindak Pidana <small>(untuk grafik bar)</small></h4>
+                        <h4><i class="fas fa-building"></i> Input Data P-48 Per Tindak Pidana <small>(untuk grafik
+                                bar)</small></h4>
                         <i class="fas fa-chevron-down toggle-icon" id="toggleP48Dir"></i>
                     </div>
                     <div class="monthly-body" id="monthlyP48Dir" style="display:none;">
@@ -290,7 +304,8 @@
 
                 <div class="monthly-detail">
                     <div class="monthly-header" onclick="toggleAccordion('ba17Dir')">
-                        <h4><i class="fas fa-building"></i> Input Data BA-17 Per Tindak Pidana <small>(untuk grafik bar)</small></h4>
+                        <h4><i class="fas fa-building"></i> Input Data BA-17 Per Tindak Pidana <small>(untuk grafik
+                                bar)</small></h4>
                         <i class="fas fa-chevron-down toggle-icon" id="toggleBa17Dir"></i>
                     </div>
                     <div class="monthly-body" id="monthlyBa17Dir" style="display:none;">
@@ -327,4 +342,5 @@
         applyViewMode();
     </script>
 </body>
+
 </html>

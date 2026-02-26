@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,14 +12,24 @@
     <script src="js/auth.js"></script>
     <script>if (!isLoggedIn()) { window.location.href = 'login.html'; }</script>
 </head>
+
 <body>
 
     <!-- Sidebar -->
     <nav class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div class="logo"></div>
-            <h3>Dashboard<br>Kejaksaan RI</h3>
-            <div class="subtitle">Case Management System</div>
+        <div
+            style="display:flex;align-items:center;gap:14px;padding:20px;border-bottom:1px solid rgba(255,255,255,0.05);">
+            <div
+                style="width:40px;height:40px;flex-shrink:0;background:linear-gradient(135deg,#c8a855,#a68b3f);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(200,168,85,0.25);border:2px solid rgba(200,168,85,0.3);">
+                <i class="fas fa-landmark" style="font-size:16px;color:#fff;"></i>
+            </div>
+            <div style="display:flex;flex-direction:column;">
+                <span
+                    style="font-family:'Inter',sans-serif;font-size:13px;font-weight:800;color:#f8fafc;line-height:1.3;">Kejati
+                    Kepri</span>
+                <span style="font-size:10px;font-weight:500;color:rgba(255,255,255,0.35);letter-spacing:0.3px;">CMS
+                    Dashboard</span>
+            </div>
         </div>
         <div class="sidebar-nav">
             <a href="index.html" class="nav-item">
@@ -41,7 +52,8 @@
             </button>
             <span class="header-greeting" id="greeting"></span>
             <span class="header-badge">KEJAKSAAN TINGGI KEPULAUAN RIAU</span>
-            <button class="btn-logout" onclick="logout()" title="Kembali ke Portal"><i class="fas fa-arrow-left"></i> Kembali ke Portal</button>
+            <button class="btn-logout" onclick="logout()" title="Kembali ke Portal"><i class="fas fa-arrow-left"></i>
+                Kembali ke Portal</button>
         </header>
 
         <!-- Page Content -->
@@ -150,31 +162,36 @@
                     <div class="data-card card-spdp animate-in">
                         <div class="card-label">SPDP</div>
                         <div class="card-value">
-                            <input type="number" id="spdp-spdp" placeholder="0" min="0" data-section="spdp" oninput="onDataInput('spdp')">
+                            <input type="number" id="spdp-spdp" placeholder="0" min="0" data-section="spdp"
+                                oninput="onDataInput('spdp')">
                         </div>
                     </div>
                     <div class="data-card card-p18 animate-in">
                         <div class="card-label">P-16</div>
                         <div class="card-value">
-                            <input type="number" id="spdp-p18" placeholder="0" min="0" data-section="spdp" oninput="onDataInput('spdp')">
+                            <input type="number" id="spdp-p18" placeholder="0" min="0" data-section="spdp"
+                                oninput="onDataInput('spdp')">
                         </div>
                     </div>
                     <div class="data-card card-p17 animate-in">
                         <div class="card-label">P-17</div>
                         <div class="card-value">
-                            <input type="number" id="spdp-p17" placeholder="0" min="0" data-section="spdp" oninput="onDataInput('spdp')">
+                            <input type="number" id="spdp-p17" placeholder="0" min="0" data-section="spdp"
+                                oninput="onDataInput('spdp')">
                         </div>
                     </div>
                     <div class="data-card card-pengembalian animate-in">
                         <div class="card-label">Pengembalian</div>
                         <div class="card-value">
-                            <input type="number" id="spdp-pengembalian" placeholder="0" min="0" data-section="spdp" oninput="onDataInput('spdp')">
+                            <input type="number" id="spdp-pengembalian" placeholder="0" min="0" data-section="spdp"
+                                oninput="onDataInput('spdp')">
                         </div>
                     </div>
                     <div class="data-card card-sp3 animate-in">
                         <div class="card-label">SP3</div>
                         <div class="card-value">
-                            <input type="number" id="spdp-sp3" placeholder="0" min="0" data-section="spdp" oninput="onDataInput('spdp')">
+                            <input type="number" id="spdp-sp3" placeholder="0" min="0" data-section="spdp"
+                                oninput="onDataInput('spdp')">
                         </div>
                     </div>
                 </div>
@@ -202,7 +219,8 @@
                 <!-- SPDP Per Bulan Detail (for trend chart) -->
                 <div class="monthly-detail">
                     <div class="monthly-header" onclick="toggleMonthlyDetail('spdp')">
-                        <h4><i class="fas fa-calendar-alt"></i> Input Data SPDP Per Bulan <small>(untuk grafik tren)</small></h4>
+                        <h4><i class="fas fa-calendar-alt"></i> Input Data SPDP Per Bulan <small>(untuk grafik
+                                tren)</small></h4>
                         <i class="fas fa-chevron-down toggle-icon" id="toggleSpdp"></i>
                     </div>
                     <div class="monthly-body" id="monthlySpdp" style="display:none;">
@@ -215,7 +233,8 @@
                 <!-- SPDP Per Direktorat (for bar chart) -->
                 <div class="monthly-detail">
                     <div class="monthly-header" onclick="toggleMonthlyDetail('spdpDir')">
-                        <h4><i class="fas fa-building"></i> Input Data SPDP Per Direktorat <small>(untuk grafik tindak pidana)</small></h4>
+                        <h4><i class="fas fa-building"></i> Input Data SPDP Per Direktorat <small>(untuk grafik tindak
+                                pidana)</small></h4>
                         <i class="fas fa-chevron-down toggle-icon" id="toggleSpdpDir"></i>
                     </div>
                     <div class="monthly-body" id="monthlySpdpDir" style="display:none;">
@@ -240,49 +259,57 @@
                     <div class="data-card card-tahap1 animate-in">
                         <div class="card-label">Tahap I</div>
                         <div class="card-value">
-                            <input type="number" id="tahap1-tahap1" placeholder="0" min="0" data-section="tahap1" oninput="onDataInput('tahap1')">
+                            <input type="number" id="tahap1-tahap1" placeholder="0" min="0" data-section="tahap1"
+                                oninput="onDataInput('tahap1')">
                         </div>
                     </div>
                     <div class="data-card card-t1-p18 animate-in">
                         <div class="card-label">P-18</div>
                         <div class="card-value">
-                            <input type="number" id="tahap1-p18" placeholder="0" min="0" data-section="tahap1" oninput="onDataInput('tahap1')">
+                            <input type="number" id="tahap1-p18" placeholder="0" min="0" data-section="tahap1"
+                                oninput="onDataInput('tahap1')">
                         </div>
                     </div>
                     <div class="data-card card-t1-p19 animate-in">
                         <div class="card-label">P-19</div>
                         <div class="card-value">
-                            <input type="number" id="tahap1-p19" placeholder="0" min="0" data-section="tahap1" oninput="onDataInput('tahap1')">
+                            <input type="number" id="tahap1-p19" placeholder="0" min="0" data-section="tahap1"
+                                oninput="onDataInput('tahap1')">
                         </div>
                     </div>
                     <div class="data-card card-t1-p20 animate-in">
                         <div class="card-label">P-20</div>
                         <div class="card-value">
-                            <input type="number" id="tahap1-p20" placeholder="0" min="0" data-section="tahap1" oninput="onDataInput('tahap1')">
+                            <input type="number" id="tahap1-p20" placeholder="0" min="0" data-section="tahap1"
+                                oninput="onDataInput('tahap1')">
                         </div>
                     </div>
                     <div class="data-card card-t1-p21 animate-in">
                         <div class="card-label">P-21</div>
                         <div class="card-value">
-                            <input type="number" id="tahap1-p21" placeholder="0" min="0" data-section="tahap1" oninput="onDataInput('tahap1')">
+                            <input type="number" id="tahap1-p21" placeholder="0" min="0" data-section="tahap1"
+                                oninput="onDataInput('tahap1')">
                         </div>
                     </div>
                     <div class="data-card card-t1-p21a animate-in">
                         <div class="card-label">P-21A</div>
                         <div class="card-value">
-                            <input type="number" id="tahap1-p21a" placeholder="0" min="0" data-section="tahap1" oninput="onDataInput('tahap1')">
+                            <input type="number" id="tahap1-p21a" placeholder="0" min="0" data-section="tahap1"
+                                oninput="onDataInput('tahap1')">
                         </div>
                     </div>
                     <div class="data-card card-t1-pengembalian animate-in">
                         <div class="card-label">Pengembalian Berkas</div>
                         <div class="card-value">
-                            <input type="number" id="tahap1-pengembalian" placeholder="0" min="0" data-section="tahap1" oninput="onDataInput('tahap1')">
+                            <input type="number" id="tahap1-pengembalian" placeholder="0" min="0" data-section="tahap1"
+                                oninput="onDataInput('tahap1')">
                         </div>
                     </div>
                     <div class="data-card card-t1-sp3 animate-in">
                         <div class="card-label">SP3</div>
                         <div class="card-value">
-                            <input type="number" id="tahap1-sp3" placeholder="0" min="0" data-section="tahap1" oninput="onDataInput('tahap1')">
+                            <input type="number" id="tahap1-sp3" placeholder="0" min="0" data-section="tahap1"
+                                oninput="onDataInput('tahap1')">
                         </div>
                     </div>
                 </div>
@@ -310,7 +337,8 @@
                 <!-- Tahap I Per Bulan Detail -->
                 <div class="monthly-detail">
                     <div class="monthly-header" onclick="toggleMonthlyDetail('tahap1')">
-                        <h4><i class="fas fa-calendar-alt"></i> Input Data Tahap I Per Bulan <small>(untuk grafik tren)</small></h4>
+                        <h4><i class="fas fa-calendar-alt"></i> Input Data Tahap I Per Bulan <small>(untuk grafik
+                                tren)</small></h4>
                         <i class="fas fa-chevron-down toggle-icon" id="toggleTahap1"></i>
                     </div>
                     <div class="monthly-body" id="monthlyTahap1" style="display:none;">
@@ -323,7 +351,8 @@
                 <!-- Tahap I Per Direktorat -->
                 <div class="monthly-detail">
                     <div class="monthly-header" onclick="toggleMonthlyDetail('tahap1Dir')">
-                        <h4><i class="fas fa-building"></i> Input Data Tahap I Per Direktorat <small>(untuk grafik tindak pidana)</small></h4>
+                        <h4><i class="fas fa-building"></i> Input Data Tahap I Per Direktorat <small>(untuk grafik
+                                tindak pidana)</small></h4>
                         <i class="fas fa-chevron-down toggle-icon" id="toggleTahap1Dir"></i>
                     </div>
                     <div class="monthly-body" id="monthlyTahap1Dir" style="display:none;">
@@ -362,4 +391,5 @@
         applyViewMode();
     </script>
 </body>
+
 </html>
