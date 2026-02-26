@@ -258,7 +258,28 @@
     </div>
 
     <script>
-        // ---- Dynamic Year Population (reads from admin-configured localStorage) ----
+        // ---- Supabase Config (same as admin) ----
+        const SB_URL = 'https://iudtxznbakaqzygpkaxf.supabase.co';
+        const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml1ZHR4em5iYWthcXp5Z3BrYXhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAwODQ3MjIsImV4cCI6MjA4NTY2MDcyMn0.eF_idmb2tF_SJtOJ7Sf9ipcT7w5Zhxt30uzMqtptxmc';
+        const SB_TABLE = 'cms_pidum_data';
+
+        async function sbFetch(storageKey) {
+            try {
+                const res = await fetch(
+                    SB_URL + '/rest/v1/' + SB_TABLE + '?storage_key=eq.' + encodeURIComponent(storageKey) + '&select=data_json&limit=1',
+                    { headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY } }
+                );
+                if (res.ok) {
+                    const arr = await res.json();
+                    if (arr && arr.length > 0 && arr[0].data_json) {
+                        return JSON.parse(arr[0].data_json);
+                    }
+                }
+            } catch (e) { console.warn('Supabase fetch error:', e); }
+            return null;
+        }
+
+        // ---- Dynamic Year Population ----
         const TAHUN_KEY = 'cms_tahun_list';
         function getDisplayTahunList() {
             try {
@@ -325,57 +346,78 @@
             'val-tppu': 'display-tppu'
         };
 
-        // ---- Load and display data ----
-        function loadDisplayData() {
+        // ---- Apply data to display ----
+        function applyDataToDisplay(data) {
+            Object.entries(fieldMap).forEach(([dataKey, displayId]) => {
+                const value = data[dataKey];
+                if (value !== undefined && value !== '') {
+                    document.getElementById(displayId).textContent = value;
+                }
+            });
+        }
+
+        // ---- Load and display data (Supabase first, localStorage fallback) ----
+        async function loadDisplayData() {
             const key = getDisplayStorageKey();
-            const saved = localStorage.getItem(key);
 
             // Reset all values first
             Object.values(fieldMap).forEach(displayId => {
                 document.getElementById(displayId).textContent = '0';
             });
 
-            if (saved) {
-                try {
+            // Try Supabase first
+            const sbData = await sbFetch(key);
+            if (sbData) {
+                applyDataToDisplay(sbData);
+                return;
+            }
+
+            // Fallback to localStorage
+            try {
+                const saved = localStorage.getItem(key);
+                if (saved) {
                     const data = JSON.parse(saved);
-                    Object.entries(fieldMap).forEach(([dataKey, displayId]) => {
-                        const value = data[dataKey];
-                        if (value !== undefined && value !== '') {
-                            document.getElementById(displayId).textContent = value;
-                        }
-                    });
-                } catch (e) {
-                    console.error('Error loading display data:', e);
+                    applyDataToDisplay(data);
                 }
+            } catch (e) {
+                console.error('Error loading display data:', e);
             }
         }
 
         // ---- Load data on page load using last saved filters ----
-        function initDisplay() {
-            // Populate Tahun dropdown from admin-configured list
+        async function initDisplay() {
             populateDisplayTahun();
 
-            // Try to load last used filters
-            const lastFilters = localStorage.getItem('pidum_last_filters');
-            if (lastFilters) {
+            // Try Supabase for last filters first
+            const sbFilters = await sbFetch('pidum_last_filters');
+            if (sbFilters) {
+                if (sbFilters.wilayah) document.getElementById('filterWilayah').value = sbFilters.wilayah;
+                if (sbFilters.satker1) document.getElementById('filterSatker1').value = sbFilters.satker1;
+                if (sbFilters.satker2) document.getElementById('filterSatker2').value = sbFilters.satker2;
+                if (sbFilters.tahun) document.getElementById('filterTahun').value = sbFilters.tahun;
+                if (sbFilters.bulan1) document.getElementById('filterBulan1').value = sbFilters.bulan1;
+                if (sbFilters.bulan2) document.getElementById('filterBulan2').value = sbFilters.bulan2;
+            } else {
+                // Fallback to localStorage
                 try {
-                    const filters = JSON.parse(lastFilters);
-                    if (filters.wilayah) document.getElementById('filterWilayah').value = filters.wilayah;
-                    if (filters.satker1) document.getElementById('filterSatker1').value = filters.satker1;
-                    if (filters.satker2) document.getElementById('filterSatker2').value = filters.satker2;
-                    if (filters.tahun) document.getElementById('filterTahun').value = filters.tahun;
-                    if (filters.bulan1) document.getElementById('filterBulan1').value = filters.bulan1;
-                    if (filters.bulan2) document.getElementById('filterBulan2').value = filters.bulan2;
-                } catch (e) {
-                    console.error('Error restoring filters:', e);
-                }
+                    const lastFilters = localStorage.getItem('pidum_last_filters');
+                    if (lastFilters) {
+                        const filters = JSON.parse(lastFilters);
+                        if (filters.wilayah) document.getElementById('filterWilayah').value = filters.wilayah;
+                        if (filters.satker1) document.getElementById('filterSatker1').value = filters.satker1;
+                        if (filters.satker2) document.getElementById('filterSatker2').value = filters.satker2;
+                        if (filters.tahun) document.getElementById('filterTahun').value = filters.tahun;
+                        if (filters.bulan1) document.getElementById('filterBulan1').value = filters.bulan1;
+                        if (filters.bulan2) document.getElementById('filterBulan2').value = filters.bulan2;
+                    }
+                } catch (e) { }
             }
 
             loadDisplayData();
         }
 
-        // ---- Auto-refresh data every 3 seconds ----
-        setInterval(loadDisplayData, 3000);
+        // ---- Auto-refresh data every 5 seconds ----
+        setInterval(loadDisplayData, 5000);
 
         // Init on load
         initDisplay();

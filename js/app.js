@@ -3,6 +3,68 @@
    Core logic: sidebar, filters, data persistence
    ============================================ */
 
+// ---- Supabase Config ----
+const PIDUM_SUPABASE_URL = 'https://iudtxznbakaqzygpkaxf.supabase.co';
+const PIDUM_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml1ZHR4em5iYWthcXp5Z3BrYXhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAwODQ3MjIsImV4cCI6MjA4NTY2MDcyMn0.eF_idmb2tF_SJtOJ7Sf9ipcT7w5Zhxt30uzMqtptxmc';
+const PIDUM_TABLE = 'cms_pidum_data';
+
+// Supabase REST helper (no SDK needed)
+async function supabaseRequest(method, endpoint, body) {
+    try {
+        const opts = {
+            method: method,
+            headers: {
+                'apikey': PIDUM_SUPABASE_KEY,
+                'Authorization': 'Bearer ' + PIDUM_SUPABASE_KEY,
+                'Content-Type': 'application/json',
+                'Prefer': method === 'POST' ? 'resolution=merge-duplicates' : 'return=representation'
+            }
+        };
+        if (body) opts.body = JSON.stringify(body);
+        const res = await fetch(PIDUM_SUPABASE_URL + '/rest/v1/' + endpoint, opts);
+        if (!res.ok) {
+            const text = await res.text();
+            console.warn('Supabase response:', res.status, text);
+            return null;
+        }
+        const text = await res.text();
+        return text ? JSON.parse(text) : null;
+    } catch (e) {
+        console.warn('Supabase request failed:', e);
+        return null;
+    }
+}
+
+// Save to Supabase
+async function saveToSupabase(storageKey, data) {
+    try {
+        const row = {
+            storage_key: storageKey,
+            data_json: JSON.stringify(data),
+            updated_at: new Date().toISOString()
+        };
+        await supabaseRequest('POST', PIDUM_TABLE, row);
+        console.log('Supabase: saved', storageKey);
+    } catch (e) {
+        console.warn('Supabase save failed:', e);
+    }
+}
+
+// Load from Supabase
+async function loadFromSupabase(storageKey) {
+    try {
+        const result = await supabaseRequest('GET',
+            PIDUM_TABLE + '?storage_key=eq.' + encodeURIComponent(storageKey) + '&select=data_json&limit=1'
+        );
+        if (result && result.length > 0 && result[0].data_json) {
+            return JSON.parse(result[0].data_json);
+        }
+    } catch (e) {
+        console.warn('Supabase load failed:', e);
+    }
+    return null;
+}
+
 // ---- Sidebar Toggle ----
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
@@ -84,7 +146,7 @@ const dataFields = [
     'val-tppu'
 ];
 
-// ---- Save Data to localStorage ----
+// ---- Save Data to localStorage + Supabase ----
 function saveData() {
     const key = getStorageKey();
     const data = {};
@@ -109,11 +171,15 @@ function saveData() {
     data._savedAt = new Date().toISOString();
 
     try {
+        // Save to localStorage (backup)
         localStorage.setItem(key, JSON.stringify(data));
-
-        // Also save last used key for quick reload
         localStorage.setItem('pidum_last_key', key);
         localStorage.setItem('pidum_last_filters', JSON.stringify(data._filters));
+
+        // Save to Supabase (primary - for WordPress iframe)
+        saveToSupabase(key, data);
+        // Also save last filters to Supabase
+        saveToSupabase('pidum_last_filters', data._filters);
 
         showToast('Data berhasil disimpan!', 'success');
         document.getElementById('btnSave').innerHTML = '<i class="fas fa-check"></i> Tersimpan';
@@ -127,45 +193,56 @@ function saveData() {
     }
 }
 
-// ---- Load Saved Data ----
+// ---- Load Saved Data (localStorage + Supabase) ----
 // restoreFilters = true only on initial page load, false when user clicks Terapkan
-function loadSavedData(restoreFilters) {
+async function loadSavedData(restoreFilters) {
     // Only restore filters on initial load, not when user manually changes them
     if (restoreFilters !== false) {
-        const lastFilters = localStorage.getItem('pidum_last_filters');
-        if (lastFilters) {
-            try {
-                const filters = JSON.parse(lastFilters);
-                setSelectValue('filterWilayah', filters.wilayah);
-                setSelectValue('filterSatker1', filters.satker1);
-                setSelectValue('filterSatker2', filters.satker2);
-                setSelectValue('filterTahun', filters.tahun);
-                setSelectValue('filterBulan1', filters.bulan1);
-                setSelectValue('filterBulan2', filters.bulan2);
-            } catch (e) {
-                console.error('Filter restore error:', e);
+        // Try Supabase first, then localStorage
+        let filters = null;
+        const sbFilters = await loadFromSupabase('pidum_last_filters');
+        if (sbFilters) {
+            filters = sbFilters;
+        } else {
+            const lastFilters = localStorage.getItem('pidum_last_filters');
+            if (lastFilters) {
+                try { filters = JSON.parse(lastFilters); } catch (e) { }
             }
+        }
+        if (filters) {
+            setSelectValue('filterWilayah', filters.wilayah);
+            setSelectValue('filterSatker1', filters.satker1);
+            setSelectValue('filterSatker2', filters.satker2);
+            setSelectValue('filterTahun', filters.tahun);
+            setSelectValue('filterBulan1', filters.bulan1);
+            setSelectValue('filterBulan2', filters.bulan2);
         }
     }
 
     // Then load data for current filter combination
     const key = getStorageKey();
-    const saved = localStorage.getItem(key);
+    let data = null;
 
-    if (saved) {
-        try {
-            const data = JSON.parse(saved);
-            dataFields.forEach(field => {
-                const input = document.getElementById(field);
-                if (input && data[field] !== undefined) {
-                    input.value = data[field];
-                }
-            });
-        } catch (e) {
-            console.error('Load error:', e);
-        }
+    // Try Supabase first
+    const sbData = await loadFromSupabase(key);
+    if (sbData) {
+        data = sbData;
     } else {
-        // Clear fields if no data for this filter combo
+        // Fallback to localStorage
+        const saved = localStorage.getItem(key);
+        if (saved) {
+            try { data = JSON.parse(saved); } catch (e) { }
+        }
+    }
+
+    if (data) {
+        dataFields.forEach(field => {
+            const input = document.getElementById(field);
+            if (input && data[field] !== undefined) {
+                input.value = data[field];
+            }
+        });
+    } else {
         clearDataFields();
     }
 
@@ -191,16 +268,19 @@ function clearDataFields() {
     });
 }
 
-// ---- Reset data (clear inputs and remove from localStorage) ----
+// ---- Reset data (clear inputs and remove from localStorage + Supabase) ----
 function resetData() {
     if (confirm('Apakah Anda yakin ingin mengosongkan semua data?')) {
         clearDataFields();
 
-        // Remove data from localStorage so display page also reflects deletion
+        // Remove data from localStorage
         const key = getStorageKey();
         localStorage.removeItem(key);
-        hasUnsaved = false;
 
+        // Also remove from Supabase
+        supabaseRequest('DELETE', PIDUM_TABLE + '?storage_key=eq.' + encodeURIComponent(key));
+
+        hasUnsaved = false;
         showToast('Data telah dikosongkan', 'success');
     }
 }
