@@ -1,0 +1,332 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eksekusi - Dashboard Kejaksaan RI</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="js/auth.js"></script>
+    <script>if (!isLoggedIn()) { window.location.href = 'login.html'; }</script>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo"></div>
+            <h3>Dashboard<br>Kejaksaan RI</h3>
+            <div class="subtitle">Case Management System</div>
+        </div>
+        <div class="sidebar-nav">
+            <a href="index.html" class="nav-item">
+                <span class="nav-icon"><i class="fas fa-home"></i></span>
+                <span class="nav-text">Home</span>
+            </a>
+            <a href="pidum.html" class="nav-item active">
+                <span class="nav-icon"><i class="fas fa-gavel"></i></span>
+                <span class="nav-text">Pidana Umum</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Header -->
+        <header class="top-header">
+            <button class="toggle-btn" onclick="toggleSidebar()" title="Toggle Sidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+            <span class="header-greeting" id="greeting"></span>
+            <span class="header-badge">KEJAKSAAN TINGGI KEPULAUAN RIAU</span>
+            <button class="btn-logout" onclick="logout()" title="Keluar">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </header>
+
+        <!-- Page Content -->
+        <div class="page-content">
+
+            <!-- Breadcrumb -->
+            <div class="breadcrumb">
+                <a href="pidum.html"><i class="fas fa-arrow-left"></i> Kembali ke Dashboard Pidum</a>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-current">Eksekusi</span>
+            </div>
+
+            <!-- Dashboard Banner -->
+            <div class="dashboard-banner animate-in">
+                <h1><i class="fas fa-stamp" style="margin-right: 10px;"></i>Dashboard Eksekusi</h1>
+                <div class="update-info">
+                    Data update: <span id="updateDate"></span>
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section animate-in">
+                <div class="filter-grid">
+                    <div class="filter-group">
+                        <label>Wilayah Hukum Kejaksaan RI</label>
+                        <select id="filterWilayah">
+                            <option value="kejati-kepri" selected>Kejaksaan Tinggi Kepulauan Riau</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Satuan Kerja 1</label>
+                        <select id="filterSatker1">
+                            <option value="">SATUAN KERJA (SATKER)</option>
+                            <option value="kejati-kepri">Kejaksaan Tinggi Kepulauan Riau</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Satuan Kerja 2</label>
+                        <select id="filterSatker2">
+                            <option value="">SATUAN KERJA (SATKER) 2</option>
+                            <option value="kejati-kepri">Kejaksaan Tinggi Kepulauan Riau</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Tahun</label>
+                        <select id="filterTahun">
+                            <!-- Loaded dynamically -->
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Bulan Awal</label>
+                        <select id="filterBulan1">
+                            <option value="01" selected>Januari</option>
+                            <option value="02">Februari</option>
+                            <option value="03">Maret</option>
+                            <option value="04">April</option>
+                            <option value="05">Mei</option>
+                            <option value="06">Juni</option>
+                            <option value="07">Juli</option>
+                            <option value="08">Agustus</option>
+                            <option value="09">September</option>
+                            <option value="10">Oktober</option>
+                            <option value="11">November</option>
+                            <option value="12">Desember</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Bulan Akhir</label>
+                        <select id="filterBulan2">
+                            <option value="01">Januari</option>
+                            <option value="02" selected>Februari</option>
+                            <option value="03">Maret</option>
+                            <option value="04">April</option>
+                            <option value="05">Mei</option>
+                            <option value="06">Juni</option>
+                            <option value="07">Juli</option>
+                            <option value="08">Agustus</option>
+                            <option value="09">September</option>
+                            <option value="10">Oktober</option>
+                            <option value="11">November</option>
+                            <option value="12">Desember</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="filter-actions">
+                    <button class="btn btn-secondary" onclick="resetFilters()">
+                        <i class="fas fa-undo"></i> Reset
+                    </button>
+                    <button class="btn btn-primary" onclick="applyFilters()">
+                        <i class="fas fa-search"></i> Terapkan
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===================== SECTION: EKSEKUSI ===================== -->
+            <div class="detail-section animate-in">
+                <div class="section-header">
+                    <div class="section-title">
+                        <div class="section-icon"><i class="fas fa-stamp"></i></div>
+                        <h2>EKSEKUSI</h2>
+                    </div>
+                    <div class="section-line"></div>
+                </div>
+
+                <!-- 4 Cards -->
+                <div class="cards-grid cards-grid-4">
+                    <div class="data-card card-eks-p48 animate-in">
+                        <div class="card-label">P-48</div>
+                        <div class="card-value">
+                            <input type="number" id="eks-p48" placeholder="0" min="0" oninput="onDataInput()">
+                        </div>
+                    </div>
+                    <div class="data-card card-eks-ba17 animate-in">
+                        <div class="card-label">BA-17</div>
+                        <div class="card-value">
+                            <input type="number" id="eks-ba17" placeholder="0" min="0" oninput="onDataInput()">
+                        </div>
+                    </div>
+                    <div class="data-card card-eks-denda animate-in">
+                        <div class="card-label">Denda</div>
+                        <div class="card-value">
+                            <input type="text" id="eks-denda" placeholder="0" inputmode="numeric"
+                                   oninput="formatCurrencyInput(this); onDataInput()">
+                        </div>
+                    </div>
+                    <div class="data-card card-eks-biaya animate-in">
+                        <div class="card-label">Biaya Perkara</div>
+                        <div class="card-value">
+                            <input type="text" id="eks-biaya" placeholder="0" inputmode="numeric"
+                                   oninput="formatCurrencyInput(this); onDataInput()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 1: P-48 Trend & BA-17 Trend -->
+                <div class="charts-row">
+                    <div class="chart-container animate-in">
+                        <div class="chart-header">
+                            <h4><i class="fas fa-chart-line"></i> Grafik Tren Per Bulan P-48</h4>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="chartP48Trend"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container animate-in">
+                        <div class="chart-header">
+                            <h4><i class="fas fa-chart-line"></i> Grafik Tren Per Bulan BA-17</h4>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="chartBa17Trend"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 2: Denda Trend & Biaya Perkara Trend -->
+                <div class="charts-row">
+                    <div class="chart-container animate-in">
+                        <div class="chart-header">
+                            <h4><i class="fas fa-chart-line"></i> Grafik Tren Per Bulan Denda</h4>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="chartDendaTrend"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container animate-in">
+                        <div class="chart-header">
+                            <h4><i class="fas fa-chart-line"></i> Grafik Tren Per Bulan Biaya Perkara</h4>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="chartBiayaTrend"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 3: P-48 Dir & BA-17 Dir Bar Charts -->
+                <div class="charts-row">
+                    <div class="chart-container animate-in">
+                        <div class="chart-header">
+                            <h4><i class="fas fa-chart-bar"></i> Grafik P-48 Berdasarkan Tindak Pidana</h4>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="chartP48Dir"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container animate-in">
+                        <div class="chart-header">
+                            <h4><i class="fas fa-chart-bar"></i> Grafik BA-17 Berdasarkan Tindak Pidana</h4>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="chartBa17Dir"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Monthly Input Accordions -->
+                <div class="monthly-detail">
+                    <div class="monthly-header" onclick="toggleAccordion('p48')">
+                        <h4><i class="fas fa-calendar-alt"></i> Input Data P-48 Per Bulan <small>(untuk grafik tren)</small></h4>
+                        <i class="fas fa-chevron-down toggle-icon" id="toggleP48"></i>
+                    </div>
+                    <div class="monthly-body" id="monthlyP48" style="display:none;">
+                        <div class="monthly-grid" id="p48MonthlyGrid"></div>
+                    </div>
+                </div>
+
+                <div class="monthly-detail">
+                    <div class="monthly-header" onclick="toggleAccordion('ba17')">
+                        <h4><i class="fas fa-calendar-alt"></i> Input Data BA-17 Per Bulan <small>(untuk grafik tren)</small></h4>
+                        <i class="fas fa-chevron-down toggle-icon" id="toggleBa17"></i>
+                    </div>
+                    <div class="monthly-body" id="monthlyBa17" style="display:none;">
+                        <div class="monthly-grid" id="ba17MonthlyGrid"></div>
+                    </div>
+                </div>
+
+                <div class="monthly-detail">
+                    <div class="monthly-header" onclick="toggleAccordion('denda')">
+                        <h4><i class="fas fa-calendar-alt"></i> Input Data Denda Per Bulan <small>(untuk grafik tren)</small></h4>
+                        <i class="fas fa-chevron-down toggle-icon" id="toggleDenda"></i>
+                    </div>
+                    <div class="monthly-body" id="monthlyDenda" style="display:none;">
+                        <div class="monthly-grid" id="dendaMonthlyGrid"></div>
+                    </div>
+                </div>
+
+                <div class="monthly-detail">
+                    <div class="monthly-header" onclick="toggleAccordion('biaya')">
+                        <h4><i class="fas fa-calendar-alt"></i> Input Data Biaya Perkara Per Bulan <small>(untuk grafik tren)</small></h4>
+                        <i class="fas fa-chevron-down toggle-icon" id="toggleBiaya"></i>
+                    </div>
+                    <div class="monthly-body" id="monthlyBiaya" style="display:none;">
+                        <div class="monthly-grid" id="biayaMonthlyGrid"></div>
+                    </div>
+                </div>
+
+                <!-- Direktorat Input Accordions -->
+                <div class="monthly-detail">
+                    <div class="monthly-header" onclick="toggleAccordion('p48Dir')">
+                        <h4><i class="fas fa-building"></i> Input Data P-48 Per Tindak Pidana <small>(untuk grafik bar)</small></h4>
+                        <i class="fas fa-chevron-down toggle-icon" id="toggleP48Dir"></i>
+                    </div>
+                    <div class="monthly-body" id="monthlyP48Dir" style="display:none;">
+                        <div class="direktorat-grid" id="p48DirGrid"></div>
+                    </div>
+                </div>
+
+                <div class="monthly-detail">
+                    <div class="monthly-header" onclick="toggleAccordion('ba17Dir')">
+                        <h4><i class="fas fa-building"></i> Input Data BA-17 Per Tindak Pidana <small>(untuk grafik bar)</small></h4>
+                        <i class="fas fa-chevron-down toggle-icon" id="toggleBa17Dir"></i>
+                    </div>
+                    <div class="monthly-body" id="monthlyBa17Dir" style="display:none;">
+                        <div class="direktorat-grid" id="ba17DirGrid"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Save Actions -->
+            <div class="save-section">
+                <button class="btn btn-secondary" onclick="resetAllData()">
+                    <i class="fas fa-eraser"></i> Kosongkan Semua Data
+                </button>
+                <button class="btn btn-save" id="btnSave" onclick="saveAllData()">
+                    <i class="fas fa-save"></i> Simpan Semua Data
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script src="js/app.js"></script>
+    <script src="js/eksekusi.js"></script>
+    <script>
+        setGreeting();
+        setUpdateDate();
+        restoreViewFilters();
+        populateTahunDropdown();
+        populateSatkerDropdowns();
+        initEksekusi();
+        applyViewMode();
+    </script>
+</body>
+</html>

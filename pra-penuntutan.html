@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pra Penuntutan - Dashboard Kejaksaan RI</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="js/auth.js"></script>
+    <script>if (!isLoggedIn()) { window.location.href = 'login.html'; }</script>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo"></div>
+            <h3>Dashboard<br>Kejaksaan RI</h3>
+            <div class="subtitle">Case Management System</div>
+        </div>
+        <div class="sidebar-nav">
+            <a href="index.html" class="nav-item">
+                <span class="nav-icon"><i class="fas fa-home"></i></span>
+                <span class="nav-text">Home</span>
+            </a>
+            <a href="pidum.html" class="nav-item active">
+                <span class="nav-icon"><i class="fas fa-gavel"></i></span>
+                <span class="nav-text">Pidana Umum</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Header -->
+        <header class="top-header">
+            <button class="toggle-btn" onclick="toggleSidebar()" title="Toggle Sidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+            <span class="header-greeting" id="greeting"></span>
+            <span class="header-badge">KEJAKSAAN TINGGI KEPULAUAN RIAU</span>
+            <button class="btn-logout" onclick="logout()" title="Keluar">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </header>
+
+        <!-- Page Content -->
+        <div class="page-content">
+
+            <!-- Breadcrumb -->
+            <div class="breadcrumb">
+                <a href="pidum.html"><i class="fas fa-arrow-left"></i> Kembali ke Dashboard Pidum</a>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-current">Pra Penuntutan</span>
+            </div>
+
+            <!-- Dashboard Banner -->
+            <div class="dashboard-banner animate-in">
+                <h1><i class="fas fa-file-alt" style="margin-right: 10px;"></i>Dashboard Pra Penuntutan</h1>
+                <div class="update-info">
+                    Data update: <span id="updateDate"></span>
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section animate-in">
+                <div class="filter-grid">
+                    <div class="filter-group">
+                        <label>Wilayah Hukum Kejaksaan RI</label>
+                        <select id="filterWilayah">
+                            <option value="kejati-kepri" selected>Kejaksaan Tinggi Kepulauan Riau</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Satuan Kerja 1</label>
+                        <select id="filterSatker1">
+                            <option value="">SATUAN KERJA (SATKER)</option>
+                            <option value="kejati-kepri">Kejaksaan Tinggi Kepulauan Riau</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Satuan Kerja 2</label>
+                        <select id="filterSatker2">
+                            <option value="">SATUAN KERJA (SATKER) 2</option>
+                            <option value="kejati-kepri">Kejaksaan Tinggi Kepulauan Riau</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Tahun</label>
+                        <select id="filterTahun">
+                            <!-- Loaded dynamically -->
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Bulan Awal</label>
+                        <select id="filterBulan1">
+                            <option value="01" selected>Januari</option>
+                            <option value="02">Februari</option>
+                            <option value="03">Maret</option>
+                            <option value="04">April</option>
+                            <option value="05">Mei</option>
+                            <option value="06">Juni</option>
+                            <option value="07">Juli</option>
+                            <option value="08">Agustus</option>
+                            <option value="09">September</option>
+                            <option value="10">Oktober</option>
+                            <option value="11">November</option>
+                            <option value="12">Desember</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Bulan Akhir</label>
+                        <select id="filterBulan2">
+                            <option value="01">Januari</option>
+                            <option value="02" selected>Februari</option>
+                            <option value="03">Maret</option>
+                            <option value="04">April</option>
+                            <option value="05">Mei</option>
+                            <option value="06">Juni</option>
+                            <option value="07">Juli</option>
+                            <option value="08">Agustus</option>
+                            <option value="09">September</option>
+                            <option value="10">Oktober</option>
+                            <option value="11">November</option>
+                            <option value="12">Desember</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="filter-actions">
+                    <button class="btn btn-secondary" onclick="resetFilters()">
+                        <i class="fas fa-undo"></i> Reset
+                    </button>
+                    <button class="btn btn-primary" onclick="applyFilters()">
+                        <i class="fas fa-search"></i> Terapkan
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===================== SECTION: SPDP ===================== -->
+            <div class="detail-section animate-in">
+                <div class="section-header">
+                    <div class="section-title">
+                        <div class="section-icon"><i class="fas fa-folder-open"></i></div>
+                        <h2>SPDP</h2>
+                    </div>
+                    <div class="section-line"></div>
+                </div>
+
+                <div class="cards-grid cards-grid-3">
+                    <div class="data-card card-spdp animate-in">
+                        <div class="card-label">SPDP</div>
+                        <div class="card-value">
+                            <input type="number" id="spdp-spdp" placeholder="0" min="0" data-section="spdp" oninput="onDataInput('spdp')">
+                        </div>
+                    </div>
+                    <div class="data-card card-p18 animate-in">
+                        <div class="card-label">P-16</div>
+                        <div class="card-value">
+                            <input type="number" id="spdp-p18" placeholder="0" min="0" data-section="spdp" oninput="onDataInput('spdp')">
+                        </div>
+                    </div>
+                    <div class="data-card card-p17 animate-in">
+                        <div class="card-label">P-17</div>
+                        <div class="card-value">
+                            <input type="number" id="spdp-p17" placeholder="0" min="0" data-section="spdp" oninput="onDataInput('spdp')">
+                        </div>
+                    </div>
+                    <div class="data-card card-pengembalian animate-in">
+                        <div class="card-label">Pengembalian</div>
+                        <div class="card-value">
+                            <input type="number" id="spdp-pengembalian" placeholder="0" min="0" data-section="spdp" oninput="onDataInput('spdp')">
+                        </div>
+                    </div>
+                    <div class="data-card card-sp3 animate-in">
+                        <div class="card-label">SP3</div>
+                        <div class="card-value">
+                            <input type="number" id="spdp-sp3" placeholder="0" min="0" data-section="spdp" oninput="onDataInput('spdp')">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SPDP Charts -->
+                <div class="charts-row">
+                    <div class="chart-container animate-in">
+                        <div class="chart-header">
+                            <h4><i class="fas fa-chart-line"></i> Grafik Tren Per Bulan SPDP</h4>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="chartSpdpTrend"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container animate-in">
+                        <div class="chart-header">
+                            <h4><i class="fas fa-chart-bar"></i> Grafik SPDP Berdasarkan Tindak Pidana</h4>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="chartSpdpTindakPidana"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SPDP Per Bulan Detail (for trend chart) -->
+                <div class="monthly-detail">
+                    <div class="monthly-header" onclick="toggleMonthlyDetail('spdp')">
+                        <h4><i class="fas fa-calendar-alt"></i> Input Data SPDP Per Bulan <small>(untuk grafik tren)</small></h4>
+                        <i class="fas fa-chevron-down toggle-icon" id="toggleSpdp"></i>
+                    </div>
+                    <div class="monthly-body" id="monthlySpdp" style="display:none;">
+                        <div class="monthly-grid" id="spdpMonthlyGrid">
+                            <!-- Generated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SPDP Per Direktorat (for bar chart) -->
+                <div class="monthly-detail">
+                    <div class="monthly-header" onclick="toggleMonthlyDetail('spdpDir')">
+                        <h4><i class="fas fa-building"></i> Input Data SPDP Per Direktorat <small>(untuk grafik tindak pidana)</small></h4>
+                        <i class="fas fa-chevron-down toggle-icon" id="toggleSpdpDir"></i>
+                    </div>
+                    <div class="monthly-body" id="monthlySpdpDir" style="display:none;">
+                        <div class="direktorat-grid" id="spdpDirGrid">
+                            <!-- Generated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== SECTION: BERKAS TAHAP I ===================== -->
+            <div class="detail-section animate-in">
+                <div class="section-header">
+                    <div class="section-title">
+                        <div class="section-icon"><i class="fas fa-file-signature"></i></div>
+                        <h2>BERKAS TAHAP I</h2>
+                    </div>
+                    <div class="section-line"></div>
+                </div>
+
+                <div class="cards-grid cards-grid-4">
+                    <div class="data-card card-tahap1 animate-in">
+                        <div class="card-label">Tahap I</div>
+                        <div class="card-value">
+                            <input type="number" id="tahap1-tahap1" placeholder="0" min="0" data-section="tahap1" oninput="onDataInput('tahap1')">
+                        </div>
+                    </div>
+                    <div class="data-card card-t1-p18 animate-in">
+                        <div class="card-label">P-18</div>
+                        <div class="card-value">
+                            <input type="number" id="tahap1-p18" placeholder="0" min="0" data-section="tahap1" oninput="onDataInput('tahap1')">
+                        </div>
+                    </div>
+                    <div class="data-card card-t1-p19 animate-in">
+                        <div class="card-label">P-19</div>
+                        <div class="card-value">
+                            <input type="number" id="tahap1-p19" placeholder="0" min="0" data-section="tahap1" oninput="onDataInput('tahap1')">
+                        </div>
+                    </div>
+                    <div class="data-card card-t1-p20 animate-in">
+                        <div class="card-label">P-20</div>
+                        <div class="card-value">
+                            <input type="number" id="tahap1-p20" placeholder="0" min="0" data-section="tahap1" oninput="onDataInput('tahap1')">
+                        </div>
+                    </div>
+                    <div class="data-card card-t1-p21 animate-in">
+                        <div class="card-label">P-21</div>
+                        <div class="card-value">
+                            <input type="number" id="tahap1-p21" placeholder="0" min="0" data-section="tahap1" oninput="onDataInput('tahap1')">
+                        </div>
+                    </div>
+                    <div class="data-card card-t1-p21a animate-in">
+                        <div class="card-label">P-21A</div>
+                        <div class="card-value">
+                            <input type="number" id="tahap1-p21a" placeholder="0" min="0" data-section="tahap1" oninput="onDataInput('tahap1')">
+                        </div>
+                    </div>
+                    <div class="data-card card-t1-pengembalian animate-in">
+                        <div class="card-label">Pengembalian Berkas</div>
+                        <div class="card-value">
+                            <input type="number" id="tahap1-pengembalian" placeholder="0" min="0" data-section="tahap1" oninput="onDataInput('tahap1')">
+                        </div>
+                    </div>
+                    <div class="data-card card-t1-sp3 animate-in">
+                        <div class="card-label">SP3</div>
+                        <div class="card-value">
+                            <input type="number" id="tahap1-sp3" placeholder="0" min="0" data-section="tahap1" oninput="onDataInput('tahap1')">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tahap I Charts -->
+                <div class="charts-row">
+                    <div class="chart-container animate-in">
+                        <div class="chart-header">
+                            <h4><i class="fas fa-chart-line"></i> Grafik Tren Per Bulan Tahap I</h4>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="chartTahap1Trend"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container animate-in">
+                        <div class="chart-header">
+                            <h4><i class="fas fa-chart-bar"></i> Grafik Tahap I Berdasarkan Tindak Pidana</h4>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="chartTahap1TindakPidana"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tahap I Per Bulan Detail -->
+                <div class="monthly-detail">
+                    <div class="monthly-header" onclick="toggleMonthlyDetail('tahap1')">
+                        <h4><i class="fas fa-calendar-alt"></i> Input Data Tahap I Per Bulan <small>(untuk grafik tren)</small></h4>
+                        <i class="fas fa-chevron-down toggle-icon" id="toggleTahap1"></i>
+                    </div>
+                    <div class="monthly-body" id="monthlyTahap1" style="display:none;">
+                        <div class="monthly-grid" id="tahap1MonthlyGrid">
+                            <!-- Generated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tahap I Per Direktorat -->
+                <div class="monthly-detail">
+                    <div class="monthly-header" onclick="toggleMonthlyDetail('tahap1Dir')">
+                        <h4><i class="fas fa-building"></i> Input Data Tahap I Per Direktorat <small>(untuk grafik tindak pidana)</small></h4>
+                        <i class="fas fa-chevron-down toggle-icon" id="toggleTahap1Dir"></i>
+                    </div>
+                    <div class="monthly-body" id="monthlyTahap1Dir" style="display:none;">
+                        <div class="direktorat-grid" id="tahap1DirGrid">
+                            <!-- Generated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Save Actions -->
+            <div class="save-section">
+                <button class="btn btn-secondary" onclick="resetAllData()">
+                    <i class="fas fa-eraser"></i> Kosongkan Semua Data
+                </button>
+                <button class="btn btn-save" id="btnSave" onclick="saveAllData()">
+                    <i class="fas fa-save"></i> Simpan Semua Data
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script src="js/app.js"></script>
+    <script src="js/pra-penuntutan.js"></script>
+    <script>
+        setGreeting();
+        setUpdateDate();
+        restoreViewFilters();
+        populateTahunDropdown();
+        populateSatkerDropdowns();
+        initPraPenuntutan();
+        applyViewMode();
+    </script>
+</body>
+</html>

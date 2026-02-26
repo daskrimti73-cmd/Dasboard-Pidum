@@ -1,0 +1,103 @@
+/* ============================================
+   TPPU Page - Special Styles
+   ============================================ */
+
+/* ---- Card Colors ---- */
+.card-tppu-main {
+    background: linear-gradient(135deg, #0ea5e9, #22d3ee);
+}
+.card-tpa-main {
+    background: linear-gradient(135deg, #f97316, #ef4444);
+}
+
+/* ---- Cards grid 2 columns ---- */
+.cards-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+/* ---- Table Section ---- */
+.tppu-table-section {
+    margin-top: 10px;
+}
+
+.section-subtitle {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    letter-spacing: 0.3px;
+}
+
+/* ---- Detail Button in Table ---- */
+.btn-detail {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-detail:hover {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+}
+
+.btn-detail i {
+    font-size: 11px;
+}
+
+/* ---- Detail Preview Modal ---- */
+.modal-detail-preview {
+    max-width: 550px;
+}
+
+.modal-header-info {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: #fff;
+    border-radius: 14px 14px 0 0;
+}
+
+.modal-header-info h3 { color: #fff; }
+.modal-header-info .modal-close { color: #fff; }
+.modal-header-info .modal-close:hover { background: rgba(255,255,255,0.15); }
+
+.detail-preview-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.detail-preview-table tr { border-bottom: 1px solid #f0f0f0; }
+.detail-preview-table tr:last-child { border-bottom: none; }
+.detail-preview-table td { padding: 12px 8px; font-size: 14px; vertical-align: top; }
+
+.detail-label { font-weight: 700; color: #374151; width: 40%; white-space: nowrap; }
+.detail-separator { width: 20px; text-align: center; color: #6b7280; font-weight: 600; }
+.detail-value { color: #1f2937; word-break: break-word; }
+
+.detail-modal-footer { display: flex; gap: 8px; justify-content: flex-end; }
+
+.btn-edit-detail {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 18px; background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s ease;
+}
+.btn-edit-detail:hover {
+    background: linear-gradient(135deg, #d97706, #b45309);
+    transform: translateY(-1px); box-shadow: 0 4px 12px rgba(217,119,6,0.35);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+    .cards-grid-2 {
+        grid-template-columns: 1fr;
+    }
+}

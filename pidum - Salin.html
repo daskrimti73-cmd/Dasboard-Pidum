@@ -1,0 +1,429 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Pidana Umum (Pidum) - Kejaksaan RI</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="js/auth.js"></script>
+    <script>if (!isLoggedIn()) { window.location.href = 'login.html'; }</script>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo"></div>
+            <h3>Dashboard<br>Kejaksaan RI</h3>
+            <div class="subtitle">Case Management System</div>
+        </div>
+        <div class="sidebar-nav">
+            <a href="index.html" class="nav-item">
+                <span class="nav-icon"><i class="fas fa-home"></i></span>
+                <span class="nav-text">Home</span>
+            </a>
+            <a href="pidum.html" class="nav-item active">
+                <span class="nav-icon"><i class="fas fa-gavel"></i></span>
+                <span class="nav-text">Pidana Umum</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Header -->
+        <header class="top-header">
+            <button class="toggle-btn" onclick="toggleSidebar()" title="Toggle Sidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+            <span class="header-greeting" id="greeting"></span>
+            <span class="header-badge">KEJAKSAAN TINGGI KEPULAUAN RIAU</span>
+            <button class="btn-logout" onclick="logout()" title="Keluar">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </header>
+
+        <!-- Page Content -->
+        <div class="page-content">
+
+            <!-- Dashboard Banner -->
+            <div class="dashboard-banner animate-in">
+                <h1><i class="fas fa-gavel" style="margin-right: 10px;"></i>Dashboard Pidana Umum (Pidum)</h1>
+                <div class="update-info">
+                    Data update: <span id="updateDate"></span>
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section animate-in">
+                <div class="filter-grid">
+                    <!-- Filter 1: Wilayah Hukum -->
+                    <div class="filter-group">
+                        <label>Wilayah Hukum Kejaksaan RI</label>
+                        <select id="filterWilayah">
+                            <option value="kejati-kepri" selected>Kejaksaan Tinggi Kepulauan Riau</option>
+                        </select>
+                    </div>
+
+                    <!-- Filter 2: Satuan Kerja 1 -->
+                    <div class="filter-group">
+                        <label>Satuan Kerja 1</label>
+                        <select id="filterSatker1">
+                            <option value="">SATUAN KERJA (SATKER)</option>
+                            <option value="kejati-kepri">Kejaksaan Tinggi Kepulauan Riau</option>
+                        </select>
+                    </div>
+
+                    <!-- Filter 3: Satuan Kerja 2 -->
+                    <div class="filter-group">
+                        <label>Satuan Kerja 2</label>
+                        <select id="filterSatker2">
+                            <option value="">SATUAN KERJA (SATKER) 2</option>
+                            <option value="kejati-kepri">Kejaksaan Tinggi Kepulauan Riau</option>
+                        </select>
+                    </div>
+
+                    <!-- Filter 4: Tahun -->
+                    <div class="filter-group">
+                        <label>Tahun</label>
+                        <select id="filterTahun">
+                            <!-- Loaded dynamically -->
+                        </select>
+                    </div>
+
+                    <!-- Filter 5: Bulan 1 -->
+                    <div class="filter-group">
+                        <label>Bulan Awal</label>
+                        <select id="filterBulan1">
+                            <option value="01" selected>Januari</option>
+                            <option value="02">Februari</option>
+                            <option value="03">Maret</option>
+                            <option value="04">April</option>
+                            <option value="05">Mei</option>
+                            <option value="06">Juni</option>
+                            <option value="07">Juli</option>
+                            <option value="08">Agustus</option>
+                            <option value="09">September</option>
+                            <option value="10">Oktober</option>
+                            <option value="11">November</option>
+                            <option value="12">Desember</option>
+                        </select>
+                    </div>
+
+                    <!-- Filter 6: Bulan 2 -->
+                    <div class="filter-group">
+                        <label>Bulan Akhir</label>
+                        <select id="filterBulan2">
+                            <option value="01">Januari</option>
+                            <option value="02" selected>Februari</option>
+                            <option value="03">Maret</option>
+                            <option value="04">April</option>
+                            <option value="05">Mei</option>
+                            <option value="06">Juni</option>
+                            <option value="07">Juli</option>
+                            <option value="08">Agustus</option>
+                            <option value="09">September</option>
+                            <option value="10">Oktober</option>
+                            <option value="11">November</option>
+                            <option value="12">Desember</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="filter-actions">
+                    <button class="btn btn-secondary" onclick="resetFilters()">
+                        <i class="fas fa-undo"></i> Reset
+                    </button>
+                    <button class="btn btn-primary" onclick="applyFilters()">
+                        <i class="fas fa-search"></i> Terapkan
+                    </button>
+                </div>
+            </div>
+
+            <!-- Data Cards -->
+            <div class="cards-section animate-in">
+                <h3><i class="fas fa-chart-bar" style="margin-right: 8px; color: var(--accent-gold);"></i>Data Pidana Umum</h3>
+                <div class="cards-grid">
+
+                    <!-- Pra Penuntutan -->
+                    <div class="data-card card-pra-penuntutan animate-in" onclick="navigateToPage('pra-penuntutan.html', event)">
+                        <div class="card-label">Pra Penuntutan</div>
+                        <div class="card-value">
+                            <input type="number" id="val-pra-penuntutan" placeholder="0" min="0" oninput="markUnsaved()">
+                        </div>
+                    </div>
+
+                    <!-- Penuntutan -->
+                    <div class="data-card card-penuntutan animate-in" onclick="navigateToPage('penuntutan.html', event)">
+                        <div class="card-label">Penuntutan</div>
+                        <div class="card-value">
+                            <input type="number" id="val-penuntutan" placeholder="0" min="0" oninput="markUnsaved()">
+                        </div>
+                    </div>
+
+                    <!-- Upaya Hukum -->
+                    <div class="data-card card-upaya-hukum animate-in" onclick="navigateToPage('upaya-hukum.html', event)">
+                        <div class="card-label">Upaya Hukum</div>
+                        <div class="card-value">
+                            <input type="number" id="val-upaya-hukum" placeholder="0" min="0" oninput="markUnsaved()">
+                        </div>
+                    </div>
+
+                    <!-- Eksekusi -->
+                    <div class="data-card card-eksekusi animate-in" onclick="navigateToPage('eksekusi.html', event)">
+                        <div class="card-label">Eksekusi</div>
+                        <div class="card-value">
+                            <input type="number" id="val-eksekusi" placeholder="0" min="0" oninput="markUnsaved()">
+                        </div>
+                    </div>
+
+                    <!-- WNA -->
+                    <div class="data-card card-wna animate-in" onclick="navigateToPage('wna.html', event)">
+                        <div class="card-label">WNA</div>
+                        <div class="card-value">
+                            <input type="number" id="val-wna" placeholder="0" min="0" oninput="markUnsaved()">
+                        </div>
+                    </div>
+
+                    <!-- Hukuman Mati -->
+                    <div class="data-card card-hukuman-mati animate-in" onclick="navigateToPage('hukuman-mati.html', event)">
+                        <div class="card-label">Hukuman Mati</div>
+                        <div class="card-value">
+                            <input type="number" id="val-hukuman-mati" placeholder="0" min="0" oninput="markUnsaved()">
+                        </div>
+                    </div>
+
+                    <!-- Korban -->
+                    <div class="data-card card-korban animate-in" onclick="navigateToPage('korban.html', event)">
+                        <div class="card-label">Korban</div>
+                        <div class="card-value">
+                            <input type="number" id="val-korban" placeholder="0" min="0" oninput="markUnsaved()">
+                        </div>
+                    </div>
+
+                    <!-- TPPU -->
+                    <div class="data-card card-tppu animate-in" onclick="navigateToPage('tppu.html', event)">
+                        <div class="card-label">TPPU</div>
+                        <div class="card-value">
+                            <input type="number" id="val-tppu" placeholder="0" min="0" oninput="markUnsaved()">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Save Actions -->
+            <div class="save-section">
+                <button class="btn btn-secondary" onclick="resetData()">
+                    <i class="fas fa-eraser"></i> Kosongkan Data
+                </button>
+                <button class="btn btn-save" id="btnSave" onclick="saveData()">
+                    <i class="fas fa-save"></i> Simpan Data
+                </button>
+            </div>
+
+            <!-- Year Management Section -->
+            <div class="year-management-section animate-in" id="yearManagement">
+                <h3><i class="fas fa-calendar-alt" style="margin-right: 8px; color: var(--accent-gold);"></i>Kelola Tahun</h3>
+                <p style="color: #888; font-size: 0.85rem; margin-bottom: 12px;">Tambahkan atau hapus tahun yang tersedia di filter. Tahun yang ditambahkan di sini akan muncul di website utama.</p>
+                <div class="year-add-form">
+                    <input type="number" id="inputTahunBaru" placeholder="Contoh: 2025" min="2000" max="2100" class="year-input">
+                    <button class="btn btn-primary btn-sm" onclick="handleAddTahun()">
+                        <i class="fas fa-plus"></i> Tambah Tahun
+                    </button>
+                </div>
+                <div class="year-tags" id="yearTagsContainer">
+                    <!-- Year tags populated by JS -->
+                </div>
+            </div>
+
+            <!-- Satuan Kerja 1 Management Section -->
+            <div class="year-management-section animate-in" id="satker1Management">
+                <h3><i class="fas fa-building" style="margin-right: 8px; color: var(--accent-gold);"></i>Kelola Satuan Kerja 1</h3>
+                <p style="color: #888; font-size: 0.85rem; margin-bottom: 12px;">Tambahkan atau hapus satuan kerja (Kejari) yang tersedia di filter Satuan Kerja 1. Satuan kerja yang ditambahkan di sini akan muncul di website utama.</p>
+                <div class="year-add-form">
+                    <input type="text" id="inputSatker1Baru" placeholder="Contoh: Kejari Tanjungpinang" class="year-input">
+                    <button class="btn btn-primary btn-sm" onclick="handleAddSatker1()">
+                        <i class="fas fa-plus"></i> Tambah Satuan Kerja 1
+                    </button>
+                </div>
+                <div class="year-tags" id="satker1TagsContainer">
+                    <!-- Satker 1 tags populated by JS -->
+                </div>
+            </div>
+
+            <!-- Satuan Kerja 2 Management Section -->
+            <div class="year-management-section animate-in" id="satker2Management">
+                <h3><i class="fas fa-building" style="margin-right: 8px; color: var(--accent-gold);"></i>Kelola Satuan Kerja 2</h3>
+                <p style="color: #888; font-size: 0.85rem; margin-bottom: 12px;">Tambahkan atau hapus satuan kerja (Kejari) yang tersedia di filter Satuan Kerja 2. Satuan kerja yang ditambahkan di sini akan muncul di website utama.</p>
+                <div class="year-add-form">
+                    <input type="text" id="inputSatker2Baru" placeholder="Contoh: Kejari Batam" class="year-input">
+                    <button class="btn btn-primary btn-sm" onclick="handleAddSatker2()">
+                        <i class="fas fa-plus"></i> Tambah Satuan Kerja 2
+                    </button>
+                </div>
+                <div class="year-tags" id="satker2TagsContainer">
+                    <!-- Satker 2 tags populated by JS -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script src="js/app.js"></script>
+    <script>
+        setGreeting();
+        setUpdateDate();
+        restoreViewFilters();
+        loadSavedData();
+        applyViewMode();
+
+        // ---- Year Management UI ----
+        function renderYearTags() {
+            const container = document.getElementById('yearTagsContainer');
+            if (!container) return;
+            const years = getTahunList();
+            container.innerHTML = '';
+            years.forEach(y => {
+                const tag = document.createElement('span');
+                tag.className = 'year-tag';
+                tag.innerHTML = `${y} <button class="year-tag-delete" onclick="handleDeleteTahun(${y})" title="Hapus ${y}">&times;</button>`;
+                container.appendChild(tag);
+            });
+        }
+
+        function handleAddTahun() {
+            const input = document.getElementById('inputTahunBaru');
+            const val = input.value.trim();
+            if (!val) { showToast('Masukkan tahun', 'error'); return; }
+            if (addTahun(val)) {
+                showToast('Tahun ' + val + ' berhasil ditambahkan', 'success');
+                input.value = '';
+                populateTahunDropdown();
+                renderYearTags();
+            } else {
+                showToast('Tahun tidak valid atau sudah ada', 'error');
+            }
+        }
+
+        function handleDeleteTahun(year) {
+            if (!confirm('Hapus tahun ' + year + ' dari daftar?')) return;
+            if (deleteTahun(year)) {
+                showToast('Tahun ' + year + ' berhasil dihapus', 'success');
+                populateTahunDropdown();
+                renderYearTags();
+            } else {
+                showToast('Tidak dapat menghapus tahun terakhir', 'error');
+            }
+        }
+
+        // ---- Satuan Kerja Management UI ----
+        function renderSatker1Tags() {
+            const container = document.getElementById('satker1TagsContainer');
+            if (!container) return;
+            const satkers = getSatker1List();
+            container.innerHTML = '';
+            satkers.forEach(s => {
+                const tag = document.createElement('span');
+                tag.className = 'year-tag';
+                const deleteBtn = s.value === 'kejati-kepri' 
+                    ? '' 
+                    : `<button class="year-tag-delete" onclick="handleDeleteSatker1('${s.value}')" title="Hapus ${s.label}">&times;</button>`;
+                tag.innerHTML = `${s.label} ${deleteBtn}`;
+                container.appendChild(tag);
+            });
+        }
+
+        function renderSatker2Tags() {
+            const container = document.getElementById('satker2TagsContainer');
+            if (!container) return;
+            const satkers = getSatker2List();
+            container.innerHTML = '';
+            satkers.forEach(s => {
+                const tag = document.createElement('span');
+                tag.className = 'year-tag';
+                const deleteBtn = s.value === 'kejati-kepri' 
+                    ? '' 
+                    : `<button class="year-tag-delete" onclick="handleDeleteSatker2('${s.value}')" title="Hapus ${s.label}">&times;</button>`;
+                tag.innerHTML = `${s.label} ${deleteBtn}`;
+                container.appendChild(tag);
+            });
+        }
+
+        function handleAddSatker1() {
+            const input = document.getElementById('inputSatker1Baru');
+            const val = input.value.trim();
+            if (!val) { showToast('Masukkan nama satuan kerja', 'error'); return; }
+            if (addSatker1(val)) {
+                showToast('Satuan kerja 1 berhasil ditambahkan', 'success');
+                input.value = '';
+                populateSatkerDropdowns();
+                renderSatker1Tags();
+            } else {
+                showToast('Satuan kerja sudah ada atau tidak valid', 'error');
+            }
+        }
+
+        function handleAddSatker2() {
+            const input = document.getElementById('inputSatker2Baru');
+            const val = input.value.trim();
+            if (!val) { showToast('Masukkan nama satuan kerja', 'error'); return; }
+            if (addSatker2(val)) {
+                showToast('Satuan kerja 2 berhasil ditambahkan', 'success');
+                input.value = '';
+                populateSatkerDropdowns();
+                renderSatker2Tags();
+            } else {
+                showToast('Satuan kerja sudah ada atau tidak valid', 'error');
+            }
+        }
+
+        function handleDeleteSatker1(value) {
+            const satkers = getSatker1List();
+            const satker = satkers.find(s => s.value === value);
+            if (!satker) return;
+            
+            if (!confirm('Hapus ' + satker.label + ' dari Satuan Kerja 1?')) return;
+            if (deleteSatker1(value)) {
+                showToast(satker.label + ' berhasil dihapus dari Satuan Kerja 1', 'success');
+                populateSatkerDropdowns();
+                renderSatker1Tags();
+            } else {
+                showToast('Tidak dapat menghapus Kejati Kepri', 'error');
+            }
+        }
+
+        function handleDeleteSatker2(value) {
+            const satkers = getSatker2List();
+            const satker = satkers.find(s => s.value === value);
+            if (!satker) return;
+            
+            if (!confirm('Hapus ' + satker.label + ' dari Satuan Kerja 2?')) return;
+            if (deleteSatker2(value)) {
+                showToast(satker.label + ' berhasil dihapus dari Satuan Kerja 2', 'success');
+                populateSatkerDropdowns();
+                renderSatker2Tags();
+            } else {
+                showToast('Tidak dapat menghapus Kejati Kepri', 'error');
+            }
+        }
+
+        // Initialize on page load
+        populateTahunDropdown();
+        populateSatkerDropdowns();
+        renderYearTags();
+        renderSatker1Tags();
+        renderSatker2Tags();
+
+        // Enter key to add year
+        document.getElementById('inputTahunBaru')?.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') { e.preventDefault(); handleAddTahun(); }
+        });
+    </script>
+</body>
+</html>

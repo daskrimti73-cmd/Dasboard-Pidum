@@ -1,0 +1,182 @@
+/* ============================================
+   WNA Page - Special Styles
+   Country list, klasifikasi list, pie chart sizing
+   ============================================ */
+
+/* ---- WNA Card Colors (matching screenshot) ---- */
+.card-wna-tersangka {
+    background: linear-gradient(135deg, #eb3349, #f45c43);
+}
+.card-wna-negara {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+}
+.card-wna-laki {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+}
+.card-wna-perempuan {
+    background: linear-gradient(135deg, #f7971e, #ffd200);
+}
+
+/* ---- Pie chart body ---- */
+.chart-body-pie {
+    min-height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+/* ---- Negara Input Area ---- */
+.negara-input-area,
+.klasifikasi-input-area {
+    padding: 10px 0;
+}
+
+.negara-add-row,
+.klasifikasi-add-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.negara-select {
+    flex: 1;
+    min-width: 200px;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 14px;
+    background: var(--card-bg);
+    color: var(--text-dark);
+}
+
+.negara-jumlah-input,
+.klasifikasi-jumlah-input {
+    width: 100px;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 14px;
+    text-align: center;
+    background: var(--card-bg);
+    color: var(--text-dark);
+}
+
+.klasifikasi-nama-input {
+    flex: 1;
+    min-width: 200px;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 14px;
+    background: var(--card-bg);
+    color: var(--text-dark);
+}
+
+.btn-sm {
+    padding: 8px 16px !important;
+    font-size: 13px !important;
+}
+
+/* ---- Negara List ---- */
+.negara-list,
+.klasifikasi-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.negara-item,
+.klasifikasi-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    transition: all 0.2s;
+}
+
+.negara-item:hover,
+.klasifikasi-item:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.negara-flag {
+    font-size: 24px;
+    line-height: 1;
+}
+
+.negara-flag-img {
+    width: 32px;
+    height: 22px;
+    object-fit: cover;
+    border-radius: 3px;
+    border: 1px solid rgba(0,0,0,0.1);
+    flex-shrink: 0;
+}
+
+.negara-name,
+.klasifikasi-name {
+    flex: 1;
+    font-weight: 600;
+    color: var(--text-dark);
+    font-size: 14px;
+}
+
+.negara-count,
+.klasifikasi-count {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text-dark);
+    min-width: 80px;
+    text-align: right;
+}
+
+.negara-count small {
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+.btn-remove {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    background: #fee2e2;
+    color: #ef4444;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 12px;
+}
+.btn-remove:hover {
+    background: #ef4444;
+    color: #fff;
+}
+
+.empty-list {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-style: italic;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 600px) {
+    .negara-add-row,
+    .klasifikasi-add-row {
+        flex-direction: column;
+    }
+    .negara-select,
+    .klasifikasi-nama-input {
+        min-width: 100%;
+    }
+}

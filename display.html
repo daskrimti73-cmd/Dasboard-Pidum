@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pidana Umum - Kejaksaan Tinggi Kepulauan Riau</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/display.css">
+</head>
+<body>
+
+    <!-- Filter Section (separate from banner) -->
+    <div class="display-filter-wrapper">
+        <div class="filter-section">
+            <div class="filter-grid">
+                <!-- Row 1 -->
+                <div class="filter-group">
+                    <label>WILAYAH HUKUM KEJAKSAAN RI</label>
+                    <select id="filterWilayah">
+                        <option value="kejati-kepri" selected>Kejaksaan Tinggi Kepulauan Riau</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>SATUAN KERJA 1</label>
+                    <select id="filterSatker1">
+                        <option value="">SATUAN KERJA (SATKER)</option>
+                            <option value="kejati-kepri">Kejaksaan Tinggi Kepulauan Riau</option>
+                        <option value="kejari-tanjungpinang">Kejari Tanjungpinang</option>
+                        <option value="kejari-batam">Kejari Batam</option>
+                        <option value="kejari-karimun">Kejari Karimun</option>
+                        <option value="kejari-bintan">Kejari Bintan</option>
+                        <option value="kejari-lingga">Kejari Lingga</option>
+                        <option value="kejari-natuna">Kejari Natuna</option>
+                        <option value="kejari-anambas">Kejari Kepulauan Anambas</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>SATUAN KERJA 2</label>
+                    <select id="filterSatker2">
+                        <option value="">SATUAN KERJA (SATKER) 2</option>
+                            <option value="kejati-kepri">Kejaksaan Tinggi Kepulauan Riau</option>
+                        <option value="kejari-tanjungpinang">Kejari Tanjungpinang</option>
+                        <option value="kejari-batam">Kejari Batam</option>
+                        <option value="kejari-karimun">Kejari Karimun</option>
+                        <option value="kejari-bintan">Kejari Bintan</option>
+                        <option value="kejari-lingga">Kejari Lingga</option>
+                        <option value="kejari-natuna">Kejari Natuna</option>
+                        <option value="kejari-anambas">Kejari Kepulauan Anambas</option>
+                    </select>
+                </div>
+
+                <!-- Row 2 -->
+                <div class="filter-group">
+                    <label>TAHUN</label>
+                    <select id="filterTahun">
+                        <!-- Loaded dynamically -->
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>BULAN AWAL</label>
+                    <select id="filterBulan1">
+                        <option value="01" selected>Januari</option>
+                        <option value="02">Februari</option>
+                        <option value="03">Maret</option>
+                        <option value="04">April</option>
+                        <option value="05">Mei</option>
+                        <option value="06">Juni</option>
+                        <option value="07">Juli</option>
+                        <option value="08">Agustus</option>
+                        <option value="09">September</option>
+                        <option value="10">Oktober</option>
+                        <option value="11">November</option>
+                        <option value="12">Desember</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>BULAN AKHIR</label>
+                    <select id="filterBulan2">
+                        <option value="01">Januari</option>
+                        <option value="02" selected>Februari</option>
+                        <option value="03">Maret</option>
+                        <option value="04">April</option>
+                        <option value="05">Mei</option>
+                        <option value="06">Juni</option>
+                        <option value="07">Juli</option>
+                        <option value="08">Agustus</option>
+                        <option value="09">September</option>
+                        <option value="10">Oktober</option>
+                        <option value="11">November</option>
+                        <option value="12">Desember</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="filter-actions">
+                <button class="btn-terapkan" onclick="loadDisplayData()">
+                    <i class="fas fa-search"></i> Terapkan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Cards Section -->
+    <div class="display-content">
+        <div class="cards-grid">
+            <!-- Row 1 -->
+            <a href="#" class="display-card card-pra-penuntutan" id="link-pra-penuntutan" onclick="goToDetail('pra-penuntutan.html', event)">
+                <div class="card-circle c1"></div>
+                <div class="card-circle c2"></div>
+                <span class="card-arrow"><i class="fas fa-arrow-right"></i></span>
+                <div class="card-label">PRA PENUNTUTAN</div>
+                <div class="card-number" id="display-pra-penuntutan">0</div>
+            </a>
+
+            <a href="#" class="display-card card-penuntutan" id="link-penuntutan" onclick="goToDetail('penuntutan.html', event)">
+                <div class="card-circle c1"></div>
+                <div class="card-circle c2"></div>
+                <span class="card-arrow"><i class="fas fa-arrow-right"></i></span>
+                <div class="card-label">PENUNTUTAN</div>
+                <div class="card-number" id="display-penuntutan">0</div>
+            </a>
+
+            <a href="#" class="display-card card-upaya-hukum" id="link-upaya-hukum" onclick="goToDetail('upaya-hukum.html', event)">
+                <div class="card-circle c1"></div>
+                <div class="card-circle c2"></div>
+                <span class="card-arrow"><i class="fas fa-arrow-right"></i></span>
+                <div class="card-label">UPAYA HUKUM</div>
+                <div class="card-number" id="display-upaya-hukum">0</div>
+            </a>
+
+            <!-- Row 2 -->
+            <a href="#" class="display-card card-eksekusi" id="link-eksekusi" onclick="goToDetail('eksekusi.html', event)">
+                <div class="card-circle c1"></div>
+                <div class="card-circle c2"></div>
+                <span class="card-arrow"><i class="fas fa-arrow-right"></i></span>
+                <div class="card-label">EKSEKUSI</div>
+                <div class="card-number" id="display-eksekusi">0</div>
+            </a>
+
+            <a href="#" class="display-card card-wna" id="link-wna" onclick="goToDetail('wna.html', event)">
+                <div class="card-circle c1"></div>
+                <div class="card-circle c2"></div>
+                <span class="card-arrow"><i class="fas fa-arrow-right"></i></span>
+                <div class="card-label">WNA</div>
+                <div class="card-number" id="display-wna">0</div>
+            </a>
+
+            <a href="#" class="display-card card-hukuman-mati" id="link-hukuman-mati" onclick="goToDetail('hukuman-mati.html', event)">
+                <div class="card-circle c1"></div>
+                <div class="card-circle c2"></div>
+                <span class="card-arrow"><i class="fas fa-arrow-right"></i></span>
+                <div class="card-label">HUKUMAN MATI</div>
+                <div class="card-number" id="display-hukuman-mati">0</div>
+            </a>
+
+            <!-- Row 3 -->
+            <a href="#" class="display-card card-korban" id="link-korban" onclick="goToDetail('korban.html', event)">
+                <div class="card-circle c1"></div>
+                <div class="card-circle c2"></div>
+                <span class="card-arrow"><i class="fas fa-arrow-right"></i></span>
+                <div class="card-label">KORBAN</div>
+                <div class="card-number" id="display-korban">0</div>
+            </a>
+
+            <a href="#" class="display-card card-tppu" id="link-tppu" onclick="goToDetail('tppu.html', event)">
+                <div class="card-circle c1"></div>
+                <div class="card-circle c2"></div>
+                <span class="card-arrow"><i class="fas fa-arrow-right"></i></span>
+                <div class="card-label">TPPU</div>
+                <div class="card-number" id="display-tppu">0</div>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // ---- Dynamic Year Population (reads from admin-configured localStorage) ----
+        const TAHUN_KEY = 'cms_tahun_list';
+        function getDisplayTahunList() {
+            try {
+                const saved = localStorage.getItem(TAHUN_KEY);
+                if (saved) {
+                    const list = JSON.parse(saved);
+                    if (Array.isArray(list) && list.length > 0) return list.sort((a, b) => b - a);
+                }
+            } catch (e) {}
+            return [new Date().getFullYear()];
+        }
+        function populateDisplayTahun() {
+            const select = document.getElementById('filterTahun');
+            if (!select) return;
+            const years = getDisplayTahunList();
+            select.innerHTML = '';
+            years.forEach((y, i) => {
+                const opt = document.createElement('option');
+                opt.value = y.toString();
+                opt.textContent = y.toString();
+                if (i === 0) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        // ---- Navigate to detail page in view mode with filter params ----
+        function goToDetail(page, event) {
+            event.preventDefault();
+            const wilayah = document.getElementById('filterWilayah')?.value || '';
+            const satker1 = document.getElementById('filterSatker1')?.value || '';
+            const satker2 = document.getElementById('filterSatker2')?.value || '';
+            const tahun = document.getElementById('filterTahun')?.value || '';
+            const bulan1 = document.getElementById('filterBulan1')?.value || '';
+            const bulan2 = document.getElementById('filterBulan2')?.value || '';
+
+            const params = new URLSearchParams({
+                mode: 'view',
+                wilayah, satker1, satker2, tahun, bulan1, bulan2
+            });
+            window.location.href = page + '?' + params.toString();
+        }
+
+        // ---- Build storage key from display filters ----
+        function getDisplayStorageKey() {
+            const wilayah = document.getElementById('filterWilayah')?.value || '';
+            const satker1 = document.getElementById('filterSatker1')?.value || '';
+            const satker2 = document.getElementById('filterSatker2')?.value || '';
+            const tahun = document.getElementById('filterTahun')?.value || '';
+            const bulan1 = document.getElementById('filterBulan1')?.value || '';
+            const bulan2 = document.getElementById('filterBulan2')?.value || '';
+
+            return `pidum_${wilayah}_${satker1}_${satker2}_${tahun}_${bulan1}_${bulan2}`;
+        }
+
+        // ---- Field mapping ----
+        const fieldMap = {
+            'val-pra-penuntutan': 'display-pra-penuntutan',
+            'val-penuntutan': 'display-penuntutan',
+            'val-upaya-hukum': 'display-upaya-hukum',
+            'val-eksekusi': 'display-eksekusi',
+            'val-wna': 'display-wna',
+            'val-hukuman-mati': 'display-hukuman-mati',
+            'val-korban': 'display-korban',
+            'val-tppu': 'display-tppu'
+        };
+
+        // ---- Load and display data ----
+        function loadDisplayData() {
+            const key = getDisplayStorageKey();
+            const saved = localStorage.getItem(key);
+
+            // Reset all values first
+            Object.values(fieldMap).forEach(displayId => {
+                document.getElementById(displayId).textContent = '0';
+            });
+
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    Object.entries(fieldMap).forEach(([dataKey, displayId]) => {
+                        const value = data[dataKey];
+                        if (value !== undefined && value !== '') {
+                            document.getElementById(displayId).textContent = value;
+                        }
+                    });
+                } catch (e) {
+                    console.error('Error loading display data:', e);
+                }
+            }
+        }
+
+        // ---- Load data on page load using last saved filters ----
+        function initDisplay() {
+            // Populate Tahun dropdown from admin-configured list
+            populateDisplayTahun();
+
+            // Try to load last used filters
+            const lastFilters = localStorage.getItem('pidum_last_filters');
+            if (lastFilters) {
+                try {
+                    const filters = JSON.parse(lastFilters);
+                    if (filters.wilayah) document.getElementById('filterWilayah').value = filters.wilayah;
+                    if (filters.satker1) document.getElementById('filterSatker1').value = filters.satker1;
+                    if (filters.satker2) document.getElementById('filterSatker2').value = filters.satker2;
+                    if (filters.tahun) document.getElementById('filterTahun').value = filters.tahun;
+                    if (filters.bulan1) document.getElementById('filterBulan1').value = filters.bulan1;
+                    if (filters.bulan2) document.getElementById('filterBulan2').value = filters.bulan2;
+                } catch (e) {
+                    console.error('Error restoring filters:', e);
+                }
+            }
+
+            loadDisplayData();
+        }
+
+        // ---- Auto-refresh data every 3 seconds ----
+        setInterval(loadDisplayData, 3000);
+
+        // Init on load
+        initDisplay();
+    </script>
+
+</body>
+</html>

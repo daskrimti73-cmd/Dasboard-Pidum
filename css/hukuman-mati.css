@@ -1,0 +1,14 @@
+/* ============================================
+   HUKUMAN MATI Page - Special Styles
+   ============================================ */
+
+/* ---- Card Colors ---- */
+.card-hm-pn {
+    background: linear-gradient(135deg, #eb3349, #f45c43);
+}
+.card-hm-pt {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+}
+.card-hm-ma {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+}

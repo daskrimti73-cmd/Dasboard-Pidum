@@ -1,0 +1,337 @@
+/* ============================================
+   DISPLAY PAGE STYLES - Public View
+   Matches the screenshot design
+   ============================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    background: #f0f2f5;
+    min-height: 100vh;
+}
+
+/* ---- Filter Wrapper ---- */
+.display-filter-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 40px 0;
+}
+
+.display-filter-wrapper .filter-section {
+    background: #ffffff;
+    padding: 30px 32px;
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-group label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #2c3e50;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 8px;
+}
+
+.filter-group select {
+    padding: 12px 16px;
+    border: 1.5px solid #dce1e8;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #2c3e50;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8"><path d="M1 1l5 5 5-5" stroke="%236c757d" stroke-width="1.5" fill="none"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.filter-group select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102,126,234,0.12);
+}
+
+.filter-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 8px;
+}
+
+.btn-terapkan {
+    padding: 12px 32px;
+    background: linear-gradient(135deg, #e91e63, #f44336);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4);
+}
+
+.btn-terapkan:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(233, 30, 99, 0.5);
+}
+
+.btn-terapkan:active {
+    transform: translateY(0);
+}
+
+/* ---- Cards Section ---- */
+.display-content {
+    max-width: 1200px;
+    margin: 24px auto 40px;
+    padding: 0 40px;
+    position: relative;
+    z-index: 2;
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+}
+
+/* ---- Card Design ---- */
+a.display-card {
+    text-decoration: none;
+    color: white;
+    cursor: pointer;
+}
+
+.display-card {
+    border-radius: 16px;
+    padding: 28px 30px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    min-height: 130px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.display-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Card arrow icon */
+.card-arrow {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    z-index: 3;
+    transition: all 0.3s ease;
+    opacity: 0.7;
+}
+
+.display-card:hover .card-arrow {
+    background: rgba(255, 255, 255, 0.35);
+    opacity: 1;
+    transform: translateX(3px);
+}
+
+/* Decorative circles */
+.display-card .card-circle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.display-card .c1 {
+    top: -20px;
+    right: -10px;
+    width: 90px;
+    height: 90px;
+}
+
+.display-card .c2 {
+    bottom: -15px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.display-card:hover .c1 {
+    transform: scale(1.15);
+}
+
+.card-label {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
+    opacity: 0.95;
+    position: relative;
+    z-index: 1;
+}
+
+.card-number {
+    font-size: 48px;
+    font-weight: 800;
+    line-height: 1;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* ---- Card Gradients ---- */
+.card-pra-penuntutan {
+    background: linear-gradient(135deg, #f7971e, #ffd200);
+}
+
+.card-penuntutan {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+}
+
+.card-upaya-hukum {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+}
+
+.card-eksekusi {
+    background: linear-gradient(135deg, #00b09b, #96c93d);
+}
+
+.card-wna {
+    background: linear-gradient(135deg, #00c6ff, #0072ff);
+}
+
+.card-hukuman-mati {
+    background: linear-gradient(135deg, #f2994a, #f2c94c);
+}
+
+.card-korban {
+    background: linear-gradient(135deg, #eb3349, #f45c43);
+}
+
+.card-tppu {
+    background: linear-gradient(135deg, #11998e, #0072ff);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 1200px) {
+    .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 992px) {
+    .filter-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .display-filter-wrapper {
+        padding: 24px 24px 0;
+    }
+
+    .display-content {
+        padding: 0 24px;
+    }
+}
+
+@media (max-width: 768px) {
+    .filter-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cards-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .display-filter-wrapper {
+        padding: 20px 16px 0;
+    }
+
+    .display-content {
+        padding: 0 16px;
+    }
+
+    .card-number {
+        font-size: 36px;
+    }
+}
+
+@media (max-width: 480px) {
+    .display-filter-wrapper {
+        padding: 16px 12px 0;
+    }
+
+    .display-content {
+        padding: 0 12px;
+    }
+
+    .filter-group select {
+        font-size: 12px;
+        padding: 10px 12px;
+    }
+
+    .card-number {
+        font-size: 32px;
+    }
+}
+
+/* ---- Animation ---- */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.display-card {
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+.display-card:nth-child(1) { animation-delay: 0.05s; }
+.display-card:nth-child(2) { animation-delay: 0.1s; }
+.display-card:nth-child(3) { animation-delay: 0.15s; }
+.display-card:nth-child(4) { animation-delay: 0.2s; }
+.display-card:nth-child(5) { animation-delay: 0.25s; }
+.display-card:nth-child(6) { animation-delay: 0.3s; }
+.display-card:nth-child(7) { animation-delay: 0.35s; }
+.display-card:nth-child(8) { animation-delay: 0.4s; }

@@ -1,0 +1,991 @@
+/* ============================================
+   DETAIL PAGE STYLES
+   Pra Penuntutan & sub-detail pages
+   ============================================ */
+
+/* ---- Breadcrumb ---- */
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.breadcrumb a {
+    color: var(--accent-gold);
+    font-weight: 500;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.breadcrumb a:hover {
+    color: #e0c05c;
+    text-decoration: underline;
+}
+
+.breadcrumb-separator {
+    color: var(--text-muted);
+}
+
+.breadcrumb-current {
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* ---- Detail Section ---- */
+.detail-section {
+    background: var(--card-bg);
+    border-radius: 14px;
+    padding: 30px;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow);
+}
+
+.section-header {
+    margin-bottom: 24px;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 12px;
+}
+
+.section-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #1a1a2e, #0f3460);
+    color: var(--accent-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.section-title h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-dark);
+    letter-spacing: 0.5px;
+}
+
+.section-line {
+    height: 2px;
+    background: repeating-linear-gradient(
+        90deg,
+        var(--border-color) 0px,
+        var(--border-color) 8px,
+        transparent 8px,
+        transparent 14px
+    );
+    border-radius: 1px;
+}
+
+/* ---- Cards Grid Variants ---- */
+.cards-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.cards-grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+/* ---- Additional Card Colors ---- */
+.card-spdp {
+    background: linear-gradient(135deg, #f7971e, #ffd200);
+}
+
+.card-p18 {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+}
+
+.card-p17 {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+}
+
+.card-pengembalian {
+    background: linear-gradient(135deg, #f2994a, #f2c94c);
+}
+
+.card-sp3 {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.card-tahap1 {
+    background: linear-gradient(135deg, #f7971e, #ffd200);
+}
+
+.card-t1-p18 {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+}
+
+.card-t1-p19 {
+    background: linear-gradient(135deg, #eb3349, #f45c43);
+}
+
+.card-t1-p20 {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+}
+
+.card-t1-p21 {
+    background: linear-gradient(135deg, #00b09b, #96c93d);
+}
+
+.card-t1-p21a {
+    background: linear-gradient(135deg, #f2994a, #f2c94c);
+}
+
+.card-t1-pengembalian {
+    background: linear-gradient(135deg, #00c6ff, #0072ff);
+}
+
+.card-t1-sp3 {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+/* ---- Tahap II Card Colors ---- */
+.card-tahap2-main {
+    background: linear-gradient(135deg, #f7971e, #ffd200);
+}
+.card-tahap2-p16a {
+    background: linear-gradient(135deg, #eb3349, #f45c43);
+}
+.card-tahap2-t7 {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+}
+.card-tahap2-ba4 {
+    background: linear-gradient(135deg, #f2994a, #f2c94c);
+}
+.card-tahap2-ba5 {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+}
+.card-tahap2-skpp {
+    background: linear-gradient(135deg, #00b09b, #96c93d);
+}
+
+/* ---- Pelimpahan Card Colors ---- */
+.card-pelimpahan-p29 {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+}
+.card-pelimpahan-p30 {
+    background: linear-gradient(135deg, #eb3349, #f45c43);
+}
+.card-pelimpahan-p33 {
+    background: linear-gradient(135deg, #00b09b, #96c93d);
+}
+
+/* ---- Tuntutan Card Colors ---- */
+.card-tuntutan-p41 {
+    background: linear-gradient(135deg, #eb3349, #f45c43);
+}
+.card-tuntutan-p42 {
+    background: linear-gradient(135deg, #f2994a, #f2c94c);
+}
+.card-tuntutan-putusan {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+/* ---- Banding Card Colors ---- */
+.card-banding-pengajuan {
+    background: linear-gradient(135deg, #eb3349, #f45c43);
+}
+.card-banding-putusan {
+    background: linear-gradient(135deg, #f7971e, #ffd200);
+}
+
+/* ---- Kasasi Card Colors ---- */
+.card-kasasi-pengajuan {
+    background: linear-gradient(135deg, #eb3349, #f45c43);
+}
+.card-kasasi-putusan {
+    background: linear-gradient(135deg, #f7971e, #ffd200);
+}
+
+/* ---- Eksekusi Card Colors ---- */
+.card-eks-p48 {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+}
+.card-eks-ba17 {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+}
+.card-eks-denda {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+}
+.card-eks-biaya {
+    background: linear-gradient(135deg, #eb3349, #f45c43);
+}
+
+/* ---- 2-column card grid ---- */
+.cards-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+/* ---- Charts Row ---- */
+.charts-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+    margin-top: 28px;
+    margin-bottom: 20px;
+}
+
+.chart-container {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.chart-header {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    color: white;
+    padding: 14px 20px;
+}
+
+.chart-header h4 {
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chart-header h4 i {
+    color: var(--accent-gold);
+}
+
+.chart-body {
+    padding: 20px;
+    min-height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chart-body canvas {
+    max-height: 280px;
+    width: 100% !important;
+}
+
+/* ---- Monthly Detail Accordion ---- */
+.monthly-detail {
+    background: #f8f9fa;
+    border-radius: 10px;
+    margin-top: 16px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.monthly-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    cursor: pointer;
+    transition: var(--transition);
+    user-select: none;
+}
+
+.monthly-header:hover {
+    background: #eef0f2;
+}
+
+.monthly-header h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.monthly-header h4 small {
+    font-weight: 400;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.monthly-header h4 i {
+    color: var(--accent-gold);
+}
+
+.toggle-icon {
+    color: var(--text-muted);
+    transition: var(--transition);
+    font-size: 14px;
+}
+
+.toggle-icon.rotated {
+    transform: rotate(180deg);
+}
+
+.monthly-body {
+    padding: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* ---- Monthly Input Grid ---- */
+.monthly-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+}
+
+.month-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.month-input-group label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.month-input-group input {
+    padding: 10px 14px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-dark);
+    transition: var(--transition);
+    text-align: center;
+    background: white;
+}
+
+.month-input-group input:focus {
+    outline: none;
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.15);
+}
+
+.month-input-group input:hover {
+    border-color: #c0c0c0;
+}
+
+/* ---- Direktorat Grid ---- */
+.direktorat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+.dir-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.dir-input-group label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #1a1a2e;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, rgba(26,26,46,0.08), rgba(15,52,96,0.08));
+    padding: 6px 10px;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.dir-input-group input {
+    padding: 10px 14px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-dark);
+    transition: var(--transition);
+    text-align: center;
+    background: white;
+}
+
+.dir-input-group input:focus {
+    outline: none;
+    border-color: #0f3460;
+    box-shadow: 0 0 0 3px rgba(15,52,96,0.12);
+}
+
+/* ---- Section Subtitle ---- */
+.section-subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+}
+
+/* ============================================
+   TABLE STYLES (Detail Table Pages)
+   ============================================ */
+
+/* ---- Table Toolbar ---- */
+.table-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.toolbar-left {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.toolbar-right label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.toolbar-right input {
+    padding: 8px 14px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 13px;
+    width: 220px;
+    transition: var(--transition);
+}
+
+.toolbar-right input:focus {
+    outline: none;
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.15);
+}
+
+.btn-add {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+    color: white;
+    box-shadow: 0 3px 10px rgba(17,153,142,0.3);
+}
+
+.btn-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(17,153,142,0.4);
+}
+
+.btn-export {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    box-shadow: 0 3px 10px rgba(33,147,176,0.3);
+}
+
+.btn-export:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(33,147,176,0.4);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #eb3349, #f45c43);
+    color: white;
+    box-shadow: 0 3px 10px rgba(235,51,73,0.3);
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(235,51,73,0.4);
+}
+
+/* ---- Data Table ---- */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+}
+
+.data-table thead {
+    background: linear-gradient(135deg, #8b0000, #b22222);
+}
+
+.data-table thead th {
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 14px 12px;
+    text-align: center;
+    border-right: 1px solid rgba(255,255,255,0.15);
+    white-space: nowrap;
+}
+
+.data-table thead th:last-child {
+    border-right: none;
+}
+
+.th-no {
+    width: 50px;
+}
+
+.th-actions {
+    width: 100px;
+}
+
+.data-table tbody td {
+    padding: 12px 12px;
+    font-size: 13px;
+    color: var(--text-dark);
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: top;
+    line-height: 1.5;
+}
+
+.data-table tbody tr:hover {
+    background: rgba(201,168,76,0.06);
+}
+
+.data-table tbody tr.row-even {
+    background: #fafafa;
+}
+
+.data-table tbody tr.row-even:hover {
+    background: rgba(201,168,76,0.08);
+}
+
+.td-no {
+    text-align: center;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.td-actions {
+    text-align: center;
+    white-space: nowrap;
+}
+
+.empty-row {
+    text-align: center;
+    padding: 50px 20px !important;
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 2;
+}
+
+.empty-row i {
+    font-size: 36px;
+    display: block;
+    margin-bottom: 8px;
+    opacity: 0.4;
+}
+
+/* ---- Bullet Items (Jaksa, Tersangka) ---- */
+.bullet-item {
+    display: block;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* ---- Icon Buttons ---- */
+.btn-icon {
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    margin: 0 2px;
+}
+
+.btn-edit {
+    background: #e8f4fd;
+    color: #2193b0;
+}
+
+.btn-edit:hover {
+    background: #2193b0;
+    color: white;
+    transform: scale(1.1);
+}
+
+.btn-delete {
+    background: #fde8ea;
+    color: #eb3349;
+}
+
+.btn-delete:hover {
+    background: #eb3349;
+    color: white;
+    transform: scale(1.1);
+}
+
+/* ---- Pagination ---- */
+.table-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 20px;
+    padding: 10px 0;
+    flex-wrap: wrap;
+}
+
+.page-btn {
+    padding: 8px 14px;
+    border: 1px solid var(--border-color);
+    background: white;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dark);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.page-btn:hover:not(.disabled):not(.active) {
+    background: #f0f2f5;
+    border-color: #ccc;
+}
+
+.page-btn.active {
+    background: linear-gradient(135deg, #8b0000, #b22222);
+    color: white;
+    border-color: #8b0000;
+}
+
+.page-btn.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.page-dots {
+    padding: 8px 6px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+/* ============================================
+   MODAL STYLES
+   ============================================ */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 650px;
+    max-height: 85vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    transform: translateY(30px) scale(0.95);
+    transition: all 0.3s ease;
+}
+
+.modal-overlay.show .modal-content {
+    transform: translateY(0) scale(1);
+}
+
+.modal-sm {
+    max-width: 450px;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #1a1a2e, #0f3460);
+    color: white;
+}
+
+.modal-header-danger {
+    background: linear-gradient(135deg, #8b0000, #b22222) !important;
+}
+
+.modal-header h3 {
+    font-size: 16px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modal-header h3 i {
+    color: var(--accent-gold);
+}
+
+.modal-header-danger h3 i {
+    color: #ffd200;
+}
+
+.modal-close {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: white;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.modal-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.modal-body {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.modal-footer {
+    padding: 16px 24px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    border-top: 1px solid var(--border-color);
+    background: #f8f9fa;
+}
+
+/* ---- Modal Form ---- */
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+}
+
+.form-control {
+    padding: 10px 14px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--text-dark);
+    transition: var(--transition);
+    font-family: inherit;
+    background: white;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.15);
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 80px;
+}
+
+select.form-control {
+    cursor: pointer;
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8"><path d="M1 1l5 5 5-5" stroke="%236c757d" stroke-width="1.5" fill="none"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+}
+
+/* ---- Card Detail Link ---- */
+.card-detail-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.8);
+    margin-top: 6px;
+    opacity: 0;
+    transition: var(--transition);
+    text-decoration: none;
+    cursor: pointer;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.card-detail-link:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+.data-card:hover .card-detail-link {
+    opacity: 1;
+}
+
+/* ---- Clickable Data Card (for pidum.html) ---- */
+.data-card.clickable {
+    cursor: pointer;
+    position: relative;
+}
+
+.data-card.clickable::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+}
+
+.data-card.clickable .card-link-icon {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    font-size: 14px;
+    opacity: 0.6;
+    transition: var(--transition);
+    z-index: 2;
+}
+
+.data-card.clickable:hover .card-link-icon {
+    opacity: 1;
+    transform: translateX(3px);
+}
+
+.data-card.clickable:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 1200px) {
+    .cards-grid-4 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .monthly-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 992px) {
+    .charts-row {
+        grid-template-columns: 1fr;
+    }
+
+    .cards-grid-3,
+    .cards-grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .direktorat-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .detail-section {
+        padding: 20px 16px;
+    }
+
+    .cards-grid-3,
+    .cards-grid-4 {
+        grid-template-columns: 1fr;
+    }
+
+    .monthly-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .direktorat-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section-title h2 {
+        font-size: 17px;
+    }
+
+    .table-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .toolbar-right {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .toolbar-right input {
+        width: 100%;
+    }
+
+    .modal-content {
+        width: 96%;
+        max-height: 90vh;
+    }
+
+    .data-table {
+        min-width: 600px;
+    }
+}
+
+@media print {
+    .monthly-detail,
+    .save-section,
+    .filter-actions,
+    .breadcrumb {
+        display: none !important;
+    }
+}

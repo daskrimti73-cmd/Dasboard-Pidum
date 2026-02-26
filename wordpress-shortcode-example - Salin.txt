@@ -1,0 +1,318 @@
+================================================================================
+CONTOH KODE UNTUK WORDPRESS - DASHBOARD PIDUM
+================================================================================
+
+Pilih salah satu metode di bawah ini dan copy-paste ke WordPress Anda.
+
+================================================================================
+METODE 1: IFRAME SEDERHANA (Paling Mudah)
+================================================================================
+
+Gunakan di: WordPress Page Editor (Block "Custom HTML" atau "Shortcode")
+
+<iframe 
+    src="https://dashboard.kejati-kepri.com/iframe-embed.html" 
+    width="100%" 
+    height="900px" 
+    frameborder="0" 
+    style="border: none; display: block; min-height: 900px;"
+    allowfullscreen>
+</iframe>
+
+<style>
+    /* Optional: Hide header/footer untuk tampilan full */
+    .site-header, .site-footer { display: none !important; }
+    .entry-content { padding: 0 !important; margin: 0 !important; }
+</style>
+
+
+================================================================================
+METODE 2: IFRAME DENGAN LOADING INDICATOR
+================================================================================
+
+Gunakan di: WordPress Page Editor (Block "Custom HTML")
+
+<div id="dashboard-container" style="position: relative; width: 100%; height: 900px;">
+    <!-- Loading Overlay -->
+    <div id="dashboard-loading" style="
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255,255,255,0.95);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+    ">
+        <div style="text-align: center;">
+            <div style="
+                width: 50px;
+                height: 50px;
+                border: 4px solid #e0e0e0;
+                border-top: 4px solid #0f3460;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin: 0 auto 15px;
+            "></div>
+            <p style="color: #0f3460; font-weight: 600;">Memuat Dashboard...</p>
+        </div>
+    </div>
+    
+    <!-- Dashboard Iframe -->
+    <iframe 
+        id="dashboard-iframe"
+        src="https://dashboard.kejati-kepri.com/iframe-embed.html" 
+        width="100%" 
+        height="900px" 
+        frameborder="0" 
+        style="border: none; display: block;"
+        allowfullscreen>
+    </iframe>
+</div>
+
+<style>
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+<script>
+    document.getElementById('dashboard-iframe').addEventListener('load', function() {
+        setTimeout(function() {
+            document.getElementById('dashboard-loading').style.display = 'none';
+        }, 500);
+    });
+</script>
+
+
+================================================================================
+METODE 3: SHORTCODE FUNCTION (Tambahkan ke functions.php)
+================================================================================
+
+Gunakan di: Appearance > Theme Editor > functions.php
+(Copy-paste kode ini ke paling bawah file functions.php)
+
+<?php
+// Dashboard Pidum Shortcode
+function dashboard_pidum_shortcode($atts) {
+    $atts = shortcode_atts(array(
+        'height' => '900px',
+        'url' => 'https://dashboard.kejati-kepri.com/iframe-embed.html'
+    ), $atts);
+    
+    $iframe_id = 'dashboard-' . uniqid();
+    
+    ob_start();
+    ?>
+    <div class="dashboard-wrapper" style="position: relative; width: 100%;">
+        <div id="<?php echo $iframe_id; ?>-loading" style="
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: <?php echo esc_attr($atts['height']); ?>;
+            background: rgba(255,255,255,0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        ">
+            <div style="text-align: center;">
+                <div style="
+                    width: 50px;
+                    height: 50px;
+                    border: 4px solid #e0e0e0;
+                    border-top: 4px solid #0f3460;
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                    margin: 0 auto 15px;
+                "></div>
+                <p style="color: #0f3460; font-weight: 600;">Memuat Dashboard...</p>
+            </div>
+        </div>
+        
+        <iframe 
+            id="<?php echo $iframe_id; ?>"
+            src="<?php echo esc_url($atts['url']); ?>" 
+            width="100%" 
+            height="<?php echo esc_attr($atts['height']); ?>" 
+            frameborder="0" 
+            style="border: none; display: block;"
+            allowfullscreen>
+        </iframe>
+    </div>
+    
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    
+    <script>
+        document.getElementById('<?php echo $iframe_id; ?>').addEventListener('load', function() {
+            setTimeout(function() {
+                document.getElementById('<?php echo $iframe_id; ?>-loading').style.display = 'none';
+            }, 500);
+        });
+    </script>
+    <?php
+    return ob_get_clean();
+}
+add_shortcode('dashboard_pidum', 'dashboard_pidum_shortcode');
+?>
+
+Setelah menambahkan kode di atas, gunakan shortcode ini di halaman WordPress:
+
+[dashboard_pidum]
+
+Atau dengan custom height:
+
+[dashboard_pidum height="1000px"]
+
+Atau dengan custom URL:
+
+[dashboard_pidum url="https://your-domain.com/iframe-embed.html" height="900px"]
+
+
+================================================================================
+METODE 4: FULL WIDTH CSS (Tambahkan ke Additional CSS)
+================================================================================
+
+Gunakan di: Appearance > Customize > Additional CSS
+
+/* Full width untuk halaman dashboard */
+.page-id-XXX .site-content,
+.page-id-XXX .content-area {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.page-id-XXX .entry-content {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Hide sidebar */
+.page-id-XXX .sidebar {
+    display: none !important;
+}
+
+/* Optional: Hide header & footer */
+.page-id-XXX .site-header,
+.page-id-XXX .site-footer {
+    display: none !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .page-id-XXX iframe {
+        height: 600px !important;
+    }
+}
+
+CATATAN: Ganti XXX dengan ID halaman dashboard Anda
+(Lihat ID di URL saat edit halaman: post.php?post=XXX&action=edit)
+
+
+================================================================================
+METODE 5: MENU NAVIGATION (Tambahkan Link ke Menu)
+================================================================================
+
+1. Buka: Appearance > Menus
+2. Klik "Custom Links"
+3. Isi:
+   - URL: /dashboard-pidum (atau URL halaman dashboard Anda)
+   - Link Text: Dashboard Pidum
+4. Klik "Add to Menu"
+5. Drag & drop untuk mengatur posisi
+6. Klik "Save Menu"
+
+
+================================================================================
+TIPS & TRICKS
+================================================================================
+
+1. CUSTOM DOMAIN
+   Jika dashboard di subdomain: https://dashboard.kejati-kepri.com
+   Ganti semua URL di kode dengan URL tersebut
+
+2. HTTPS
+   Pastikan dashboard menggunakan HTTPS (bukan HTTP)
+   WordPress modern memblokir HTTP iframe
+
+3. PERFORMANCE
+   - Gunakan lazy loading: loading="lazy" di iframe
+   - Enable caching di hosting
+   - Compress images
+
+4. SECURITY
+   - Pastikan file .htaccess sudah di-upload
+   - Enable SSL certificate
+   - Backup data rutin
+
+5. MOBILE RESPONSIVE
+   Test di mobile browser untuk memastikan responsive
+
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+PROBLEM: Iframe tidak muncul
+SOLUSI: 
+- Cek URL dashboard bisa diakses langsung
+- Clear browser cache (Ctrl+F5)
+- Disable plugin security sementara
+
+PROBLEM: Blank screen
+SOLUSI:
+- Pastikan file .htaccess sudah di-upload
+- Cek browser console (F12) untuk error
+- Test di browser lain
+
+PROBLEM: Login tidak berfungsi
+SOLUSI:
+- Pastikan localStorage enabled
+- Coba incognito mode
+- Cek cookies tidak diblokir
+
+
+================================================================================
+CONTOH URL YANG BENAR
+================================================================================
+
+✅ BENAR:
+https://dashboard.kejati-kepri.com/iframe-embed.html
+https://kejati-kepri.com/dashboard/iframe-embed.html
+https://subdomain.domain.com/iframe-embed.html
+
+❌ SALAH:
+http://dashboard.kejati-kepri.com/iframe-embed.html (HTTP, bukan HTTPS)
+https://dashboard.kejati-kepri.com (tanpa /iframe-embed.html)
+file:///C:/Users/dashboard/iframe-embed.html (local file)
+
+
+================================================================================
+SUPPORT
+================================================================================
+
+Dokumentasi Lengkap:
+- HOSTING-GUIDE.md - Panduan hosting
+- WORDPRESS-INTEGRATION.md - Panduan integrasi detail
+- QUICK-START.md - Panduan cepat
+- README.md - Dokumentasi dashboard
+
+Kontak:
+- Email: it@kejati-kepri.go.id
+- Website: https://kejati-kepri.go.id
+
+
+================================================================================
+SELAMAT MENCOBA! 🚀
+================================================================================
