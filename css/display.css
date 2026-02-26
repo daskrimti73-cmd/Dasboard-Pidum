@@ -70,7 +70,7 @@ body {
 .filter-group select:focus {
     outline: none;
     border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102,126,234,0.12);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.12);
 }
 
 .filter-actions {
@@ -169,32 +169,6 @@ a.display-card {
     transform: translateX(3px);
 }
 
-/* Decorative circles */
-.display-card .card-circle {
-    position: absolute;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    transition: all 0.3s ease;
-}
-
-.display-card .c1 {
-    top: -20px;
-    right: -10px;
-    width: 90px;
-    height: 90px;
-}
-
-.display-card .c2 {
-    bottom: -15px;
-    right: 30px;
-    width: 60px;
-    height: 60px;
-    background: rgba(255, 255, 255, 0.07);
-}
-
-.display-card:hover .c1 {
-    transform: scale(1.15);
-}
 
 .card-label {
     font-size: 13px;
@@ -317,6 +291,7 @@ a.display-card {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -327,11 +302,34 @@ a.display-card {
     animation: fadeInUp 0.5s ease forwards;
 }
 
-.display-card:nth-child(1) { animation-delay: 0.05s; }
-.display-card:nth-child(2) { animation-delay: 0.1s; }
-.display-card:nth-child(3) { animation-delay: 0.15s; }
-.display-card:nth-child(4) { animation-delay: 0.2s; }
-.display-card:nth-child(5) { animation-delay: 0.25s; }
-.display-card:nth-child(6) { animation-delay: 0.3s; }
-.display-card:nth-child(7) { animation-delay: 0.35s; }
-.display-card:nth-child(8) { animation-delay: 0.4s; }
+.display-card:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.display-card:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.display-card:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+.display-card:nth-child(4) {
+    animation-delay: 0.2s;
+}
+
+.display-card:nth-child(5) {
+    animation-delay: 0.25s;
+}
+
+.display-card:nth-child(6) {
+    animation-delay: 0.3s;
+}
+
+.display-card:nth-child(7) {
+    animation-delay: 0.35s;
+}
+
+.display-card:nth-child(8) {
+    animation-delay: 0.4s;
+}
