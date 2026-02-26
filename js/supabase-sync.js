@@ -58,6 +58,7 @@ localStorage.removeItem = function (key) {
 
 // Hydrate localStorage from Supabase SYNCHRONOUSLY
 // This ensures data is available before page scripts run
+var _sbRecordCount = 0;
 (function _hydrateSync() {
     try {
         var xhr = new XMLHttpRequest();
@@ -67,6 +68,7 @@ localStorage.removeItem = function (key) {
         xhr.send(null);
         if (xhr.status === 200) {
             var rows = JSON.parse(xhr.responseText);
+            _sbRecordCount = rows.length;
             for (var i = 0; i < rows.length; i++) {
                 if (rows[i].storage_key && rows[i].data_json !== null && rows[i].data_json !== undefined) {
                     _originalSetItem(rows[i].storage_key, rows[i].data_json);
@@ -76,5 +78,59 @@ localStorage.removeItem = function (key) {
         }
     } catch (e) {
         console.warn('Supabase hydrate failed (will use localStorage):', e.message);
+    }
+})();
+
+// Push ALL localStorage data to Supabase (for first-time sync)
+function syncAllToCloud() {
+    var count = 0;
+    var keys = Object.keys(localStorage);
+    var batch = [];
+    for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        if (_shouldSkip(key)) continue;
+        batch.push({
+            storage_key: key,
+            data_json: localStorage.getItem(key),
+            updated_at: new Date().toISOString()
+        });
+        count++;
+    }
+    if (batch.length === 0) {
+        console.log('syncAllToCloud: nothing to sync');
+        return Promise.resolve(0);
+    }
+    // Send in chunks of 50
+    var promises = [];
+    for (var j = 0; j < batch.length; j += 50) {
+        var chunk = batch.slice(j, j + 50);
+        promises.push(
+            fetch(_SB_URL + '/rest/v1/' + _SB_TABLE, {
+                method: 'POST',
+                headers: {
+                    'apikey': _SB_KEY,
+                    'Authorization': 'Bearer ' + _SB_KEY,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'resolution=merge-duplicates'
+                },
+                body: JSON.stringify(chunk)
+            })
+        );
+    }
+    return Promise.all(promises).then(function () {
+        console.log('syncAllToCloud: pushed ' + count + ' records');
+        return count;
+    });
+}
+
+// Auto-sync: if localStorage has more data than Supabase, push it
+(function _autoSync() {
+    var localKeys = 0;
+    for (var i = 0; i < localStorage.length; i++) {
+        if (!_shouldSkip(localStorage.key(i))) localKeys++;
+    }
+    if (localKeys > _sbRecordCount + 2) {
+        console.log('Auto-syncing ' + localKeys + ' localStorage keys to Supabase (had ' + _sbRecordCount + ')');
+        syncAllToCloud();
     }
 })();
