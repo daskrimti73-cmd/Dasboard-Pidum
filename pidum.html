@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,14 +11,35 @@
     <script src="js/auth.js"></script>
     <script>if (!isLoggedIn()) { window.location.href = 'login.html'; }</script>
 </head>
+
 <body>
 
     <!-- Sidebar -->
     <nav class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div class="logo"></div>
-            <h3>Dashboard<br>Kejaksaan RI</h3>
-            <div class="subtitle">Case Management System</div>
+        <div style="
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        ">
+            <div style="
+                width: 40px; height: 40px; flex-shrink: 0;
+                background: linear-gradient(135deg, #c8a855, #a68b3f);
+                border-radius: 50%;
+                display: flex; align-items: center; justify-content: center;
+                box-shadow: 0 4px 12px rgba(200,168,85,0.25);
+                border: 2px solid rgba(200,168,85,0.3);
+            ">
+                <i class="fas fa-landmark" style="font-size:16px; color:#fff;"></i>
+            </div>
+            <div style="display:flex; flex-direction:column;">
+                <span
+                    style="font-family:'Inter',sans-serif; font-size:13px; font-weight:800; color:#f8fafc; line-height:1.3;">Kejati
+                    Kepri</span>
+                <span style="font-size:10px; font-weight:500; color:rgba(255,255,255,0.35); letter-spacing:0.3px;">CMS
+                    Dashboard</span>
+            </div>
         </div>
         <div class="sidebar-nav">
             <a href="index.html" class="nav-item">
@@ -40,7 +62,8 @@
             </button>
             <span class="header-greeting" id="greeting"></span>
             <span class="header-badge">KEJAKSAAN TINGGI KEPULAUAN RIAU</span>
-            <button class="btn-logout" onclick="logout()" title="Kembali ke Portal"><i class="fas fa-arrow-left"></i> Kembali ke Portal</button>
+            <button class="btn-logout" onclick="logout()" title="Kembali ke Portal"><i class="fas fa-arrow-left"></i>
+                Kembali ke Portal</button>
         </header>
 
         <!-- Page Content -->
@@ -142,19 +165,23 @@
 
             <!-- Data Cards -->
             <div class="cards-section animate-in">
-                <h3><i class="fas fa-chart-bar" style="margin-right: 8px; color: var(--accent-gold);"></i>Data Pidana Umum</h3>
+                <h3><i class="fas fa-chart-bar" style="margin-right: 8px; color: var(--accent-gold);"></i>Data Pidana
+                    Umum</h3>
                 <div class="cards-grid">
 
                     <!-- Pra Penuntutan -->
-                    <div class="data-card card-pra-penuntutan animate-in" onclick="navigateToPage('pra-penuntutan.html', event)">
+                    <div class="data-card card-pra-penuntutan animate-in"
+                        onclick="navigateToPage('pra-penuntutan.html', event)">
                         <div class="card-label">Pra Penuntutan</div>
                         <div class="card-value">
-                            <input type="number" id="val-pra-penuntutan" placeholder="0" min="0" oninput="markUnsaved()">
+                            <input type="number" id="val-pra-penuntutan" placeholder="0" min="0"
+                                oninput="markUnsaved()">
                         </div>
                     </div>
 
                     <!-- Penuntutan -->
-                    <div class="data-card card-penuntutan animate-in" onclick="navigateToPage('penuntutan.html', event)">
+                    <div class="data-card card-penuntutan animate-in"
+                        onclick="navigateToPage('penuntutan.html', event)">
                         <div class="card-label">Penuntutan</div>
                         <div class="card-value">
                             <input type="number" id="val-penuntutan" placeholder="0" min="0" oninput="markUnsaved()">
@@ -162,7 +189,8 @@
                     </div>
 
                     <!-- Upaya Hukum -->
-                    <div class="data-card card-upaya-hukum animate-in" onclick="navigateToPage('upaya-hukum.html', event)">
+                    <div class="data-card card-upaya-hukum animate-in"
+                        onclick="navigateToPage('upaya-hukum.html', event)">
                         <div class="card-label">Upaya Hukum</div>
                         <div class="card-value">
                             <input type="number" id="val-upaya-hukum" placeholder="0" min="0" oninput="markUnsaved()">
@@ -186,7 +214,8 @@
                     </div>
 
                     <!-- Hukuman Mati -->
-                    <div class="data-card card-hukuman-mati animate-in" onclick="navigateToPage('hukuman-mati.html', event)">
+                    <div class="data-card card-hukuman-mati animate-in"
+                        onclick="navigateToPage('hukuman-mati.html', event)">
                         <div class="card-label">Hukuman Mati</div>
                         <div class="card-value">
                             <input type="number" id="val-hukuman-mati" placeholder="0" min="0" oninput="markUnsaved()">
@@ -224,10 +253,13 @@
 
             <!-- Year Management Section -->
             <div class="year-management-section animate-in" id="yearManagement">
-                <h3><i class="fas fa-calendar-alt" style="margin-right: 8px; color: var(--accent-gold);"></i>Kelola Tahun</h3>
-                <p style="color: #888; font-size: 0.85rem; margin-bottom: 12px;">Tambahkan atau hapus tahun yang tersedia di filter. Tahun yang ditambahkan di sini akan muncul di website utama.</p>
+                <h3><i class="fas fa-calendar-alt" style="margin-right: 8px; color: var(--accent-gold);"></i>Kelola
+                    Tahun</h3>
+                <p style="color: #888; font-size: 0.85rem; margin-bottom: 12px;">Tambahkan atau hapus tahun yang
+                    tersedia di filter. Tahun yang ditambahkan di sini akan muncul di website utama.</p>
                 <div class="year-add-form">
-                    <input type="number" id="inputTahunBaru" placeholder="Contoh: 2025" min="2000" max="2100" class="year-input">
+                    <input type="number" id="inputTahunBaru" placeholder="Contoh: 2025" min="2000" max="2100"
+                        class="year-input">
                     <button class="btn btn-primary btn-sm" onclick="handleAddTahun()">
                         <i class="fas fa-plus"></i> Tambah Tahun
                     </button>
@@ -239,10 +271,14 @@
 
             <!-- Satuan Kerja 1 Management Section -->
             <div class="year-management-section animate-in" id="satker1Management">
-                <h3><i class="fas fa-building" style="margin-right: 8px; color: var(--accent-gold);"></i>Kelola Satuan Kerja 1</h3>
-                <p style="color: #888; font-size: 0.85rem; margin-bottom: 12px;">Tambahkan atau hapus satuan kerja (Kejari) yang tersedia di filter Satuan Kerja 1. Satuan kerja yang ditambahkan di sini akan muncul di website utama.</p>
+                <h3><i class="fas fa-building" style="margin-right: 8px; color: var(--accent-gold);"></i>Kelola Satuan
+                    Kerja 1</h3>
+                <p style="color: #888; font-size: 0.85rem; margin-bottom: 12px;">Tambahkan atau hapus satuan kerja
+                    (Kejari) yang tersedia di filter Satuan Kerja 1. Satuan kerja yang ditambahkan di sini akan muncul
+                    di website utama.</p>
                 <div class="year-add-form">
-                    <input type="text" id="inputSatker1Baru" placeholder="Contoh: Kejari Tanjungpinang" class="year-input">
+                    <input type="text" id="inputSatker1Baru" placeholder="Contoh: Kejari Tanjungpinang"
+                        class="year-input">
                     <button class="btn btn-primary btn-sm" onclick="handleAddSatker1()">
                         <i class="fas fa-plus"></i> Tambah Satuan Kerja 1
                     </button>
@@ -254,8 +290,11 @@
 
             <!-- Satuan Kerja 2 Management Section -->
             <div class="year-management-section animate-in" id="satker2Management">
-                <h3><i class="fas fa-building" style="margin-right: 8px; color: var(--accent-gold);"></i>Kelola Satuan Kerja 2</h3>
-                <p style="color: #888; font-size: 0.85rem; margin-bottom: 12px;">Tambahkan atau hapus satuan kerja (Kejari) yang tersedia di filter Satuan Kerja 2. Satuan kerja yang ditambahkan di sini akan muncul di website utama.</p>
+                <h3><i class="fas fa-building" style="margin-right: 8px; color: var(--accent-gold);"></i>Kelola Satuan
+                    Kerja 2</h3>
+                <p style="color: #888; font-size: 0.85rem; margin-bottom: 12px;">Tambahkan atau hapus satuan kerja
+                    (Kejari) yang tersedia di filter Satuan Kerja 2. Satuan kerja yang ditambahkan di sini akan muncul
+                    di website utama.</p>
                 <div class="year-add-form">
                     <input type="text" id="inputSatker2Baru" placeholder="Contoh: Kejari Batam" class="year-input">
                     <button class="btn btn-primary btn-sm" onclick="handleAddSatker2()">
@@ -329,8 +368,8 @@
             satkers.forEach(s => {
                 const tag = document.createElement('span');
                 tag.className = 'year-tag';
-                const deleteBtn = s.value === 'kejati-kepri' 
-                    ? '' 
+                const deleteBtn = s.value === 'kejati-kepri'
+                    ? ''
                     : `<button class="year-tag-delete" onclick="handleDeleteSatker1('${s.value}')" title="Hapus ${s.label}">&times;</button>`;
                 tag.innerHTML = `${s.label} ${deleteBtn}`;
                 container.appendChild(tag);
@@ -345,8 +384,8 @@
             satkers.forEach(s => {
                 const tag = document.createElement('span');
                 tag.className = 'year-tag';
-                const deleteBtn = s.value === 'kejati-kepri' 
-                    ? '' 
+                const deleteBtn = s.value === 'kejati-kepri'
+                    ? ''
                     : `<button class="year-tag-delete" onclick="handleDeleteSatker2('${s.value}')" title="Hapus ${s.label}">&times;</button>`;
                 tag.innerHTML = `${s.label} ${deleteBtn}`;
                 container.appendChild(tag);
@@ -385,7 +424,7 @@
             const satkers = getSatker1List();
             const satker = satkers.find(s => s.value === value);
             if (!satker) return;
-            
+
             if (!confirm('Hapus ' + satker.label + ' dari Satuan Kerja 1?')) return;
             if (deleteSatker1(value)) {
                 showToast(satker.label + ' berhasil dihapus dari Satuan Kerja 1', 'success');
@@ -400,7 +439,7 @@
             const satkers = getSatker2List();
             const satker = satkers.find(s => s.value === value);
             if (!satker) return;
-            
+
             if (!confirm('Hapus ' + satker.label + ' dari Satuan Kerja 2?')) return;
             if (deleteSatker2(value)) {
                 showToast(satker.label + ' berhasil dihapus dari Satuan Kerja 2', 'success');
@@ -419,9 +458,10 @@
         renderSatker2Tags();
 
         // Enter key to add year
-        document.getElementById('inputTahunBaru')?.addEventListener('keydown', function(e) {
+        document.getElementById('inputTahunBaru')?.addEventListener('keydown', function (e) {
             if (e.key === 'Enter') { e.preventDefault(); handleAddTahun(); }
         });
     </script>
 </body>
+
 </html>
