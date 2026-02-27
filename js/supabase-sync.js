@@ -6,6 +6,20 @@
    goes to/from Supabase for cross-origin access.
    ============================================ */
 
+// IMMEDIATE iframe detection — runs before body renders
+// Hides sidebar/admin elements via CSS on <html> element
+(function () {
+    var inIframe = false;
+    try { inIframe = (window.self !== window.top); } catch (e) { inIframe = true; }
+    if (inIframe) {
+        document.documentElement.classList.add('view-mode');
+        // Inject CSS immediately to prevent any flash of admin UI
+        var s = document.createElement('style');
+        s.textContent = 'html.view-mode .sidebar, html.view-mode #sidebar, html.view-mode .top-header, html.view-mode .save-section, html.view-mode .btn-logout, html.view-mode .toggle-btn, html.view-mode .header-badge, html.view-mode .monthly-detail, html.view-mode .btn-save, html.view-mode .btn-icon, html.view-mode .modal-overlay, html.view-mode .sidebar-brand, html.view-mode .sidebar-status, html.view-mode .sidebar-nav, html.view-mode .sidebar-footer { display: none !important; } html.view-mode .main-content, html.view-mode .main-area { margin-left: 0 !important; }';
+        document.head.appendChild(s);
+    }
+})();
+
 const _SB_URL = 'https://iudtxznbakaqzygpkaxf.supabase.co';
 const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml1ZHR4em5iYWthcXp5Z3BrYXhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAwODQ3MjIsImV4cCI6MjA4NTY2MDcyMn0.eF_idmb2tF_SJtOJ7Sf9ipcT7w5Zhxt30uzMqtptxmc';
 const _SB_TABLE = 'cms_pidum_data';

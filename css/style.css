@@ -4,47 +4,58 @@
    ============================================ */
 
 /* ---- View Mode (Public/iframe): hide all admin elements ---- */
-body.view-mode .sidebar {
+body.view-mode .sidebar,
+html.view-mode .sidebar {
     display: none !important;
 }
 
-body.view-mode .main-content {
+body.view-mode .main-content,
+html.view-mode .main-content {
     margin-left: 0 !important;
 }
 
-body.view-mode .top-header {
+body.view-mode .top-header,
+html.view-mode .top-header {
     display: none !important;
 }
 
-body.view-mode .save-section {
+body.view-mode .save-section,
+html.view-mode .save-section {
     display: none !important;
 }
 
-body.view-mode .btn-logout {
+body.view-mode .btn-logout,
+html.view-mode .btn-logout {
     display: none !important;
 }
 
-body.view-mode .toggle-btn {
+body.view-mode .toggle-btn,
+html.view-mode .toggle-btn {
     display: none !important;
 }
 
-body.view-mode .header-badge {
+body.view-mode .header-badge,
+html.view-mode .header-badge {
     display: none !important;
 }
 
-body.view-mode .monthly-detail {
+body.view-mode .monthly-detail,
+html.view-mode .monthly-detail {
     display: none !important;
 }
 
-body.view-mode .btn-save {
+body.view-mode .btn-save,
+html.view-mode .btn-save {
     display: none !important;
 }
 
-body.view-mode .btn-icon {
+body.view-mode .btn-icon,
+html.view-mode .btn-icon {
     display: none !important;
 }
 
-body.view-mode .modal-overlay {
+body.view-mode .modal-overlay,
+html.view-mode .modal-overlay {
     display: none !important;
 }
 
