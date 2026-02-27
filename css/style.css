@@ -3,6 +3,51 @@
    Professional CMS Dashboard
    ============================================ */
 
+/* ---- View Mode (Public/iframe): hide all admin elements ---- */
+body.view-mode .sidebar {
+    display: none !important;
+}
+
+body.view-mode .main-content {
+    margin-left: 0 !important;
+}
+
+body.view-mode .top-header {
+    display: none !important;
+}
+
+body.view-mode .save-section {
+    display: none !important;
+}
+
+body.view-mode .btn-logout {
+    display: none !important;
+}
+
+body.view-mode .toggle-btn {
+    display: none !important;
+}
+
+body.view-mode .header-badge {
+    display: none !important;
+}
+
+body.view-mode .monthly-detail {
+    display: none !important;
+}
+
+body.view-mode .btn-save {
+    display: none !important;
+}
+
+body.view-mode .btn-icon {
+    display: none !important;
+}
+
+body.view-mode .modal-overlay {
+    display: none !important;
+}
+
 /* ---- CSS Variables ---- */
 :root {
     --sidebar-bg: #1a1a2e;
