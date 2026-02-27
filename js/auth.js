@@ -215,7 +215,15 @@ function populateSatkerDropdowns() {
 // ---- Check if current page is in view mode (public) ----
 function isViewMode() {
     const params = new URLSearchParams(window.location.search);
-    return params.get('mode') === 'view';
+    if (params.get('mode') === 'view') return true;
+    // Auto-detect if loaded inside an iframe (e.g., WordPress embed)
+    try {
+        if (window.self !== window.top) return true;
+    } catch (e) {
+        // Cross-origin iframe — definitely embedded
+        return true;
+    }
+    return false;
 }
 
 // ---- Check if user is logged in (Auto-grant — login removed from flow) ----
