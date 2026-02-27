@@ -22,6 +22,10 @@
 </head>
 
 <body>
+    <script>
+        // If loaded in iframe (WordPress), redirect to public display page
+        try { if (window.self !== window.top) { window.location.replace('display.html'); } } catch (e) { window.location.replace('display.html'); }
+    </script>
 
     <!-- Sidebar -->
     <nav class="sidebar" id="sidebar">
