@@ -64,11 +64,26 @@
         body.has-admin-bar {
             padding-top: 48px;
         }
+
+        /* Hide admin bar in iframe/view mode */
+        html.view-mode .admin-back-bar,
+        body.view-mode .admin-back-bar {
+            display: none !important;
+        }
+
+        html.view-mode body.has-admin-bar,
+        html.view-mode.has-admin-bar {
+            padding-top: 0 !important;
+        }
     </style>
     <script src="js/supabase-sync.js"></script>
 </head>
 
 <body>
+    <script>
+        // Hide admin bar if in iframe
+        try { if (window.self !== window.top) { document.documentElement.classList.add('view-mode'); } } catch (e) { document.documentElement.classList.add('view-mode'); }
+    </script>
 
     <!-- Admin-only back bar (only visible for logged-in admin) -->
     <div class="admin-back-bar" id="adminBackBar">
