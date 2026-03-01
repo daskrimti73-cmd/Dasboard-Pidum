@@ -133,17 +133,17 @@ function generateDirInputsUH(section, gridId) {
     const grid = document.getElementById(gridId);
     if (!grid) return;
     grid.innerHTML = '';
-    
+
     // Gunakan direktorat list yang sesuai dengan section
     const dirList = DIREKTORAT_MAP_UH[section] || DIREKTORAT_BANDING;
-    
+
     dirList.forEach((dir, idx) => {
         const div = document.createElement('div');
         div.className = 'dir-input-group';
-        
+
         // Untuk kasasi, gunakan label yang lebih deskriptif
         const label = section === 'kasasi' ? `Angka ${dir}` : dir;
-        
+
         div.innerHTML = `
             <label>${label}</label>
             <input type="number" id="dir-${section}-${idx}" placeholder="0" min="0"
@@ -226,31 +226,26 @@ function getLineOptsUH() {
 function getBarOptsUH(section) {
     // Kasasi menggunakan horizontal bar chart
     const isHorizontal = section === 'kasasi';
-    
+
     return {
         responsive: true,
         maintainAspectRatio: false,
         indexAxis: isHorizontal ? 'y' : 'x', // Horizontal untuk kasasi
         plugins: {
             legend: { display: false },
-            tooltip: {
-                backgroundColor: 'rgba(26,26,46,0.9)',
-                padding: 12,
-                cornerRadius: 8,
-                callbacks: { label: ctx => `Jumlah: ${ctx.parsed[isHorizontal ? 'x' : 'y']}` }
-            }
+            tooltip: makeBarTooltip()
         },
         scales: isHorizontal ? {
             // Horizontal bar (kasasi)
-            x: { 
-                beginAtZero: true, 
-                title: { display: true, text: 'JUMLAH', font: { size: 11, weight: '700' } }, 
-                grid: { color: 'rgba(0,0,0,0.06)' }, 
-                ticks: { precision: 0 } 
+            x: {
+                beginAtZero: true,
+                title: { display: true, text: 'JUMLAH', font: { size: 11, weight: '700' } },
+                grid: { color: 'rgba(0,0,0,0.06)' },
+                ticks: { precision: 0 }
             },
-            y: { 
-                grid: { display: false }, 
-                ticks: { font: { size: 10, weight: '600' } } 
+            y: {
+                grid: { display: false },
+                ticks: { font: { size: 10, weight: '600' } }
             }
         } : {
             // Vertical bar (banding)
@@ -278,9 +273,9 @@ function initAllChartsUH() {
             if (sec === 'kasasi') {
                 SECTIONS_UH[sec].dirChart = new Chart(dirCanvas.getContext('2d'), {
                     type: 'line',
-                    data: { 
+                    data: {
                         labels: KASASI_LABELS,
-                        datasets: [{ 
+                        datasets: [{
                             data: [0, 0, 0, 0, 0, 0],
                             borderColor: chartColorsUH.line.borderColor,
                             backgroundColor: 'transparent',
@@ -288,7 +283,7 @@ function initAllChartsUH() {
                             pointBorderColor: chartColorsUH.line.pointBorder,
                             borderWidth: 2,
                             tension: 0
-                        }] 
+                        }]
                     },
                     options: {
                         responsive: true,
@@ -299,19 +294,19 @@ function initAllChartsUH() {
                                 backgroundColor: 'rgba(26,26,46,0.9)',
                                 padding: 12,
                                 cornerRadius: 8,
-                                callbacks: { 
+                                callbacks: {
                                     title: ctx => `Angka ${ctx[0].label}`,
-                                    label: ctx => `Jumlah: ${ctx.parsed.y}` 
+                                    label: ctx => `Jumlah: ${ctx.parsed.y}`
                                 }
                             }
                         },
                         scales: {
-                            x: { 
+                            x: {
                                 title: { display: false },
                                 grid: { display: true, color: 'rgba(0,0,0,0.06)' },
                                 ticks: { font: { size: 11 } }
                             },
-                            y: { 
+                            y: {
                                 beginAtZero: true,
                                 title: { display: true, text: 'JUMLAH', font: { size: 11, weight: '700' } },
                                 grid: { color: 'rgba(0,0,0,0.06)' },

@@ -82,20 +82,20 @@ let sortDirection = 'asc';
 
 // ---- Storage key ----
 function getKorbanStorageKey() {
-    const w  = document.getElementById('filterWilayah')?.value || '';
+    const w = document.getElementById('filterWilayah')?.value || '';
     const s1 = document.getElementById('filterSatker1')?.value || '';
     const s2 = document.getElementById('filterSatker2')?.value || '';
-    const t  = document.getElementById('filterTahun')?.value || '';
+    const t = document.getElementById('filterTahun')?.value || '';
     const b1 = document.getElementById('filterBulan1')?.value || '';
     const b2 = document.getElementById('filterBulan2')?.value || '';
     return `korban_${w}_${s1}_${s2}_${t}_${b1}_${b2}`;
 }
 
 function getKorbanTableKey() {
-    const w  = document.getElementById('filterWilayah')?.value || '';
+    const w = document.getElementById('filterWilayah')?.value || '';
     const s1 = document.getElementById('filterSatker1')?.value || '';
     const s2 = document.getElementById('filterSatker2')?.value || '';
-    const t  = document.getElementById('filterTahun')?.value || '';
+    const t = document.getElementById('filterTahun')?.value || '';
     const b1 = document.getElementById('filterBulan1')?.value || '';
     const b2 = document.getElementById('filterBulan2')?.value || '';
     return `korban_table_${w}_${s1}_${s2}_${t}_${b1}_${b2}`;
@@ -319,9 +319,7 @@ function initAllCharts() {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: { display: false },
-                    tooltip: {
-                        backgroundColor: 'rgba(26,26,46,0.9)', padding: 12, cornerRadius: 8
-                    }
+                    tooltip: makeBarTooltip()
                 },
                 scales: {
                     x: {
@@ -352,9 +350,7 @@ function initAllCharts() {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: { display: false },
-                    tooltip: {
-                        backgroundColor: 'rgba(26,26,46,0.9)', padding: 12, cornerRadius: 8
-                    }
+                    tooltip: makeBarTooltip()
                 },
                 scales: {
                     x: {
@@ -442,10 +438,12 @@ function initAllCharts() {
 function updatePerempuanBarChart() {
     if (!chartPerempuanBar) return;
     const sorted = [...perkaraPerempuanData].sort((a, b) => b.jumlah - a.jumlah).slice(0, 10);
-    const labels = sorted.map(p => p.nama.length > 25 ? p.nama.substring(0, 22) + '...' : p.nama);
+    const fullLabels = sorted.map(p => p.nama);
+    const labels = sorted.map(p => p.nama.length > 30 ? p.nama.substring(0, 27) + '...' : p.nama);
     const values = sorted.map(p => p.jumlah);
     const colors = sorted.map((_, i) => barColorsPerempuan[i % barColorsPerempuan.length]);
 
+    chartPerempuanBar._fullLabels = fullLabels;
     chartPerempuanBar.data.labels = labels;
     chartPerempuanBar.data.datasets = [{
         label: 'Jumlah',
@@ -460,10 +458,12 @@ function updatePerempuanBarChart() {
 function updateAnakBarChart() {
     if (!chartAnakBar) return;
     const sorted = [...perkaraAnakData].sort((a, b) => b.jumlah - a.jumlah).slice(0, 10);
-    const labels = sorted.map(p => p.nama.length > 25 ? p.nama.substring(0, 22) + '...' : p.nama);
+    const fullLabels = sorted.map(p => p.nama);
+    const labels = sorted.map(p => p.nama.length > 30 ? p.nama.substring(0, 27) + '...' : p.nama);
     const values = sorted.map(p => p.jumlah);
     const colors = sorted.map((_, i) => barColorsAnak[i % barColorsAnak.length]);
 
+    chartAnakBar._fullLabels = fullLabels;
     chartAnakBar.data.labels = labels;
     chartAnakBar.data.datasets = [{
         label: 'Jumlah',
@@ -810,12 +810,12 @@ function saveRecord() {
     }
 
     saveTableData();
-    
+
     // Sinkronisasi dengan dashboard utama - tambah 1 jika data baru
     if (isNewRecord) {
         syncWithMainDashboard(1);
     }
-    
+
     closeModal();
     filterTable();
 }
@@ -830,10 +830,10 @@ function confirmDelete() {
     if (deleteIndex >= 0 && deleteIndex < tableData.length) {
         tableData.splice(deleteIndex, 1);
         saveTableData();
-        
+
         // Sinkronisasi dengan dashboard utama - kurangi nilai korban
         syncWithMainDashboard(-1);
-        
+
         filterTable();
         showToast('Data berhasil dihapus!', 'success');
     }
@@ -843,16 +843,16 @@ function confirmDelete() {
 // Fungsi untuk sinkronisasi dengan dashboard utama
 function syncWithMainDashboard(delta) {
     try {
-        const w  = document.getElementById('filterWilayah')?.value || '';
+        const w = document.getElementById('filterWilayah')?.value || '';
         const s1 = document.getElementById('filterSatker1')?.value || '';
         const s2 = document.getElementById('filterSatker2')?.value || '';
-        const t  = document.getElementById('filterTahun')?.value || '';
+        const t = document.getElementById('filterTahun')?.value || '';
         const b1 = document.getElementById('filterBulan1')?.value || '';
         const b2 = document.getElementById('filterBulan2')?.value || '';
-        
+
         const mainKey = `pidum_${w}_${s1}_${s2}_${t}_${b1}_${b2}`;
         const mainData = localStorage.getItem(mainKey);
-        
+
         if (mainData) {
             const data = JSON.parse(mainData);
             const currentVal = parseInt(data['val-korban']) || 0;
@@ -1145,11 +1145,11 @@ function goToDetailKorban(jenis, event) {
     if (event && event.target.tagName === 'INPUT') {
         return;
     }
-    
-    const w  = document.getElementById('filterWilayah')?.value || '';
+
+    const w = document.getElementById('filterWilayah')?.value || '';
     const s1 = document.getElementById('filterSatker1')?.value || '';
     const s2 = document.getElementById('filterSatker2')?.value || '';
-    const t  = document.getElementById('filterTahun')?.value || '';
+    const t = document.getElementById('filterTahun')?.value || '';
     const b1 = document.getElementById('filterBulan1')?.value || '';
     const b2 = document.getElementById('filterBulan2')?.value || '';
     const params = new URLSearchParams({ jenis, w, s1, s2, t, b1, b2 });

@@ -536,39 +536,7 @@ function initAllCharts() {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: { display: false },
-                    tooltip: {
-                        backgroundColor: 'rgba(26,26,46,0.95)',
-                        padding: 14,
-                        cornerRadius: 8,
-                        titleFont: { size: 13, weight: '700' },
-                        bodyFont: { size: 12 },
-                        maxWidth: 350,
-                        callbacks: {
-                            title: function (items) {
-                                if (!items.length) return '';
-                                var idx = items[0].dataIndex;
-                                var fullText = chartKlasifikasi._fullLabels ? chartKlasifikasi._fullLabels[idx] : items[0].label;
-                                // Split long text into multiple lines (max 40 chars per line)
-                                var lines = [];
-                                var words = fullText.split(' ');
-                                var currentLine = '';
-                                for (var i = 0; i < words.length; i++) {
-                                    var testLine = currentLine ? currentLine + ' ' + words[i] : words[i];
-                                    if (testLine.length > 40 && currentLine) {
-                                        lines.push(currentLine);
-                                        currentLine = words[i];
-                                    } else {
-                                        currentLine = testLine;
-                                    }
-                                }
-                                if (currentLine) lines.push(currentLine);
-                                return lines;
-                            },
-                            label: function (ctx) {
-                                return 'Jumlah: ' + ctx.parsed.x;
-                            }
-                        }
-                    }
+                    tooltip: makeBarTooltip()
                 },
                 scales: {
                     x: {

@@ -35,6 +35,50 @@ async function supabaseRequest(method, endpoint, body) {
     }
 }
 
+// ---- Global helper: wrap long text into multi-line array ----
+function wrapText(text, maxChars) {
+    maxChars = maxChars || 40;
+    if (!text || text.length <= maxChars) return [text];
+    var lines = [];
+    var words = text.split(' ');
+    var currentLine = '';
+    for (var i = 0; i < words.length; i++) {
+        var testLine = currentLine ? currentLine + ' ' + words[i] : words[i];
+        if (testLine.length > maxChars && currentLine) {
+            lines.push(currentLine);
+            currentLine = words[i];
+        } else {
+            currentLine = testLine;
+        }
+    }
+    if (currentLine) lines.push(currentLine);
+    return lines;
+}
+
+// ---- Global: create horizontal bar tooltip config with full labels ----
+function makeBarTooltip(chartRef) {
+    return {
+        backgroundColor: 'rgba(26,26,46,0.95)',
+        padding: 14,
+        cornerRadius: 8,
+        titleFont: { size: 13, weight: '700' },
+        bodyFont: { size: 12 },
+        callbacks: {
+            title: function (items) {
+                if (!items.length) return '';
+                var idx = items[0].dataIndex;
+                var chart = items[0].chart;
+                var fullText = chart._fullLabels ? chart._fullLabels[idx] : items[0].label;
+                return wrapText(fullText, 40);
+            },
+            label: function (ctx) {
+                var axis = ctx.chart.options.indexAxis === 'y' ? 'x' : 'y';
+                return 'Jumlah: ' + ctx.parsed[axis];
+            }
+        }
+    };
+}
+
 // Save to Supabase
 async function saveToSupabase(storageKey, data) {
     try {
