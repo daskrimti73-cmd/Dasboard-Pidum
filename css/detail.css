@@ -77,13 +77,11 @@
 
 .section-line {
     height: 2px;
-    background: repeating-linear-gradient(
-        90deg,
-        var(--border-color) 0px,
-        var(--border-color) 8px,
-        transparent 8px,
-        transparent 14px
-    );
+    background: repeating-linear-gradient(90deg,
+            var(--border-color) 0px,
+            var(--border-color) 8px,
+            transparent 8px,
+            transparent 14px);
     border-radius: 1px;
 }
 
@@ -153,18 +151,23 @@
 .card-tahap2-main {
     background: linear-gradient(135deg, #f7971e, #ffd200);
 }
+
 .card-tahap2-p16a {
     background: linear-gradient(135deg, #eb3349, #f45c43);
 }
+
 .card-tahap2-t7 {
     background: linear-gradient(135deg, #2193b0, #6dd5ed);
 }
+
 .card-tahap2-ba4 {
     background: linear-gradient(135deg, #f2994a, #f2c94c);
 }
+
 .card-tahap2-ba5 {
     background: linear-gradient(135deg, #11998e, #38ef7d);
 }
+
 .card-tahap2-skpp {
     background: linear-gradient(135deg, #00b09b, #96c93d);
 }
@@ -173,9 +176,11 @@
 .card-pelimpahan-p29 {
     background: linear-gradient(135deg, #11998e, #38ef7d);
 }
+
 .card-pelimpahan-p30 {
     background: linear-gradient(135deg, #eb3349, #f45c43);
 }
+
 .card-pelimpahan-p33 {
     background: linear-gradient(135deg, #00b09b, #96c93d);
 }
@@ -184,9 +189,11 @@
 .card-tuntutan-p41 {
     background: linear-gradient(135deg, #eb3349, #f45c43);
 }
+
 .card-tuntutan-p42 {
     background: linear-gradient(135deg, #f2994a, #f2c94c);
 }
+
 .card-tuntutan-putusan {
     background: linear-gradient(135deg, #667eea, #764ba2);
 }
@@ -195,6 +202,7 @@
 .card-banding-pengajuan {
     background: linear-gradient(135deg, #eb3349, #f45c43);
 }
+
 .card-banding-putusan {
     background: linear-gradient(135deg, #f7971e, #ffd200);
 }
@@ -203,6 +211,7 @@
 .card-kasasi-pengajuan {
     background: linear-gradient(135deg, #eb3349, #f45c43);
 }
+
 .card-kasasi-putusan {
     background: linear-gradient(135deg, #f7971e, #ffd200);
 }
@@ -211,12 +220,15 @@
 .card-eks-p48 {
     background: linear-gradient(135deg, #11998e, #38ef7d);
 }
+
 .card-eks-ba17 {
     background: linear-gradient(135deg, #2193b0, #6dd5ed);
 }
+
 .card-eks-denda {
     background: linear-gradient(135deg, #11998e, #38ef7d);
 }
+
 .card-eks-biaya {
     background: linear-gradient(135deg, #eb3349, #f45c43);
 }
@@ -238,7 +250,7 @@
 .chart-container {
     background: var(--card-bg);
     border-radius: 12px;
-    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
     border: 1px solid var(--border-color);
     overflow: hidden;
 }
@@ -367,7 +379,7 @@
 .month-input-group input:focus {
     outline: none;
     border-color: var(--accent-gold);
-    box-shadow: 0 0 0 3px rgba(201,168,76,0.15);
+    box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15);
 }
 
 .month-input-group input:hover {
@@ -393,7 +405,7 @@
     color: #1a1a2e;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    background: linear-gradient(135deg, rgba(26,26,46,0.08), rgba(15,52,96,0.08));
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.08), rgba(15, 52, 96, 0.08));
     padding: 6px 10px;
     border-radius: 6px;
     text-align: center;
@@ -414,7 +426,7 @@
 .dir-input-group input:focus {
     outline: none;
     border-color: #0f3460;
-    box-shadow: 0 0 0 3px rgba(15,52,96,0.12);
+    box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.12);
 }
 
 /* ---- Section Subtitle ---- */
@@ -471,40 +483,40 @@
 .toolbar-right input:focus {
     outline: none;
     border-color: var(--accent-gold);
-    box-shadow: 0 0 0 3px rgba(201,168,76,0.15);
+    box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15);
 }
 
 .btn-add {
     background: linear-gradient(135deg, #11998e, #38ef7d);
     color: white;
-    box-shadow: 0 3px 10px rgba(17,153,142,0.3);
+    box-shadow: 0 3px 10px rgba(17, 153, 142, 0.3);
 }
 
 .btn-add:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(17,153,142,0.4);
+    box-shadow: 0 5px 15px rgba(17, 153, 142, 0.4);
 }
 
 .btn-export {
     background: linear-gradient(135deg, #2193b0, #6dd5ed);
     color: white;
-    box-shadow: 0 3px 10px rgba(33,147,176,0.3);
+    box-shadow: 0 3px 10px rgba(33, 147, 176, 0.3);
 }
 
 .btn-export:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(33,147,176,0.4);
+    box-shadow: 0 5px 15px rgba(33, 147, 176, 0.4);
 }
 
 .btn-danger {
     background: linear-gradient(135deg, #eb3349, #f45c43);
     color: white;
-    box-shadow: 0 3px 10px rgba(235,51,73,0.3);
+    box-shadow: 0 3px 10px rgba(235, 51, 73, 0.3);
 }
 
 .btn-danger:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(235,51,73,0.4);
+    box-shadow: 0 5px 15px rgba(235, 51, 73, 0.4);
 }
 
 /* ---- Data Table ---- */
@@ -533,7 +545,7 @@
     letter-spacing: 0.5px;
     padding: 14px 12px;
     text-align: center;
-    border-right: 1px solid rgba(255,255,255,0.15);
+    border-right: 1px solid rgba(255, 255, 255, 0.15);
     white-space: nowrap;
 }
 
@@ -559,7 +571,7 @@
 }
 
 .data-table tbody tr:hover {
-    background: rgba(201,168,76,0.06);
+    background: rgba(201, 168, 76, 0.06);
 }
 
 .data-table tbody tr.row-even {
@@ -567,7 +579,7 @@
 }
 
 .data-table tbody tr.row-even:hover {
-    background: rgba(201,168,76,0.08);
+    background: rgba(201, 168, 76, 0.08);
 }
 
 .td-no {
@@ -830,7 +842,7 @@
 .form-control:focus {
     outline: none;
     border-color: var(--accent-gold);
-    box-shadow: 0 0 0 3px rgba(201,168,76,0.15);
+    box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15);
 }
 
 textarea.form-control {
@@ -853,7 +865,7 @@ select.form-control {
     align-items: center;
     gap: 4px;
     font-size: 11px;
-    color: rgba(255,255,255,0.8);
+    color: rgba(255, 255, 255, 0.8);
     margin-top: 6px;
     opacity: 0;
     transition: var(--transition);
@@ -886,7 +898,7 @@ select.form-control {
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.08);
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .data-card.clickable .card-link-icon {
@@ -906,7 +918,7 @@ select.form-control {
 
 .data-card.clickable:hover {
     transform: translateY(-6px);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
 }
 
 /* ---- Responsive ---- */
@@ -981,7 +993,68 @@ select.form-control {
     }
 }
 
+@media (max-width: 480px) {
+    .cards-grid-2 {
+        grid-template-columns: 1fr;
+    }
+
+    .chart-body {
+        min-height: 200px;
+        padding: 12px;
+    }
+
+    .chart-header {
+        padding: 10px 14px;
+    }
+
+    .chart-header h4 {
+        font-size: 12px;
+    }
+
+    .monthly-body {
+        padding: 14px;
+    }
+
+    .monthly-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .month-input-group input {
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+
+    .modal-header {
+        padding: 16px 18px;
+    }
+
+    .modal-header h3 {
+        font-size: 14px;
+    }
+
+    .modal-body {
+        padding: 16px;
+    }
+
+    .modal-footer {
+        padding: 12px 16px;
+        flex-wrap: wrap;
+    }
+
+    .modal-footer .btn {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .btn-icon {
+        width: 38px;
+        height: 38px;
+    }
+}
+
 @media print {
+
     .monthly-detail,
     .save-section,
     .filter-actions,

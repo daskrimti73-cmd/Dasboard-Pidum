@@ -735,26 +735,158 @@ a {
 
 @media (max-width: 480px) {
     .sidebar {
-        width: 0;
-        overflow: hidden;
+        position: fixed;
+        top: 0;
+        left: -280px;
+        width: 260px;
+        height: 100vh;
+        z-index: 10000;
+        transition: left 0.3s ease;
     }
 
     .sidebar.mobile-open {
+        left: 0;
         width: 260px;
+    }
+
+    .sidebar.mobile-open .nav-text,
+    .sidebar.mobile-open .sidebar-header h3,
+    .sidebar.mobile-open .sidebar-header .subtitle {
+        display: block;
+    }
+
+    .sidebar.mobile-open .nav-item {
+        justify-content: flex-start;
+        padding: 13px 24px;
     }
 
     .main-content {
         margin-left: 0;
     }
 
+    .top-header {
+        padding: 0 14px;
+        height: 50px;
+        gap: 8px;
+    }
+
     .header-greeting {
-        font-size: 13px;
+        font-size: 11px;
+        display: none;
     }
 
     .header-badge {
-        font-size: 10px;
+        font-size: 9px;
+        padding: 5px 10px;
+        letter-spacing: 0.3px;
+    }
+
+    .btn-logout {
+        font-size: 11px;
         padding: 6px 12px;
     }
+
+    .page-content {
+        padding: 14px 10px;
+    }
+
+    .dashboard-banner {
+        padding: 16px 14px;
+        margin-bottom: 16px;
+        border-radius: 10px;
+    }
+
+    .dashboard-banner h1 {
+        font-size: 16px;
+    }
+
+    .dashboard-banner .update-info {
+        font-size: 11px;
+    }
+
+    .filter-section {
+        padding: 16px 14px;
+        border-radius: 10px;
+        margin-bottom: 16px;
+    }
+
+    .filter-group select {
+        padding: 10px 12px;
+        font-size: 12px;
+        padding-right: 32px;
+    }
+
+    .filter-actions {
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 10px 18px;
+        font-size: 13px;
+        flex: 1;
+        justify-content: center;
+    }
+
+    .data-card {
+        padding: 16px 14px;
+        min-height: 90px;
+        border-radius: 10px;
+    }
+
+    .data-card .card-label {
+        font-size: 10px;
+        letter-spacing: 0.8px;
+    }
+
+    .data-card .card-value input {
+        font-size: 24px;
+        padding: 6px 10px;
+    }
+
+    .save-section {
+        flex-wrap: wrap;
+    }
+
+    .save-section .btn {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .toast {
+        left: 14px;
+        right: 14px;
+        bottom: 20px;
+        font-size: 13px;
+        padding: 12px 18px;
+    }
+
+    .welcome-box {
+        padding: 30px 20px;
+    }
+
+    .welcome-box h2 {
+        font-size: 20px;
+    }
+
+    .welcome-box p {
+        font-size: 13px;
+    }
+}
+
+/* Sidebar overlay backdrop */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+}
+
+.sidebar-overlay.show {
+    display: block;
 }
 
 /* ---- View Mode Styles ---- */
