@@ -509,7 +509,7 @@ function initAllCharts() {
                         padding: 12,
                         cornerRadius: 8,
                         callbacks: {
-                            label: function(ctx) {
+                            label: function (ctx) {
                                 const label = ctx.label || '';
                                 const value = ctx.parsed;
                                 const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
@@ -538,8 +538,20 @@ function initAllCharts() {
                     legend: { display: false },
                     tooltip: {
                         backgroundColor: 'rgba(26,26,46,0.9)',
-                        padding: 12,
-                        cornerRadius: 8
+                        padding: 14,
+                        cornerRadius: 8,
+                        titleFont: { size: 13, weight: '700' },
+                        bodyFont: { size: 12 },
+                        callbacks: {
+                            title: function (items) {
+                                if (!items.length) return '';
+                                var idx = items[0].dataIndex;
+                                return chartKlasifikasi._fullLabels ? chartKlasifikasi._fullLabels[idx] : items[0].label;
+                            },
+                            label: function (ctx) {
+                                return 'Jumlah: ' + ctx.parsed.x;
+                            }
+                        }
                     }
                 },
                 scales: {
@@ -640,10 +652,14 @@ function updatePieChart() {
 function updateKlasifikasiChart() {
     if (!chartKlasifikasi) return;
     // Sort descending, take top 10
-    const sorted = [...klasifikasiData].sort((a, b) => b.jumlah - a.jumlah).slice(0, 10);
-    const labels = sorted.map(k => k.nama.length > 25 ? k.nama.substring(0, 22) + '...' : k.nama);
-    const values = sorted.map(k => k.jumlah);
-    const colors = sorted.map((_, i) => klasifikasiColors[i % klasifikasiColors.length]);
+    var sorted = [...klasifikasiData].sort((a, b) => b.jumlah - a.jumlah).slice(0, 10);
+    var fullLabels = sorted.map(k => k.nama);
+    var labels = sorted.map(k => k.nama.length > 30 ? k.nama.substring(0, 27) + '...' : k.nama);
+    var values = sorted.map(k => k.jumlah);
+    var colors = sorted.map((_, i) => klasifikasiColors[i % klasifikasiColors.length]);
+
+    // Store full labels for tooltip access
+    chartKlasifikasi._fullLabels = fullLabels;
 
     chartKlasifikasi.data.labels = labels;
     chartKlasifikasi.data.datasets = [{
