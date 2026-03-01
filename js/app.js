@@ -112,11 +112,22 @@ async function loadFromSupabase(storageKey) {
 // ---- Sidebar Toggle ----
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
-    sidebar.classList.toggle('collapsed');
 
-    // Mobile handling
-    if (window.innerWidth <= 480) {
+    if (window.innerWidth <= 768) {
+        // Mobile: slide-in overlay
         sidebar.classList.toggle('mobile-open');
+        // Show/hide overlay
+        var overlay = document.getElementById('sidebarOverlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'sidebarOverlay';
+            overlay.className = 'sidebar-overlay';
+            overlay.onclick = function () { toggleSidebar(); };
+            document.body.appendChild(overlay);
+        }
+        overlay.classList.toggle('show', sidebar.classList.contains('mobile-open'));
+    } else {
+        sidebar.classList.toggle('collapsed');
     }
 }
 

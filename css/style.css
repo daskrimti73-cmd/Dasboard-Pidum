@@ -690,22 +690,32 @@ a {
 
 @media (max-width: 768px) {
     .sidebar {
-        width: 70px;
+        position: fixed;
+        top: 0;
+        left: -280px;
+        width: 260px;
+        height: 100vh;
+        z-index: 10000;
+        transition: left 0.3s ease;
     }
 
-    .sidebar .nav-text,
-    .sidebar .sidebar-header h3,
-    .sidebar .sidebar-header .subtitle {
-        display: none;
+    .sidebar.mobile-open {
+        left: 0;
     }
 
-    .sidebar .nav-item {
-        justify-content: center;
-        padding: 13px 0;
+    .sidebar.mobile-open .nav-text,
+    .sidebar.mobile-open .sidebar-header h3,
+    .sidebar.mobile-open .sidebar-header .subtitle {
+        display: block;
+    }
+
+    .sidebar.mobile-open .nav-item {
+        justify-content: flex-start;
+        padding: 13px 24px;
     }
 
     .main-content {
-        margin-left: 70px;
+        margin-left: 0;
     }
 
     .filter-grid {
