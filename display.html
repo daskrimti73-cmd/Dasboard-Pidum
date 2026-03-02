@@ -125,14 +125,7 @@
                     <label>SATUAN KERJA 1</label>
                     <select id="filterSatker1">
                         <option value="">SATUAN KERJA (SATKER)</option>
-                        <option value="kejati-kepri">Kejaksaan Tinggi Kepulauan Riau</option>
-                        <option value="kejari-tanjungpinang">Kejari Tanjungpinang</option>
-                        <option value="kejari-batam">Kejari Batam</option>
-                        <option value="kejari-karimun">Kejari Karimun</option>
-                        <option value="kejari-bintan">Kejari Bintan</option>
-                        <option value="kejari-lingga">Kejari Lingga</option>
-                        <option value="kejari-natuna">Kejari Natuna</option>
-                        <option value="kejari-anambas">Kejari Kepulauan Anambas</option>
+                        <!-- Loaded dynamically from Supabase -->
                     </select>
                 </div>
 
@@ -140,14 +133,7 @@
                     <label>SATUAN KERJA 2</label>
                     <select id="filterSatker2">
                         <option value="">SATUAN KERJA (SATKER) 2</option>
-                        <option value="kejati-kepri">Kejaksaan Tinggi Kepulauan Riau</option>
-                        <option value="kejari-tanjungpinang">Kejari Tanjungpinang</option>
-                        <option value="kejari-batam">Kejari Batam</option>
-                        <option value="kejari-karimun">Kejari Karimun</option>
-                        <option value="kejari-bintan">Kejari Bintan</option>
-                        <option value="kejari-lingga">Kejari Lingga</option>
-                        <option value="kejari-natuna">Kejari Natuna</option>
-                        <option value="kejari-anambas">Kejari Kepulauan Anambas</option>
+                        <!-- Loaded dynamically from Supabase -->
                     </select>
                 </div>
 
@@ -305,6 +291,56 @@
             });
         }
 
+        // ---- Dynamic Satker Population (from Supabase/localStorage) ----
+        const SATKER1_KEY = 'cms_satker1_list';
+        const SATKER2_KEY = 'cms_satker2_list';
+
+        function getDisplaySatkerList(key) {
+            try {
+                const saved = localStorage.getItem(key);
+                if (saved) {
+                    const list = JSON.parse(saved);
+                    if (Array.isArray(list) && list.length > 0) return list;
+                }
+            } catch (e) { }
+            return [{ value: 'kejati-kepri', label: 'Kejaksaan Tinggi Kepulauan Riau' }];
+        }
+
+        async function populateDisplaySatker() {
+            // Try loading satker lists from Supabase first
+            var sbSatker1 = await sbFetch('cms_satker1_list');
+            var sbSatker2 = await sbFetch('cms_satker2_list');
+
+            var satkers1 = (sbSatker1 && Array.isArray(sbSatker1) && sbSatker1.length > 0)
+                ? sbSatker1 : getDisplaySatkerList(SATKER1_KEY);
+            var satkers2 = (sbSatker2 && Array.isArray(sbSatker2) && sbSatker2.length > 0)
+                ? sbSatker2 : getDisplaySatkerList(SATKER2_KEY);
+
+            // Populate Satker 1
+            var select1 = document.getElementById('filterSatker1');
+            if (select1) {
+                select1.innerHTML = '<option value="">SATUAN KERJA (SATKER)</option>';
+                satkers1.forEach(function (s) {
+                    var opt = document.createElement('option');
+                    opt.value = s.value;
+                    opt.textContent = s.label;
+                    select1.appendChild(opt);
+                });
+            }
+
+            // Populate Satker 2
+            var select2 = document.getElementById('filterSatker2');
+            if (select2) {
+                select2.innerHTML = '<option value="">SATUAN KERJA (SATKER) 2</option>';
+                satkers2.forEach(function (s) {
+                    var opt = document.createElement('option');
+                    opt.value = s.value;
+                    opt.textContent = s.label;
+                    select2.appendChild(opt);
+                });
+            }
+        }
+
         // ---- Navigate to detail page in view mode with filter params ----
         function goToDetail(page, event) {
             event.preventDefault();
@@ -387,6 +423,7 @@
         // ---- Load data on page load using last saved filters ----
         async function initDisplay() {
             populateDisplayTahun();
+            await populateDisplaySatker();
 
             // Try Supabase for last filters first
             const sbFilters = await sbFetch('pidum_last_filters');
