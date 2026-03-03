@@ -14,6 +14,7 @@ const TAHUN_KEY = 'cms_tahun_list';
 const SATKER1_KEY = 'cms_satker1_list';
 const SATKER2_KEY = 'cms_satker2_list';
 const DIREKTORAT_KEY = 'cms_direktorat_list';
+const BULAN_KEY = 'cms_selected_bulan';
 
 // ---- Year Management ----
 function getTahunList() {
@@ -235,14 +236,124 @@ function deleteDirektorat(label, sectionKey) {
     return true;
 }
 
-// ---- Dynamic default month filter ----
+// ---- Bulan (Month) Management ----
+const BULAN_NAMES_ALL = [
+    { index: 1, name: 'Januari' },
+    { index: 2, name: 'Februari' },
+    { index: 3, name: 'Maret' },
+    { index: 4, name: 'April' },
+    { index: 5, name: 'Mei' },
+    { index: 6, name: 'Juni' },
+    { index: 7, name: 'Juli' },
+    { index: 8, name: 'Agustus' },
+    { index: 9, name: 'September' },
+    { index: 10, name: 'Oktober' },
+    { index: 11, name: 'November' },
+    { index: 12, name: 'Desember' }
+];
+
+// Get the list of selected months (array of month numbers, sorted)
+function getSelectedBulanList() {
+    try {
+        const saved = localStorage.getItem(BULAN_KEY);
+        if (saved) {
+            const list = JSON.parse(saved);
+            if (Array.isArray(list) && list.length > 0) return list.sort((a, b) => a - b);
+        }
+    } catch (e) { }
+    // Default: January to current month
+    const currentMonth = new Date().getMonth() + 1;
+    const defaults = [];
+    for (let i = 1; i <= currentMonth; i++) defaults.push(i);
+    localStorage.setItem(BULAN_KEY, JSON.stringify(defaults));
+    return defaults;
+}
+
+function saveSelectedBulanList(list) {
+    const sorted = [...list].sort((a, b) => a - b);
+    localStorage.setItem(BULAN_KEY, JSON.stringify(sorted));
+    return sorted;
+}
+
+function addBulan(monthNum) {
+    const num = parseInt(monthNum);
+    if (isNaN(num) || num < 1 || num > 12) return false;
+    const list = getSelectedBulanList();
+    if (list.includes(num)) return false;
+    list.push(num);
+    saveSelectedBulanList(list);
+    return true;
+}
+
+function deleteBulan(monthNum) {
+    const num = parseInt(monthNum);
+    let list = getSelectedBulanList();
+    if (list.length <= 1) return false;
+    list = list.filter(m => m !== num);
+    saveSelectedBulanList(list);
+    return true;
+}
+
+// Get selected months as objects [{index, name}], sorted
+function getSelectedMonths() {
+    const selected = getSelectedBulanList();
+    return selected.map(idx => BULAN_NAMES_ALL[idx - 1]).filter(Boolean);
+}
+
+// ---- Bulan Management UI (global, used by all pages) ----
+function renderBulanTags() {
+    const container = document.getElementById('bulanTagsContainer');
+    if (!container) return;
+    const list = getSelectedBulanList();
+    container.innerHTML = '';
+    list.forEach(num => {
+        const info = BULAN_NAMES_ALL[num - 1];
+        if (!info) return;
+        const tag = document.createElement('span');
+        tag.className = 'year-tag';
+        tag.textContent = info.name + ' ';
+        const btn = document.createElement('button');
+        btn.className = 'year-tag-delete';
+        btn.title = 'Hapus ' + info.name;
+        btn.innerHTML = '&times;';
+        btn.addEventListener('click', function () { handleDeleteBulan(num); });
+        tag.appendChild(btn);
+        container.appendChild(tag);
+    });
+}
+
+function handleAddBulan() {
+    const sel = document.getElementById('selectBulanBaru');
+    if (!sel || !sel.value) { showToast('Pilih bulan yang ingin ditambahkan', 'error'); return; }
+    if (addBulan(sel.value)) {
+        const name = BULAN_NAMES_ALL[parseInt(sel.value) - 1]?.name || '';
+        showToast('Bulan ' + name + ' berhasil ditambahkan', 'success');
+        sel.value = '';
+        renderBulanTags();
+        if (typeof rebuildMonthlyUI === 'function') rebuildMonthlyUI();
+    } else {
+        showToast('Bulan sudah ada dalam daftar', 'error');
+    }
+}
+
+function handleDeleteBulan(monthNum) {
+    const name = BULAN_NAMES_ALL[monthNum - 1]?.name || '';
+    if (!confirm('Hapus bulan ' + name + ' dari tampilan?')) return;
+    if (deleteBulan(monthNum)) {
+        showToast('Bulan ' + name + ' berhasil dihapus', 'success');
+        renderBulanTags();
+        if (typeof rebuildMonthlyUI === 'function') rebuildMonthlyUI();
+    } else {
+        showToast('Tidak dapat menghapus bulan terakhir', 'error');
+    }
+}
+
 // Returns current month as zero-padded string ('01'..'12')
 function getDefaultBulanAkhir() {
-    const m = new Date().getMonth() + 1; // 1-12
+    const m = new Date().getMonth() + 1;
     return m < 10 ? '0' + m : '' + m;
 }
 
-// Auto-set filterBulan2 to current month on page load
 function initDefaultBulanFilter() {
     const sel = document.getElementById('filterBulan2');
     if (sel) sel.value = getDefaultBulanAkhir();

@@ -96,13 +96,16 @@ function getPenuntutanStorageKey() {
 
 // ---- Month range from filter ----
 function getMonthRangeP() {
-    const b1 = parseInt(document.getElementById('filterBulan1')?.value || '1');
-    const b2 = parseInt(document.getElementById('filterBulan2')?.value || '12');
-    const months = [];
-    for (let i = b1; i <= b2; i++) {
-        months.push({ index: i, name: BULAN_NAMES_P[i - 1] });
-    }
-    return months;
+    return getSelectedMonths();
+}
+
+// ---- Page-specific: rebuild monthly UI when months change ----
+function rebuildMonthlyUI() {
+    Object.keys(SECTIONS).forEach(sec => {
+        generateMonthlyInputsP(sec, SECTIONS[sec].monthlyGrid);
+    });
+    loadAllData();
+    Object.keys(SECTIONS).forEach(sec => updateTrendChartP(sec));
 }
 
 // ---- Initialize ----
@@ -114,6 +117,7 @@ function initPenuntutan() {
     loadAllData();
     initAllChartsP();
     renderAllDirektoratTags();
+    renderBulanTags();
 }
 
 // ---- Generate monthly inputs ----

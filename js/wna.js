@@ -273,13 +273,14 @@ function getWnaStorageKey() {
 
 // ---- Month range ----
 function getMonthRangeWna() {
-    const b1 = parseInt(document.getElementById('filterBulan1')?.value || '1');
-    const b2 = parseInt(document.getElementById('filterBulan2')?.value || '12');
-    const months = [];
-    for (let i = b1; i <= b2; i++) {
-        months.push({ index: i, name: BULAN_NAMES_WNA[i - 1] });
-    }
-    return months;
+    return getSelectedMonths();
+}
+
+// ---- Page-specific ----
+function rebuildMonthlyUI() {
+    generateMonthlyInputs();
+    loadAllData();
+    updateTrendChart();
 }
 
 // ============================================
@@ -292,6 +293,7 @@ function initWna() {
     loadAllData();
     initAllCharts();
     renderDirektoratTags();
+    renderBulanTags();
 }
 
 // ---- Populate country dropdown ----

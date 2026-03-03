@@ -88,13 +88,16 @@ function getUpayaHukumStorageKey() {
 
 // ---- Month range from filter ----
 function getMonthRangeUH() {
-    const b1 = parseInt(document.getElementById('filterBulan1')?.value || '1');
-    const b2 = parseInt(document.getElementById('filterBulan2')?.value || '12');
-    const months = [];
-    for (let i = b1; i <= b2; i++) {
-        months.push({ index: i, name: BULAN_NAMES_UH[i - 1] });
-    }
-    return months;
+    return getSelectedMonths();
+}
+
+// ---- Page-specific ----
+function rebuildMonthlyUI() {
+    Object.keys(SECTIONS_UH).forEach(sec => {
+        generateMonthlyInputsUH(sec, SECTIONS_UH[sec].monthlyGrid);
+    });
+    loadAllData();
+    Object.keys(SECTIONS_UH).forEach(sec => updateTrendChartUH(sec));
 }
 
 // ---- Initialize ----
@@ -106,6 +109,7 @@ function initUpayaHukum() {
     loadAllData();
     initAllChartsUH();
     renderDirektoratTags();
+    renderBulanTags();
 }
 
 // ---- Generate monthly inputs ----

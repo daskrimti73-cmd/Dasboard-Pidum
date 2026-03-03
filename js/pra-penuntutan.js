@@ -40,13 +40,16 @@ function getPrapenStorageKey(prefix) {
 
 // ---- Get month range from filter ----
 function getMonthRange() {
-    const b1 = parseInt(document.getElementById('filterBulan1')?.value || '1');
-    const b2 = parseInt(document.getElementById('filterBulan2')?.value || '12');
-    const months = [];
-    for (let i = b1; i <= b2; i++) {
-        months.push({ index: i, name: BULAN_NAMES[i - 1] });
-    }
-    return months;
+    return getSelectedMonths();
+}
+
+// ---- Page-specific: rebuild monthly inputs/charts when months change ----
+function rebuildMonthlyUI() {
+    generateMonthlyInputs('spdp', 'spdpMonthlyGrid');
+    generateMonthlyInputs('tahap1', 'tahap1MonthlyGrid');
+    loadAllData();
+    updateTrendChart('spdp');
+    updateTrendChart('tahap1');
 }
 
 // ---- Initialize everything ----
@@ -58,6 +61,7 @@ function initPraPenuntutan() {
     loadAllData();
     initAllCharts();
     renderAllDirektoratTags();
+    renderBulanTags();
 }
 
 // ---- Generate monthly input fields ----

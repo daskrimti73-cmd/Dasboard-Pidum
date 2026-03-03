@@ -48,13 +48,14 @@ function getHmStorageKey() {
 
 // ---- Month range ----
 function getMonthRangeHm() {
-    const b1 = parseInt(document.getElementById('filterBulan1')?.value || '1');
-    const b2 = parseInt(document.getElementById('filterBulan2')?.value || '12');
-    const months = [];
-    for (let i = b1; i <= b2; i++) {
-        months.push({ index: i, name: BULAN_NAMES_HM[i - 1] });
-    }
-    return months;
+    return getSelectedMonths();
+}
+
+// ---- Page-specific ----
+function rebuildMonthlyUI() {
+    generateMonthlyInputsHm();
+    loadAllDataHm();
+    updateTrendChartHm();
 }
 
 // ============================================
@@ -66,6 +67,7 @@ function initHukumanMati() {
     loadAllDataHm();
     initAllChartsHm();
     renderDirektoratTags();
+    renderBulanTags();
 }
 
 // ---- Generate monthly inputs ----
