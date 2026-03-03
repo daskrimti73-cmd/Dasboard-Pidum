@@ -94,10 +94,10 @@ function setupPageInfo() {
 
 // ---- Storage key ----
 function getStorageKeyHm() {
-    const w  = document.getElementById('filterWilayah').value || '';
+    const w = document.getElementById('filterWilayah').value || '';
     const s1 = document.getElementById('filterSatker1').value || '';
     const s2 = document.getElementById('filterSatker2').value || '';
-    const t  = document.getElementById('filterTahun').value || '';
+    const t = document.getElementById('filterTahun').value || '';
     const b1 = document.getElementById('filterBulan1').value || '';
     const b2 = document.getElementById('filterBulan2').value || '';
     return `hm_detail_${currentSection}_${w}_${s1}_${s2}_${t}_${b1}_${b2}`;
@@ -403,12 +403,12 @@ function saveRecord() {
     }
 
     saveTableData();
-    
+
     // Sinkronisasi dengan dashboard utama - tambah 1 jika data baru
     if (isNewRecord) {
         syncWithMainDashboard(1);
     }
-    
+
     closeModal();
     filterTable();
 }
@@ -423,10 +423,10 @@ function confirmDelete() {
     if (deleteIndex >= 0 && deleteIndex < tableData.length) {
         tableData.splice(deleteIndex, 1);
         saveTableData();
-        
+
         // Sinkronisasi dengan dashboard utama - kurangi nilai hukuman mati
         syncWithMainDashboard(-1);
-        
+
         filterTable();
         showToast('Data berhasil dihapus!', 'success');
     }
@@ -436,16 +436,16 @@ function confirmDelete() {
 // Fungsi untuk sinkronisasi dengan dashboard utama
 function syncWithMainDashboard(delta) {
     try {
-        const w  = document.getElementById('filterWilayah')?.value || '';
+        const w = document.getElementById('filterWilayah')?.value || '';
         const s1 = document.getElementById('filterSatker1')?.value || '';
         const s2 = document.getElementById('filterSatker2')?.value || '';
-        const t  = document.getElementById('filterTahun')?.value || '';
+        const t = document.getElementById('filterTahun')?.value || '';
         const b1 = document.getElementById('filterBulan1')?.value || '';
         const b2 = document.getElementById('filterBulan2')?.value || '';
-        
+
         const mainKey = `pidum_${w}_${s1}_${s2}_${t}_${b1}_${b2}`;
         const mainData = localStorage.getItem(mainKey);
-        
+
         if (mainData) {
             const data = JSON.parse(mainData);
             const currentVal = parseInt(data['val-hukuman-mati']) || 0;
@@ -520,7 +520,7 @@ function resetFilters() {
     document.getElementById('filterSatker2').value = '';
     document.getElementById('filterTahun').value = getTahunList()[0]?.toString() || '2026';
     document.getElementById('filterBulan1').value = '01';
-    document.getElementById('filterBulan2').value = '02';
+    document.getElementById('filterBulan2').value = getDefaultBulanAkhir();
     loadTableData();
     filterTable();
     showToast('Filter telah direset', 'success');

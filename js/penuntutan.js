@@ -525,7 +525,7 @@ function resetFilters() {
     document.getElementById('filterSatker2').value = '';
     document.getElementById('filterTahun').value = getTahunList()[0]?.toString() || '2026';
     document.getElementById('filterBulan1').value = '01';
-    document.getElementById('filterBulan2').value = '02';
+    document.getElementById('filterBulan2').value = getDefaultBulanAkhir();
 
     Object.keys(SECTIONS).forEach(sec => {
         generateMonthlyInputsP(sec, SECTIONS[sec].monthlyGrid);

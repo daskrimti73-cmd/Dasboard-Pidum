@@ -359,7 +359,7 @@ function resetFilters() {
     const years = getTahunList();
     document.getElementById('filterTahun').value = years[0]?.toString() || '2026';
     document.getElementById('filterBulan1').value = '01';
-    document.getElementById('filterBulan2').value = '02';
+    document.getElementById('filterBulan2').value = getDefaultBulanAkhir();
 
     clearDataFields();
     showToast('Filter telah direset', 'success');

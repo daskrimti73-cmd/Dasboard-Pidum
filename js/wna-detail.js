@@ -9,32 +9,32 @@
 
 // ---- All countries for dropdown ----
 const ALL_COUNTRIES = [
-    'Afghanistan','Afrika Selatan','Albania','Aljazair','Amerika Serikat','Andorra','Angola',
-    'Antigua dan Barbuda','Arab Saudi','Argentina','Armenia','Australia','Austria','Azerbaijan',
-    'Bahama','Bahrain','Bangladesh','Barbados','Belanda','Belarus','Belgia','Belize','Benin',
-    'Bhutan','Bolivia','Bosnia dan Herzegovina','Botswana','Brasil','Brunei Darussalam','Bulgaria',
-    'Burkina Faso','Burundi','Chad','Ceko','Chili','Denmark','Djibouti','Dominika','Ekuador',
-    'El Salvador','Eritrea','Estonia','Eswatini','Ethiopia','Fiji','Filipina','Finlandia',
-    'Gabon','Gambia','Georgia','Ghana','Grenada','Guatemala','Guinea','Guinea-Bissau',
-    'Guinea Khatulistiwa','Guyana','Haiti','Honduras','Hong Kong','Hungaria','India','Indonesia',
-    'Inggris','Irak','Iran','Irlandia','Islandia','Israel','Italia','Jamaika','Jepang','Jerman',
-    'Kamboja','Kamerun','Kanada','Kazakhstan','Kenya','Kepulauan Marshall','Kepulauan Solomon',
-    'Kirgistan','Kiribati','Kolombia','Komoro','Korea Selatan','Korea Utara','Kosovo','Kosta Rika',
-    'Kroasia','Kuba','Kuwait','Laos','Latvia','Lebanon','Lesotho','Liberia','Libya','Liechtenstein',
-    'Lithuania','Luksemburg','Madagaskar','Makedonia Utara','Maladewa','Malawi','Malaysia','Mali',
-    'Malta','Maroko','Mauritania','Mauritius','Meksiko','Mesir','Mikronesia','Moldova','Monako',
-    'Mongolia','Montenegro','Mozambik','Myanmar','Namibia','Nauru','Nepal','Niger','Nigeria',
-    'Nikaragua','Norwegia','Oman','Pakistan','Palau','Palestina','Panama','Pantai Gading',
-    'Papua Nugini','Paraguay','Peru','Polandia','Portugal','Prancis','Qatar',
-    'Republik Afrika Tengah','Republik Demokratik Kongo','Republik Dominika','Republik Kongo',
-    'Rumania','Rusia','Rwanda','Saint Kitts dan Nevis','Saint Lucia',
-    'Saint Vincent dan Grenadines','Samoa','San Marino','Sao Tome dan Principe','Selandia Baru',
-    'Senegal','Serbia','Seychelles','Sierra Leone','Singapura','Siprus','Slovakia','Slovenia',
-    'Somalia','Spanyol','Sri Lanka','Sudan','Sudan Selatan','Suriname','Suriah','Swedia','Swiss',
-    'Tajikistan','Taiwan','Tanzania','Thailand','Tiongkok','Timor Leste','Togo','Tonga',
-    'Trinidad dan Tobago','Tunisia','Turki','Turkmenistan','Tuvalu','Uganda','Ukraina',
-    'Uni Emirat Arab','Uruguay','Uzbekistan','Vanuatu','Vatikan','Venezuela','Vietnam','Yaman',
-    'Yordania','Yunani','Zambia','Zimbabwe'
+    'Afghanistan', 'Afrika Selatan', 'Albania', 'Aljazair', 'Amerika Serikat', 'Andorra', 'Angola',
+    'Antigua dan Barbuda', 'Arab Saudi', 'Argentina', 'Armenia', 'Australia', 'Austria', 'Azerbaijan',
+    'Bahama', 'Bahrain', 'Bangladesh', 'Barbados', 'Belanda', 'Belarus', 'Belgia', 'Belize', 'Benin',
+    'Bhutan', 'Bolivia', 'Bosnia dan Herzegovina', 'Botswana', 'Brasil', 'Brunei Darussalam', 'Bulgaria',
+    'Burkina Faso', 'Burundi', 'Chad', 'Ceko', 'Chili', 'Denmark', 'Djibouti', 'Dominika', 'Ekuador',
+    'El Salvador', 'Eritrea', 'Estonia', 'Eswatini', 'Ethiopia', 'Fiji', 'Filipina', 'Finlandia',
+    'Gabon', 'Gambia', 'Georgia', 'Ghana', 'Grenada', 'Guatemala', 'Guinea', 'Guinea-Bissau',
+    'Guinea Khatulistiwa', 'Guyana', 'Haiti', 'Honduras', 'Hong Kong', 'Hungaria', 'India', 'Indonesia',
+    'Inggris', 'Irak', 'Iran', 'Irlandia', 'Islandia', 'Israel', 'Italia', 'Jamaika', 'Jepang', 'Jerman',
+    'Kamboja', 'Kamerun', 'Kanada', 'Kazakhstan', 'Kenya', 'Kepulauan Marshall', 'Kepulauan Solomon',
+    'Kirgistan', 'Kiribati', 'Kolombia', 'Komoro', 'Korea Selatan', 'Korea Utara', 'Kosovo', 'Kosta Rika',
+    'Kroasia', 'Kuba', 'Kuwait', 'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein',
+    'Lithuania', 'Luksemburg', 'Madagaskar', 'Makedonia Utara', 'Maladewa', 'Malawi', 'Malaysia', 'Mali',
+    'Malta', 'Maroko', 'Mauritania', 'Mauritius', 'Meksiko', 'Mesir', 'Mikronesia', 'Moldova', 'Monako',
+    'Mongolia', 'Montenegro', 'Mozambik', 'Myanmar', 'Namibia', 'Nauru', 'Nepal', 'Niger', 'Nigeria',
+    'Nikaragua', 'Norwegia', 'Oman', 'Pakistan', 'Palau', 'Palestina', 'Panama', 'Pantai Gading',
+    'Papua Nugini', 'Paraguay', 'Peru', 'Polandia', 'Portugal', 'Prancis', 'Qatar',
+    'Republik Afrika Tengah', 'Republik Demokratik Kongo', 'Republik Dominika', 'Republik Kongo',
+    'Rumania', 'Rusia', 'Rwanda', 'Saint Kitts dan Nevis', 'Saint Lucia',
+    'Saint Vincent dan Grenadines', 'Samoa', 'San Marino', 'Sao Tome dan Principe', 'Selandia Baru',
+    'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapura', 'Siprus', 'Slovakia', 'Slovenia',
+    'Somalia', 'Spanyol', 'Sri Lanka', 'Sudan', 'Sudan Selatan', 'Suriname', 'Suriah', 'Swedia', 'Swiss',
+    'Tajikistan', 'Taiwan', 'Tanzania', 'Thailand', 'Tiongkok', 'Timor Leste', 'Togo', 'Tonga',
+    'Trinidad dan Tobago', 'Tunisia', 'Turki', 'Turkmenistan', 'Tuvalu', 'Uganda', 'Ukraina',
+    'Uni Emirat Arab', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Vatikan', 'Venezuela', 'Vietnam', 'Yaman',
+    'Yordania', 'Yunani', 'Zambia', 'Zimbabwe'
 ];
 
 const SATKER_LIST = [
@@ -455,12 +455,12 @@ function saveRecord() {
     }
 
     saveTableData();
-    
+
     // Sinkronisasi dengan dashboard utama - tambah 1 jika data baru
     if (isNewRecord) {
         syncWithMainDashboard(1);
     }
-    
+
     closeModal();
     filterTable();
 }
@@ -475,10 +475,10 @@ function confirmDelete() {
     if (deleteIndex >= 0 && deleteIndex < tableData.length) {
         tableData.splice(deleteIndex, 1);
         saveTableData();
-        
+
         // Sinkronisasi dengan dashboard utama - kurangi nilai WNA
         syncWithMainDashboard(-1);
-        
+
         filterTable();
         showToast('Data berhasil dihapus!', 'success');
     }
@@ -488,16 +488,16 @@ function confirmDelete() {
 // Fungsi untuk sinkronisasi dengan dashboard utama
 function syncWithMainDashboard(delta) {
     try {
-        const w  = document.getElementById('filterWilayah')?.value || '';
+        const w = document.getElementById('filterWilayah')?.value || '';
         const s1 = document.getElementById('filterSatker1')?.value || '';
         const s2 = document.getElementById('filterSatker2')?.value || '';
-        const t  = document.getElementById('filterTahun')?.value || '';
+        const t = document.getElementById('filterTahun')?.value || '';
         const b1 = document.getElementById('filterBulan1')?.value || '';
         const b2 = document.getElementById('filterBulan2')?.value || '';
-        
+
         const mainKey = `pidum_${w}_${s1}_${s2}_${t}_${b1}_${b2}`;
         const mainData = localStorage.getItem(mainKey);
-        
+
         if (mainData) {
             const data = JSON.parse(mainData);
             const currentVal = parseInt(data['val-wna']) || 0;
@@ -567,7 +567,7 @@ function resetFilters() {
     document.getElementById('filterSatker2').value = '';
     document.getElementById('filterTahun').value = getTahunList()[0]?.toString() || '2026';
     document.getElementById('filterBulan1').value = '01';
-    document.getElementById('filterBulan2').value = '02';
+    document.getElementById('filterBulan2').value = getDefaultBulanAkhir();
     loadTableData();
     filterTable();
     showToast('Filter telah direset', 'success');

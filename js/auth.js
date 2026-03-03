@@ -235,6 +235,19 @@ function deleteDirektorat(label, sectionKey) {
     return true;
 }
 
+// ---- Dynamic default month filter ----
+// Returns current month as zero-padded string ('01'..'12')
+function getDefaultBulanAkhir() {
+    const m = new Date().getMonth() + 1; // 1-12
+    return m < 10 ? '0' + m : '' + m;
+}
+
+// Auto-set filterBulan2 to current month on page load
+function initDefaultBulanFilter() {
+    const sel = document.getElementById('filterBulan2');
+    if (sel) sel.value = getDefaultBulanAkhir();
+}
+
 function populateSatkerDropdowns() {
     // Populate Satker 1
     const satkers1 = getSatker1List();
@@ -454,6 +467,9 @@ function getViewFilterParams() {
 function restoreViewFilters() {
     // Populate Tahun dropdown first (dynamic from localStorage)
     populateTahunDropdown();
+
+    // Set default Bulan Akhir to current month
+    initDefaultBulanFilter();
 
     if (!isViewMode()) return;
     const filters = getViewFilterParams();

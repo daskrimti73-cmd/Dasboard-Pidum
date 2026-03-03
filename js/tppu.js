@@ -8,10 +8,10 @@
 
 // ---- Storage key ----
 function getStorageKey() {
-    const w  = document.getElementById('filterWilayah')?.value || '';
+    const w = document.getElementById('filterWilayah')?.value || '';
     const s1 = document.getElementById('filterSatker1')?.value || '';
     const s2 = document.getElementById('filterSatker2')?.value || '';
-    const t  = document.getElementById('filterTahun')?.value || '';
+    const t = document.getElementById('filterTahun')?.value || '';
     const b1 = document.getElementById('filterBulan1')?.value || '';
     const b2 = document.getElementById('filterBulan2')?.value || '';
     return `tppu_${w}_${s1}_${s2}_${t}_${b1}_${b2}`;
@@ -93,7 +93,7 @@ function resetFilters() {
     document.getElementById('filterSatker2').value = '';
     document.getElementById('filterTahun').value = getTahunList()[0]?.toString() || '2026';
     document.getElementById('filterBulan1').value = '01';
-    document.getElementById('filterBulan2').value = '02';
+    document.getElementById('filterBulan2').value = getDefaultBulanAkhir();
     ['tppu-count', 'tpa-count'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
@@ -107,11 +107,11 @@ function goToDetailTppu(jenis, event) {
     if (event && event.target.tagName === 'INPUT') {
         return;
     }
-    
-    const w  = document.getElementById('filterWilayah')?.value || '';
+
+    const w = document.getElementById('filterWilayah')?.value || '';
     const s1 = document.getElementById('filterSatker1')?.value || '';
     const s2 = document.getElementById('filterSatker2')?.value || '';
-    const t  = document.getElementById('filterTahun')?.value || '';
+    const t = document.getElementById('filterTahun')?.value || '';
     const b1 = document.getElementById('filterBulan1')?.value || '';
     const b2 = document.getElementById('filterBulan2')?.value || '';
     const params = new URLSearchParams({ jenis, w, s1, s2, t, b1, b2 });

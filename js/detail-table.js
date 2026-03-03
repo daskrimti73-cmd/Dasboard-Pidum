@@ -861,12 +861,12 @@ function saveRecord() {
     }
 
     saveTableData();
-    
+
     // Sinkronisasi dengan dashboard utama - tambah 1 jika data baru
     if (isNewRecord) {
         syncWithMainDashboard(1);
     }
-    
+
     closeModal();
     filterTable();
 }
@@ -881,10 +881,10 @@ function confirmDelete() {
     if (deleteIndex >= 0 && deleteIndex < tableData.length) {
         tableData.splice(deleteIndex, 1);
         saveTableData();
-        
+
         // Sinkronisasi dengan dashboard utama
         syncWithMainDashboard(-1);
-        
+
         filterTable();
         showToast('Data berhasil dihapus!', 'success');
     }
@@ -894,26 +894,26 @@ function confirmDelete() {
 // Fungsi untuk sinkronisasi dengan dashboard utama
 function syncWithMainDashboard(delta) {
     try {
-        const w  = document.getElementById('filterWilayah')?.value || '';
+        const w = document.getElementById('filterWilayah')?.value || '';
         const s1 = document.getElementById('filterSatker1')?.value || '';
         const s2 = document.getElementById('filterSatker2')?.value || '';
-        const t  = document.getElementById('filterTahun')?.value || '';
+        const t = document.getElementById('filterTahun')?.value || '';
         const b1 = document.getElementById('filterBulan1')?.value || '';
         const b2 = document.getElementById('filterBulan2')?.value || '';
-        
+
         const mainKey = `pidum_${w}_${s1}_${s2}_${t}_${b1}_${b2}`;
         const mainData = localStorage.getItem(mainKey);
-        
+
         if (mainData) {
             const data = JSON.parse(mainData);
-            
+
             // Tentukan field mana yang harus diupdate berdasarkan section
             let fieldKey = '';
             const section = getSection();
-            
+
             // Mapping section ke field dashboard
-            if (section.startsWith('spdp') || section.startsWith('p16') || section.startsWith('p17') || 
-                section.startsWith('pengembalian') || section.startsWith('sp3') || 
+            if (section.startsWith('spdp') || section.startsWith('p16') || section.startsWith('p17') ||
+                section.startsWith('pengembalian') || section.startsWith('sp3') ||
                 section.startsWith('tahap1') || section.startsWith('t1-')) {
                 fieldKey = 'val-pra-penuntutan';
             } else if (section.startsWith('t2-') || section.startsWith('pl-') || section.startsWith('tt-')) {
@@ -923,7 +923,7 @@ function syncWithMainDashboard(delta) {
             } else if (section.startsWith('eks-')) {
                 fieldKey = 'val-eksekusi';
             }
-            
+
             if (fieldKey && data[fieldKey] !== undefined) {
                 const currentVal = parseInt(data[fieldKey]) || 0;
                 const newVal = Math.max(0, currentVal + delta);
@@ -990,7 +990,7 @@ function resetFilters() {
     document.getElementById('filterSatker2').value = '';
     document.getElementById('filterTahun').value = getTahunList()[0]?.toString() || '2026';
     document.getElementById('filterBulan1').value = '01';
-    document.getElementById('filterBulan2').value = '02';
+    document.getElementById('filterBulan2').value = getDefaultBulanAkhir();
 
     loadTableData();
     filterTable();
