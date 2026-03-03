@@ -329,7 +329,6 @@ function handleAddBulan() {
         const name = BULAN_NAMES_ALL[parseInt(sel.value) - 1]?.name || '';
         showToast('Bulan ' + name + ' berhasil ditambahkan', 'success');
         sel.value = '';
-        renderBulanTags();
         if (typeof rebuildMonthlyUI === 'function') rebuildMonthlyUI();
     } else {
         showToast('Bulan sudah ada dalam daftar', 'error');
@@ -341,7 +340,6 @@ function handleDeleteBulan(monthNum) {
     if (!confirm('Hapus bulan ' + name + ' dari tampilan?')) return;
     if (deleteBulan(monthNum)) {
         showToast('Bulan ' + name + ' berhasil dihapus', 'success');
-        renderBulanTags();
         if (typeof rebuildMonthlyUI === 'function') rebuildMonthlyUI();
     } else {
         showToast('Tidak dapat menghapus bulan terakhir', 'error');

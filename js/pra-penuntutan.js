@@ -61,10 +61,9 @@ function initPraPenuntutan() {
     loadAllData();
     initAllCharts();
     renderAllDirektoratTags();
-    renderBulanTags();
 }
 
-// ---- Generate monthly input fields ----
+// ---- Generate monthly input fields with delete button ----
 function generateMonthlyInputs(section, gridId) {
     const grid = document.getElementById(gridId);
     if (!grid) return;
@@ -76,7 +75,7 @@ function generateMonthlyInputs(section, gridId) {
         const div = document.createElement('div');
         div.className = 'month-input-group';
         div.innerHTML = `
-            <label>${m.name}</label>
+            <label>${m.name} <button class="year-tag-delete" title="Hapus ${m.name}" onclick="handleDeleteBulan(${m.index})" style="margin-left:4px;font-size:10px;">&times;</button></label>
             <input type="number" 
                    id="monthly-${section}-${m.index}" 
                    placeholder="0" 
@@ -85,6 +84,20 @@ function generateMonthlyInputs(section, gridId) {
         `;
         grid.appendChild(div);
     });
+}
+
+// Handle add from secondary (alt) select dropdowns
+function handleAddBulanAlt(btn) {
+    const sel = btn.parentElement.querySelector('select');
+    if (!sel || !sel.value) { showToast('Pilih bulan yang ingin ditambahkan', 'error'); return; }
+    if (addBulan(sel.value)) {
+        const name = BULAN_NAMES_ALL[parseInt(sel.value) - 1]?.name || '';
+        showToast('Bulan ' + name + ' berhasil ditambahkan', 'success');
+        sel.value = '';
+        rebuildMonthlyUI();
+    } else {
+        showToast('Bulan sudah ada dalam daftar', 'error');
+    }
 }
 
 // ---- Generate direktorat input fields (dynamic) ----

@@ -117,7 +117,6 @@ function initPenuntutan() {
     loadAllData();
     initAllChartsP();
     renderAllDirektoratTags();
-    renderBulanTags();
 }
 
 // ---- Generate monthly inputs ----
@@ -130,7 +129,7 @@ function generateMonthlyInputsP(section, gridId) {
         const div = document.createElement('div');
         div.className = 'month-input-group';
         div.innerHTML = `
-            <label>${m.name}</label>
+            <label>${m.name} <button class="year-tag-delete" title="Hapus ${m.name}" onclick="handleDeleteBulan(${m.index})" style="margin-left:4px;font-size:10px;">&times;</button></label>
             <input type="number" id="monthly-${section}-${m.index}" placeholder="0" min="0"
                    oninput="onMonthlyInputP('${section}')">
         `;

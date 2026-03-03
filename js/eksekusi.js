@@ -101,7 +101,6 @@ function initEksekusi() {
     loadAllData();
     initAllCharts();
     renderAllDirektoratTags();
-    renderBulanTags();
 }
 
 // ---- Generate monthly inputs ----
@@ -116,13 +115,13 @@ function generateMonthlyInputs(key, gridId) {
         div.className = 'month-input-group';
         if (isCurrency) {
             div.innerHTML = `
-                <label>${m.name}</label>
+                <label>${m.name} <button class="year-tag-delete" title="Hapus ${m.name}" onclick="handleDeleteBulan(${m.index})" style="margin-left:4px;font-size:10px;">&times;</button></label>
                 <input type="text" id="monthly-${key}-${m.index}" placeholder="0" inputmode="numeric"
                        oninput="formatCurrencyInput(this); onMonthlyInput('${key}')">
             `;
         } else {
             div.innerHTML = `
-                <label>${m.name}</label>
+                <label>${m.name} <button class="year-tag-delete" title="Hapus ${m.name}" onclick="handleDeleteBulan(${m.index})" style="margin-left:4px;font-size:10px;">&times;</button></label>
                 <input type="number" id="monthly-${key}-${m.index}" placeholder="0" min="0"
                        oninput="onMonthlyInput('${key}')">
             `;
