@@ -1082,23 +1082,52 @@ body.view-mode .toggle-btn {
 }
 
 .year-tag-delete {
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    color: #fff;
-    width: 20px;
-    height: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: rgba(255, 255, 255, 0.75);
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
+    font-size: 10px;
     line-height: 1;
-    transition: var(--transition);
+    transition: all 0.25s ease;
+    padding: 0;
 }
 
 .year-tag-delete:hover {
-    background: #e74c3c;
+    background: rgba(231, 76, 60, 0.85);
+    border-color: rgba(231, 76, 60, 0.9);
+    color: #fff;
+    transform: scale(1.15);
+}
+
+/* ---- Month Delete Button (in input section) ---- */
+.btn-hapus-bulan {
+    background: none;
+    border: 1px solid #dee2e6;
+    color: #adb5bd;
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    transition: all 0.25s ease;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.btn-hapus-bulan:hover {
+    background: #fee2e2;
+    border-color: #ef4444;
+    color: #ef4444;
+    transform: scale(1.1);
 }
 
 /* Hide year management in view mode */

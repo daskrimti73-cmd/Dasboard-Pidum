@@ -129,10 +129,12 @@ function generateMonthlyInputsP(section, gridId) {
         const div = document.createElement('div');
         div.className = 'month-input-group';
         div.innerHTML = `
-            <label style="display:flex;justify-content:space-between;align-items:center;">${m.name}
-                <button type="button" class="year-tag-delete" title="Hapus ${m.name}" onclick="handleDeleteBulan(${m.index})"
-                    style="margin-left:6px;font-size:14px;color:#dc3545;background:#fff0f0;border:1px solid #dc3545;border-radius:4px;cursor:pointer;padding:0 5px;line-height:1.4;font-weight:bold;">&times;</button>
-            </label>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                <label style="margin:0;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#2c3e50;">${m.name}</label>
+                <button type="button" class="btn-hapus-bulan" title="Hapus ${m.name}" onclick="event.preventDefault();event.stopPropagation();handleDeleteBulan(${m.index})">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>
             <input type="number" id="monthly-${section}-${m.index}" placeholder="0" min="0"
                    oninput="onMonthlyInputP('${section}')">
         `;
@@ -355,7 +357,7 @@ function renderDirektoratTags(section) {
         const btn = document.createElement('button');
         btn.className = 'year-tag-delete';
         btn.title = 'Hapus ' + dir;
-        btn.innerHTML = '&times;';
+        btn.innerHTML = '<i class="fas fa-times"></i>';
         btn.addEventListener('click', function () { handleDeleteDirektorat(section, dir); });
         tag.appendChild(btn);
         container.appendChild(tag);
