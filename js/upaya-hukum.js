@@ -9,22 +9,19 @@ const BULAN_NAMES_UH = [
     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
 ];
 
-// Direktorat list untuk Banding (hanya A, B, C, dan Narkotika)
-const DIREKTORAT_BANDING = [
-    'Direktorat A',
-    'Direktorat B',
-    'Direktorat C',
-    'Narkotika'
-];
+// Direktorat list untuk Banding - now dynamically managed
+function getDirektoratBanding() {
+    return getDirektoratList();
+}
 
 // Kasasi menggunakan angka 0-5 (bukan direktorat)
 const KASASI_LABELS = ['0', '1', '2', '3', '4', '5'];
 
 // Mapping section ke direktorat list
-const DIREKTORAT_MAP_UH = {
-    'banding': DIREKTORAT_BANDING,
-    'kasasi': KASASI_LABELS
-};
+function getDirektoratMapUH(section) {
+    if (section === 'kasasi') return KASASI_LABELS;
+    return getDirektoratBanding();
+}
 
 // ---- All sections config ----
 const SECTIONS_UH = {
@@ -108,6 +105,7 @@ function initUpayaHukum() {
     });
     loadAllData();
     initAllChartsUH();
+    renderDirektoratTags();
 }
 
 // ---- Generate monthly inputs ----
@@ -135,7 +133,7 @@ function generateDirInputsUH(section, gridId) {
     grid.innerHTML = '';
 
     // Gunakan direktorat list yang sesuai dengan section
-    const dirList = DIREKTORAT_MAP_UH[section] || DIREKTORAT_BANDING;
+    const dirList = getDirektoratMapUH(section);
 
     dirList.forEach((dir, idx) => {
         const div = document.createElement('div');
@@ -370,7 +368,7 @@ function updateDirChartUH(section) {
     if (!chart) return;
 
     // Gunakan direktorat list yang sesuai dengan section
-    const dirList = DIREKTORAT_MAP_UH[section] || DIREKTORAT_BANDING;
+    const dirList = getDirektoratMapUH(section);
 
     const values = dirList.map((_, idx) => {
         const input = document.getElementById(`dir-${section}-${idx}`);
@@ -391,13 +389,17 @@ function updateDirChartUH(section) {
             tension: 0
         }];
     } else {
+        // Generate enough colors for dynamic list
+        const bgColors = dirList.map((_, i) => chartColorsUH.bar.backgroundColor[i % chartColorsUH.bar.backgroundColor.length]);
+        const hoverColors = dirList.map((_, i) => chartColorsUH.bar.hoverBg[i % chartColorsUH.bar.hoverBg.length]);
+
         // Update chart untuk banding (bar chart)
         chart.data.labels = dirList;
         chart.data.datasets = [{
             label: 'Jumlah',
             data: values,
-            backgroundColor: chartColorsUH.bar.backgroundColor,
-            hoverBackgroundColor: chartColorsUH.bar.hoverBg,
+            backgroundColor: bgColors,
+            hoverBackgroundColor: hoverColors,
             borderRadius: 4,
             borderSkipped: false,
             barPercentage: 0.7
@@ -429,12 +431,15 @@ function saveAllData() {
             if (input) allData[`${sec}Monthly`][m.index] = input.value;
         });
 
-        // Dir values
+        // Dir values (keyed by label for banding, index for kasasi)
         allData[`${sec}Dir`] = {};
-        const dirList = DIREKTORAT_MAP_UH[sec] || DIREKTORAT_BANDING;
-        dirList.forEach((_, idx) => {
+        const dirList = getDirektoratMapUH(sec);
+        dirList.forEach((dir, idx) => {
             const input = document.getElementById(`dir-${sec}-${idx}`);
-            if (input) allData[`${sec}Dir`][idx] = input.value;
+            if (input) {
+                const key = sec === 'kasasi' ? idx : dir;
+                allData[`${sec}Dir`][key] = input.value;
+            }
         });
     });
 
@@ -474,10 +479,20 @@ function loadAllData() {
                 });
             }
             if (data[`${sec}Dir`]) {
-                Object.keys(data[`${sec}Dir`]).forEach(idx => {
-                    const input = document.getElementById(`dir-${sec}-${idx}`);
-                    if (input) input.value = data[`${sec}Dir`][idx];
-                });
+                const dirList = getDirektoratMapUH(sec);
+                const keys = Object.keys(data[`${sec}Dir`]);
+                const isLabelBased = sec !== 'kasasi' && keys.length > 0 && isNaN(parseInt(keys[0]));
+                if (isLabelBased) {
+                    dirList.forEach((dir, idx) => {
+                        const input = document.getElementById(`dir-${sec}-${idx}`);
+                        if (input && data[`${sec}Dir`][dir]) input.value = data[`${sec}Dir`][dir];
+                    });
+                } else {
+                    keys.forEach(idx => {
+                        const input = document.getElementById(`dir-${sec}-${idx}`);
+                        if (input) input.value = data[`${sec}Dir`][idx];
+                    });
+                }
             }
         });
     } catch (e) {
@@ -497,7 +512,7 @@ function resetAllData() {
             const el = document.getElementById(`monthly-${sec}-${m.index}`);
             if (el) el.value = '';
         });
-        const dirList = DIREKTORAT_MAP_UH[sec] || DIREKTORAT_BANDING;
+        const dirList = getDirektoratMapUH(sec);
         dirList.forEach((_, idx) => {
             const el = document.getElementById(`dir-${sec}-${idx}`);
             if (el) el.value = '';
@@ -542,4 +557,59 @@ function resetFilters() {
     });
 
     showToast('Filter telah direset', 'success');
+}
+
+// ============================================
+// DIREKTORAT MANAGEMENT UI
+// ============================================
+function renderDirektoratTags() {
+    const container = document.getElementById('direktoratTagsContainer');
+    if (!container) return;
+    const list = getDirektoratList();
+    container.innerHTML = '';
+    list.forEach(dir => {
+        const tag = document.createElement('span');
+        tag.className = 'year-tag';
+        tag.textContent = dir + ' ';
+        const btn = document.createElement('button');
+        btn.className = 'year-tag-delete';
+        btn.title = 'Hapus ' + dir;
+        btn.innerHTML = '&times;';
+        btn.addEventListener('click', function () { handleDeleteDirektorat(dir); });
+        tag.appendChild(btn);
+        container.appendChild(tag);
+    });
+}
+
+function handleAddDirektorat() {
+    const input = document.getElementById('inputDirektoratBaru');
+    if (!input) return;
+    const val = input.value.trim();
+    if (!val) { showToast('Masukkan nama kategori tindak pidana', 'error'); return; }
+    if (addDirektorat(val)) {
+        showToast('Kategori "' + val + '" berhasil ditambahkan', 'success');
+        input.value = '';
+        renderDirektoratTags();
+        rebuildDirektoratUI();
+    } else {
+        showToast('Kategori sudah ada atau tidak valid', 'error');
+    }
+}
+
+function handleDeleteDirektorat(label) {
+    if (!confirm('Hapus kategori "' + label + '" dari daftar?')) return;
+    if (deleteDirektorat(label)) {
+        showToast('Kategori "' + label + '" berhasil dihapus', 'success');
+        renderDirektoratTags();
+        rebuildDirektoratUI();
+    } else {
+        showToast('Tidak dapat menghapus kategori terakhir', 'error');
+    }
+}
+
+function rebuildDirektoratUI() {
+    // Only rebuild banding section (kasasi uses fixed numeric labels)
+    generateDirInputsUH('banding', SECTIONS_UH.banding.dirGrid);
+    loadAllData();
+    updateDirChartUH('banding');
 }

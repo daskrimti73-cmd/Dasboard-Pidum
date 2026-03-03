@@ -9,9 +9,9 @@ const BULAN_NAMES_HM = [
     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
 ];
 
-const TINDAK_PIDANA_LIST_HM = [
-    'DIREKTORAT B'
-];
+function getTindakPidanaListHm() {
+    return getDirektoratList();
+}
 
 // ---- Chart instances ----
 let chartTrendHm = null;
@@ -37,10 +37,10 @@ const barHoverHm = [
 
 // ---- Storage key ----
 function getHmStorageKey() {
-    const w  = document.getElementById('filterWilayah')?.value || '';
+    const w = document.getElementById('filterWilayah')?.value || '';
     const s1 = document.getElementById('filterSatker1')?.value || '';
     const s2 = document.getElementById('filterSatker2')?.value || '';
-    const t  = document.getElementById('filterTahun')?.value || '';
+    const t = document.getElementById('filterTahun')?.value || '';
     const b1 = document.getElementById('filterBulan1')?.value || '';
     const b2 = document.getElementById('filterBulan2')?.value || '';
     return `hm_${w}_${s1}_${s2}_${t}_${b1}_${b2}`;
@@ -65,6 +65,7 @@ function initHukumanMati() {
     generateTindakPidanaInputs();
     loadAllDataHm();
     initAllChartsHm();
+    renderDirektoratTags();
 }
 
 // ---- Generate monthly inputs ----
@@ -90,7 +91,8 @@ function generateTindakPidanaInputs() {
     const grid = document.getElementById('tindakPidanaGrid');
     if (!grid) return;
     grid.innerHTML = '';
-    TINDAK_PIDANA_LIST_HM.forEach((tp, idx) => {
+    const tpList = getTindakPidanaListHm();
+    tpList.forEach((tp, idx) => {
         const div = document.createElement('div');
         div.className = 'dir-input-group';
         div.innerHTML = `
@@ -216,17 +218,21 @@ function updateTrendChartHm() {
 // ---- Update tindak pidana bar chart ----
 function updateTpChartHm() {
     if (!chartTindakPidanaHm) return;
-    const values = TINDAK_PIDANA_LIST_HM.map((_, idx) => {
+    const tpList = getTindakPidanaListHm();
+    const values = tpList.map((_, idx) => {
         const input = document.getElementById(`tp-hm-${idx}`);
         return input ? (parseInt(input.value) || 0) : 0;
     });
 
-    chartTindakPidanaHm.data.labels = TINDAK_PIDANA_LIST_HM;
+    const bgColors = tpList.map((_, i) => barBgHm[i % barBgHm.length]);
+    const hoverColors = tpList.map((_, i) => barHoverHm[i % barHoverHm.length]);
+
+    chartTindakPidanaHm.data.labels = tpList;
     chartTindakPidanaHm.data.datasets = [{
         label: 'Jumlah',
         data: values,
-        backgroundColor: barBgHm,
-        hoverBackgroundColor: barHoverHm,
+        backgroundColor: bgColors,
+        hoverBackgroundColor: hoverColors,
         borderRadius: 4,
         borderSkipped: false,
         barPercentage: 0.7
@@ -254,11 +260,12 @@ function saveAllData() {
         if (el) allData.trenMonthly[m.index] = el.value;
     });
 
-    // Tindak pidana values
+    // Tindak pidana values (keyed by label)
     allData.tpValues = {};
-    TINDAK_PIDANA_LIST_HM.forEach((_, idx) => {
+    const tpListSave = getTindakPidanaListHm();
+    tpListSave.forEach((tp, idx) => {
         const el = document.getElementById(`tp-hm-${idx}`);
-        if (el) allData.tpValues[idx] = el.value;
+        if (el) allData.tpValues[tp] = el.value;
     });
 
     try {
@@ -298,12 +305,22 @@ function loadAllDataHm() {
             });
         }
 
-        // Tindak pidana
+        // Tindak pidana (support label-based and index-based)
         if (data.tpValues) {
-            Object.keys(data.tpValues).forEach(idx => {
-                const el = document.getElementById(`tp-hm-${idx}`);
-                if (el) el.value = data.tpValues[idx];
-            });
+            const tpList = getTindakPidanaListHm();
+            const keys = Object.keys(data.tpValues);
+            const isLabelBased = keys.length > 0 && isNaN(parseInt(keys[0]));
+            if (isLabelBased) {
+                tpList.forEach((tp, idx) => {
+                    const el = document.getElementById(`tp-hm-${idx}`);
+                    if (el && data.tpValues[tp]) el.value = data.tpValues[tp];
+                });
+            } else {
+                keys.forEach(idx => {
+                    const el = document.getElementById(`tp-hm-${idx}`);
+                    if (el) el.value = data.tpValues[idx];
+                });
+            }
         }
     } catch (e) {
         console.error('Load error:', e);
@@ -324,7 +341,8 @@ function resetAllData() {
     });
     updateTrendChartHm();
 
-    TINDAK_PIDANA_LIST_HM.forEach((_, idx) => {
+    const tpList = getTindakPidanaListHm();
+    tpList.forEach((_, idx) => {
         const el = document.getElementById(`tp-hm-${idx}`);
         if (el) el.value = '';
     });
@@ -361,4 +379,58 @@ function resetFilters() {
     updateTpChartHm();
 
     showToast('Filter telah direset', 'success');
+}
+
+// ============================================
+// DIREKTORAT MANAGEMENT UI
+// ============================================
+function renderDirektoratTags() {
+    const container = document.getElementById('direktoratTagsContainer');
+    if (!container) return;
+    const list = getDirektoratList();
+    container.innerHTML = '';
+    list.forEach(dir => {
+        const tag = document.createElement('span');
+        tag.className = 'year-tag';
+        tag.textContent = dir + ' ';
+        const btn = document.createElement('button');
+        btn.className = 'year-tag-delete';
+        btn.title = 'Hapus ' + dir;
+        btn.innerHTML = '&times;';
+        btn.addEventListener('click', function () { handleDeleteDirektorat(dir); });
+        tag.appendChild(btn);
+        container.appendChild(tag);
+    });
+}
+
+function handleAddDirektorat() {
+    const input = document.getElementById('inputDirektoratBaru');
+    if (!input) return;
+    const val = input.value.trim();
+    if (!val) { showToast('Masukkan nama kategori tindak pidana', 'error'); return; }
+    if (addDirektorat(val)) {
+        showToast('Kategori "' + val + '" berhasil ditambahkan', 'success');
+        input.value = '';
+        renderDirektoratTags();
+        rebuildDirektoratUI();
+    } else {
+        showToast('Kategori sudah ada atau tidak valid', 'error');
+    }
+}
+
+function handleDeleteDirektorat(label) {
+    if (!confirm('Hapus kategori "' + label + '" dari daftar?')) return;
+    if (deleteDirektorat(label)) {
+        showToast('Kategori "' + label + '" berhasil dihapus', 'success');
+        renderDirektoratTags();
+        rebuildDirektoratUI();
+    } else {
+        showToast('Tidak dapat menghapus kategori terakhir', 'error');
+    }
+}
+
+function rebuildDirektoratUI() {
+    generateTindakPidanaInputs();
+    loadAllDataHm();
+    updateTpChartHm();
 }

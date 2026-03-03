@@ -1,6 +1,7 @@
 /* ============================================
    PRA PENUNTUTAN - JAVASCRIPT
    Charts, data management, auto-update logic
+   Now with dynamic direktorat/tindak pidana
    ============================================ */
 
 // ---- Month names ----
@@ -9,24 +10,11 @@ const BULAN_NAMES = [
     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
 ];
 
-// ---- Direktorat list ----
-const DIREKTORAT_LIST = [
-    'Direktorat A',
-    'Direktorat B',
-    'Direktorat C',
-    'Direktorat D',
-    'Direktorat E',
-    'Mnegtibum dan TPUL'
-];
-
-// ---- Direktorat list untuk SPDP (tanpa Mnegtibum dan TPUL) ----
-const DIREKTORAT_LIST_SPDP = [
-    'Direktorat A',
-    'Direktorat B',
-    'Direktorat C',
-    'Direktorat D',
-    'Direktorat E'
-];
+// ---- Get current direktorat list from shared management ----
+function getDirListForSection(section) {
+    // All sections now use the shared dynamic list
+    return getDirektoratList();
+}
 
 // ---- Chart instances ----
 let chartSpdpTrend = null;
@@ -70,6 +58,7 @@ function initPraPenuntutan() {
     generateDirektoratInputs('tahap1', 'tahap1DirGrid');
     loadAllData();
     initAllCharts();
+    renderDirektoratTags();
 }
 
 // ---- Generate monthly input fields ----
@@ -95,15 +84,14 @@ function generateMonthlyInputs(section, gridId) {
     });
 }
 
-// ---- Generate direktorat input fields ----
+// ---- Generate direktorat input fields (dynamic) ----
 function generateDirektoratInputs(section, gridId) {
     const grid = document.getElementById(gridId);
     if (!grid) return;
 
     grid.innerHTML = '';
 
-    // Gunakan list yang berbeda untuk SPDP dan Tahap I
-    const dirList = section === 'spdp' ? DIREKTORAT_LIST_SPDP : DIREKTORAT_LIST;
+    const dirList = getDirListForSection(section);
 
     dirList.forEach((dir, idx) => {
         const div = document.createElement('div');
@@ -180,7 +168,10 @@ const chartColors = {
             'rgba(15, 52, 96, 0.65)',
             'rgba(15, 52, 96, 0.55)',
             'rgba(15, 52, 96, 0.45)',
-            'rgba(15, 52, 96, 0.80)'
+            'rgba(15, 52, 96, 0.80)',
+            'rgba(26, 26, 46, 0.75)',
+            'rgba(139, 0, 0, 0.70)',
+            'rgba(200, 168, 85, 0.75)'
         ],
         hoverBg: [
             'rgba(15, 52, 96, 1)',
@@ -188,7 +179,10 @@ const chartColors = {
             'rgba(15, 52, 96, 0.8)',
             'rgba(15, 52, 96, 0.7)',
             'rgba(15, 52, 96, 0.6)',
-            'rgba(15, 52, 96, 0.95)'
+            'rgba(15, 52, 96, 0.95)',
+            'rgba(26, 26, 46, 0.9)',
+            'rgba(139, 0, 0, 0.85)',
+            'rgba(200, 168, 85, 0.9)'
         ]
     }
 };
@@ -213,7 +207,7 @@ function getLineChartOptions(titleText) {
                 padding: 12,
                 cornerRadius: 8,
                 callbacks: {
-                    label: function(ctx) {
+                    label: function (ctx) {
                         return `Jumlah: ${ctx.parsed.y}`;
                     }
                 }
@@ -252,7 +246,7 @@ function getBarChartOptions() {
                 padding: 12,
                 cornerRadius: 8,
                 callbacks: {
-                    label: function(ctx) {
+                    label: function (ctx) {
                         return `Jumlah: ${ctx.parsed.y}`;
                     }
                 }
@@ -359,8 +353,7 @@ function updateTrendChart(section) {
 
 // ---- Update Dir (bar) Chart ----
 function updateDirChart(section) {
-    // Gunakan list yang berbeda untuk SPDP dan Tahap I
-    const dirList = section === 'spdp' ? DIREKTORAT_LIST_SPDP : DIREKTORAT_LIST;
+    const dirList = getDirListForSection(section);
     const labels = dirList;
     const values = dirList.map((_, idx) => {
         const input = document.getElementById(`dir-${section}-${idx}`);
@@ -370,12 +363,20 @@ function updateDirChart(section) {
     const chart = section === 'spdp' ? chartSpdpTindakPidana : chartTahap1TindakPidana;
     if (!chart) return;
 
+    // Generate enough colors
+    const bgColors = [];
+    const hoverColors = [];
+    for (let i = 0; i < dirList.length; i++) {
+        bgColors.push(chartColors.bar.backgroundColor[i % chartColors.bar.backgroundColor.length]);
+        hoverColors.push(chartColors.bar.hoverBg[i % chartColors.bar.hoverBg.length]);
+    }
+
     chart.data.labels = labels;
     chart.data.datasets = [{
         label: 'Jumlah',
         data: values,
-        backgroundColor: chartColors.bar.backgroundColor,
-        hoverBackgroundColor: chartColors.bar.hoverBg,
+        backgroundColor: bgColors,
+        hoverBackgroundColor: hoverColors,
         borderRadius: 4,
         borderSkipped: false,
         barPercentage: 0.7
@@ -385,11 +386,71 @@ function updateDirChart(section) {
 }
 
 // ============================================
+// DIREKTORAT MANAGEMENT UI
+// ============================================
+
+function renderDirektoratTags() {
+    const container = document.getElementById('direktoratTagsContainer');
+    if (!container) return;
+    const list = getDirektoratList();
+    container.innerHTML = '';
+    list.forEach(dir => {
+        const tag = document.createElement('span');
+        tag.className = 'year-tag';
+        tag.textContent = dir + ' ';
+        const btn = document.createElement('button');
+        btn.className = 'year-tag-delete';
+        btn.title = 'Hapus ' + dir;
+        btn.innerHTML = '&times;';
+        btn.addEventListener('click', function () { handleDeleteDirektorat(dir); });
+        tag.appendChild(btn);
+        container.appendChild(tag);
+    });
+}
+
+function handleAddDirektorat() {
+    const input = document.getElementById('inputDirektoratBaru');
+    if (!input) return;
+
+    // Support both text input and datalist selection
+    const val = input.value.trim();
+    if (!val) { showToast('Masukkan nama kategori tindak pidana', 'error'); return; }
+
+    if (addDirektorat(val)) {
+        showToast('Kategori "' + val + '" berhasil ditambahkan', 'success');
+        input.value = '';
+        renderDirektoratTags();
+        rebuildDirektoratUI();
+    } else {
+        showToast('Kategori sudah ada atau tidak valid', 'error');
+    }
+}
+
+function handleDeleteDirektorat(label) {
+    if (!confirm('Hapus kategori "' + label + '" dari daftar?')) return;
+    if (deleteDirektorat(label)) {
+        showToast('Kategori "' + label + '" berhasil dihapus', 'success');
+        renderDirektoratTags();
+        rebuildDirektoratUI();
+    } else {
+        showToast('Tidak dapat menghapus kategori terakhir', 'error');
+    }
+}
+
+function rebuildDirektoratUI() {
+    generateDirektoratInputs('spdp', 'spdpDirGrid');
+    generateDirektoratInputs('tahap1', 'tahap1DirGrid');
+    loadAllData();
+    updateDirChart('spdp');
+    updateDirChart('tahap1');
+}
+
+// ============================================
 // SAVE & LOAD
 // ============================================
 
 function saveAllData() {
-    const keyPrefix = getPrapenStorageKey('');
+    const dirList = getDirListForSection('spdp');
 
     // Save SPDP card values
     const spdpData = {};
@@ -419,18 +480,19 @@ function saveAllData() {
         if (input) tahap1Monthly[m.index] = input.value;
     });
 
-    // Save direktorat SPDP
+    // Save direktorat SPDP (keyed by label for persistence)
     const spdpDir = {};
-    DIREKTORAT_LIST_SPDP.forEach((_, idx) => {
+    dirList.forEach((dir, idx) => {
         const input = document.getElementById(`dir-spdp-${idx}`);
-        if (input) spdpDir[idx] = input.value;
+        if (input) spdpDir[dir] = input.value;
     });
 
-    // Save direktorat Tahap I
+    // Save direktorat Tahap I (keyed by label for persistence)
+    const tahap1DirList = getDirListForSection('tahap1');
     const tahap1Dir = {};
-    DIREKTORAT_LIST.forEach((_, idx) => {
+    tahap1DirList.forEach((dir, idx) => {
         const input = document.getElementById(`dir-tahap1-${idx}`);
-        if (input) tahap1Dir[idx] = input.value;
+        if (input) tahap1Dir[dir] = input.value;
     });
 
     const allData = {
@@ -501,20 +563,44 @@ function loadAllData() {
             });
         }
 
-        // Restore direktorat SPDP
+        // Restore direktorat SPDP (keyed by label)
         if (data.spdpDir) {
-            Object.keys(data.spdpDir).forEach(idx => {
-                const input = document.getElementById(`dir-spdp-${idx}`);
-                if (input) input.value = data.spdpDir[idx];
-            });
+            const dirList = getDirListForSection('spdp');
+            // Check if data uses label-based keys (new) or index-based keys (old)
+            const keys = Object.keys(data.spdpDir);
+            const isLabelBased = keys.length > 0 && isNaN(parseInt(keys[0]));
+
+            if (isLabelBased) {
+                dirList.forEach((dir, idx) => {
+                    const input = document.getElementById(`dir-spdp-${idx}`);
+                    if (input && data.spdpDir[dir]) input.value = data.spdpDir[dir];
+                });
+            } else {
+                // Old format: index-based
+                Object.keys(data.spdpDir).forEach(idx => {
+                    const input = document.getElementById(`dir-spdp-${idx}`);
+                    if (input) input.value = data.spdpDir[idx];
+                });
+            }
         }
 
-        // Restore direktorat Tahap I
+        // Restore direktorat Tahap I (keyed by label)
         if (data.tahap1Dir) {
-            Object.keys(data.tahap1Dir).forEach(idx => {
-                const input = document.getElementById(`dir-tahap1-${idx}`);
-                if (input) input.value = data.tahap1Dir[idx];
-            });
+            const dirList = getDirListForSection('tahap1');
+            const keys = Object.keys(data.tahap1Dir);
+            const isLabelBased = keys.length > 0 && isNaN(parseInt(keys[0]));
+
+            if (isLabelBased) {
+                dirList.forEach((dir, idx) => {
+                    const input = document.getElementById(`dir-tahap1-${idx}`);
+                    if (input && data.tahap1Dir[dir]) input.value = data.tahap1Dir[dir];
+                });
+            } else {
+                Object.keys(data.tahap1Dir).forEach(idx => {
+                    const input = document.getElementById(`dir-tahap1-${idx}`);
+                    if (input) input.value = data.tahap1Dir[idx];
+                });
+            }
         }
 
     } catch (e) {
@@ -546,11 +632,13 @@ function resetAllData() {
     });
 
     // Clear direktorat inputs
-    DIREKTORAT_LIST_SPDP.forEach((_, idx) => {
+    const dirList = getDirListForSection('spdp');
+    dirList.forEach((_, idx) => {
         const d1 = document.getElementById(`dir-spdp-${idx}`);
         if (d1) d1.value = '';
     });
-    DIREKTORAT_LIST.forEach((_, idx) => {
+    const dirList2 = getDirListForSection('tahap1');
+    dirList2.forEach((_, idx) => {
         const d2 = document.getElementById(`dir-tahap1-${idx}`);
         if (d2) d2.value = '';
     });

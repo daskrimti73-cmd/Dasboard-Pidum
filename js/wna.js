@@ -9,9 +9,9 @@ const BULAN_NAMES_WNA = [
     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
 ];
 
-const TINDAK_PIDANA_LIST_WNA = [
-    'DIREKTORAT A', 'DIREKTORAT B', 'DIREKTORAT E'
-];
+function getTindakPidanaListWna() {
+    return getDirektoratList();
+}
 
 // ---- Country list (All 197 countries of the world 2026, sorted A-Z in Bahasa Indonesia) ----
 const COUNTRY_LIST = [
@@ -291,6 +291,7 @@ function initWna() {
     generateDirInputs();
     loadAllData();
     initAllCharts();
+    renderDirektoratTags();
 }
 
 // ---- Populate country dropdown ----
@@ -329,7 +330,8 @@ function generateDirInputs() {
     const grid = document.getElementById('wnaDirGrid');
     if (!grid) return;
     grid.innerHTML = '';
-    TINDAK_PIDANA_LIST_WNA.forEach((dir, idx) => {
+    const tpList = getTindakPidanaListWna();
+    tpList.forEach((dir, idx) => {
         const div = document.createElement('div');
         div.className = 'dir-input-group';
         div.innerHTML = `
@@ -686,17 +688,21 @@ function updateTrendChart() {
 // ---- Update dir bar chart ----
 function updateDirChart() {
     if (!chartDir) return;
-    const values = TINDAK_PIDANA_LIST_WNA.map((_, idx) => {
+    const tpList = getTindakPidanaListWna();
+    const values = tpList.map((_, idx) => {
         const input = document.getElementById(`dir-wna-${idx}`);
         return input ? (parseInt(input.value) || 0) : 0;
     });
 
-    chartDir.data.labels = TINDAK_PIDANA_LIST_WNA;
+    const bgColors = tpList.map((_, i) => barBg[i % barBg.length]);
+    const hoverColors = tpList.map((_, i) => barHover[i % barHover.length]);
+
+    chartDir.data.labels = tpList;
     chartDir.data.datasets = [{
         label: 'Jumlah',
         data: values,
-        backgroundColor: barBg,
-        hoverBackgroundColor: barHover,
+        backgroundColor: bgColors,
+        hoverBackgroundColor: hoverColors,
         borderRadius: 4,
         borderSkipped: false,
         barPercentage: 0.7
@@ -730,11 +736,12 @@ function saveAllData() {
         if (el) allData.trenMonthly[m.index] = el.value;
     });
 
-    // Dir values
+    // Dir values (keyed by label)
     allData.dirValues = {};
-    TINDAK_PIDANA_LIST_WNA.forEach((_, idx) => {
+    const tpListSave = getTindakPidanaListWna();
+    tpListSave.forEach((dir, idx) => {
         const el = document.getElementById(`dir-wna-${idx}`);
-        if (el) allData.dirValues[idx] = el.value;
+        if (el) allData.dirValues[dir] = el.value;
     });
 
     try {
@@ -787,12 +794,22 @@ function loadAllData() {
             });
         }
 
-        // Dir
+        // Dir (support label-based and index-based)
         if (data.dirValues) {
-            Object.keys(data.dirValues).forEach(idx => {
-                const el = document.getElementById(`dir-wna-${idx}`);
-                if (el) el.value = data.dirValues[idx];
-            });
+            const tpList = getTindakPidanaListWna();
+            const keys = Object.keys(data.dirValues);
+            const isLabelBased = keys.length > 0 && isNaN(parseInt(keys[0]));
+            if (isLabelBased) {
+                tpList.forEach((dir, idx) => {
+                    const el = document.getElementById(`dir-wna-${idx}`);
+                    if (el && data.dirValues[dir]) el.value = data.dirValues[dir];
+                });
+            } else {
+                keys.forEach(idx => {
+                    const el = document.getElementById(`dir-wna-${idx}`);
+                    if (el) el.value = data.dirValues[idx];
+                });
+            }
         }
     } catch (e) {
         console.error('Load error:', e);
@@ -820,7 +837,8 @@ function resetAllData() {
     });
     updateTrendChart();
 
-    TINDAK_PIDANA_LIST_WNA.forEach((_, idx) => {
+    const tpListReset = getTindakPidanaListWna();
+    tpListReset.forEach((_, idx) => {
         const el = document.getElementById(`dir-wna-${idx}`);
         if (el) el.value = '';
     });
@@ -866,4 +884,58 @@ function resetFilters() {
     updateDirChart();
 
     showToast('Filter telah direset', 'success');
+}
+
+// ============================================
+// DIREKTORAT MANAGEMENT UI
+// ============================================
+function renderDirektoratTags() {
+    const container = document.getElementById('direktoratTagsContainer');
+    if (!container) return;
+    const list = getDirektoratList();
+    container.innerHTML = '';
+    list.forEach(dir => {
+        const tag = document.createElement('span');
+        tag.className = 'year-tag';
+        tag.textContent = dir + ' ';
+        const btn = document.createElement('button');
+        btn.className = 'year-tag-delete';
+        btn.title = 'Hapus ' + dir;
+        btn.innerHTML = '&times;';
+        btn.addEventListener('click', function () { handleDeleteDirektorat(dir); });
+        tag.appendChild(btn);
+        container.appendChild(tag);
+    });
+}
+
+function handleAddDirektorat() {
+    const input = document.getElementById('inputDirektoratBaru');
+    if (!input) return;
+    const val = input.value.trim();
+    if (!val) { showToast('Masukkan nama kategori tindak pidana', 'error'); return; }
+    if (addDirektorat(val)) {
+        showToast('Kategori "' + val + '" berhasil ditambahkan', 'success');
+        input.value = '';
+        renderDirektoratTags();
+        rebuildDirektoratUI();
+    } else {
+        showToast('Kategori sudah ada atau tidak valid', 'error');
+    }
+}
+
+function handleDeleteDirektorat(label) {
+    if (!confirm('Hapus kategori "' + label + '" dari daftar?')) return;
+    if (deleteDirektorat(label)) {
+        showToast('Kategori "' + label + '" berhasil dihapus', 'success');
+        renderDirektoratTags();
+        rebuildDirektoratUI();
+    } else {
+        showToast('Tidak dapat menghapus kategori terakhir', 'error');
+    }
+}
+
+function rebuildDirektoratUI() {
+    generateDirInputs();
+    loadAllData();
+    updateDirChart();
 }

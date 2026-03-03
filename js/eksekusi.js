@@ -10,11 +10,10 @@ const BULAN_NAMES_EKS = [
     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
 ];
 
-const TINDAK_PIDANA_LIST_EKS = [
-    'DIREKTORAT A', 'DIREKTORAT B', 'DIREKTORAT C',
-    'DIREKTORAT E', 'MNEGTIBUM DAN TPUL', 'NARKOTIKA',
-    'OHARDA', 'TERORISME'
-];
+// Tindak Pidana list now comes from shared dynamic management
+function getTindakPidanaListEks() {
+    return getDirektoratList();
+}
 
 // Card field IDs
 const CARD_FIELDS = ['eks-p48', 'eks-ba17', 'eks-denda', 'eks-biaya'];
@@ -22,15 +21,15 @@ const CARD_FIELDS = ['eks-p48', 'eks-ba17', 'eks-denda', 'eks-biaya'];
 // Trend chart configs (all 4 cards have trend charts)
 // isCurrency = true → large monetary values with dot-separator formatting
 const TREND_CHARTS = {
-    p48:   { canvasId: 'chartP48Trend',   monthlyGrid: 'p48MonthlyGrid',   chart: null, label: 'P-48',          isCurrency: false },
-    ba17:  { canvasId: 'chartBa17Trend',  monthlyGrid: 'ba17MonthlyGrid',  chart: null, label: 'BA-17',         isCurrency: false },
-    denda: { canvasId: 'chartDendaTrend', monthlyGrid: 'dendaMonthlyGrid', chart: null, label: 'Denda',         isCurrency: true },
+    p48: { canvasId: 'chartP48Trend', monthlyGrid: 'p48MonthlyGrid', chart: null, label: 'P-48', isCurrency: false },
+    ba17: { canvasId: 'chartBa17Trend', monthlyGrid: 'ba17MonthlyGrid', chart: null, label: 'BA-17', isCurrency: false },
+    denda: { canvasId: 'chartDendaTrend', monthlyGrid: 'dendaMonthlyGrid', chart: null, label: 'Denda', isCurrency: true },
     biaya: { canvasId: 'chartBiayaTrend', monthlyGrid: 'biayaMonthlyGrid', chart: null, label: 'Biaya Perkara', isCurrency: true }
 };
 
 // Bar chart configs (only P-48 and BA-17 have bar charts)
 const DIR_CHARTS = {
-    p48:  { canvasId: 'chartP48Dir',  dirGrid: 'p48DirGrid',  chart: null, label: 'P-48' },
+    p48: { canvasId: 'chartP48Dir', dirGrid: 'p48DirGrid', chart: null, label: 'P-48' },
     ba17: { canvasId: 'chartBa17Dir', dirGrid: 'ba17DirGrid', chart: null, label: 'BA-17' }
 };
 
@@ -100,6 +99,7 @@ function initEksekusi() {
     });
     loadAllData();
     initAllCharts();
+    renderDirektoratTags();
 }
 
 // ---- Generate monthly inputs ----
@@ -129,12 +129,13 @@ function generateMonthlyInputs(key, gridId) {
     });
 }
 
-// ---- Generate direktorat inputs ----
+// ---- Generate direktorat inputs (dynamic) ----
 function generateDirInputs(key, gridId) {
     const grid = document.getElementById(gridId);
     if (!grid) return;
     grid.innerHTML = '';
-    TINDAK_PIDANA_LIST_EKS.forEach((dir, idx) => {
+    const tpList = getTindakPidanaListEks();
+    tpList.forEach((dir, idx) => {
         const div = document.createElement('div');
         div.className = 'dir-input-group';
         div.innerHTML = `
@@ -341,17 +342,26 @@ function updateDirChart(key) {
     const cfg = DIR_CHARTS[key];
     if (!cfg || !cfg.chart) return;
 
-    const values = TINDAK_PIDANA_LIST_EKS.map((_, idx) => {
+    const tpList = getTindakPidanaListEks();
+    const values = tpList.map((_, idx) => {
         const input = document.getElementById(`dir-${key}-${idx}`);
         return input ? (parseInt(input.value) || 0) : 0;
     });
 
-    cfg.chart.data.labels = TINDAK_PIDANA_LIST_EKS;
+    // Generate enough colors
+    const bgColors = [];
+    const hoverColors = [];
+    for (let i = 0; i < tpList.length; i++) {
+        bgColors.push(chartColorsEks.bar.backgroundColor[i % chartColorsEks.bar.backgroundColor.length]);
+        hoverColors.push(chartColorsEks.bar.hoverBg[i % chartColorsEks.bar.hoverBg.length]);
+    }
+
+    cfg.chart.data.labels = tpList;
     cfg.chart.data.datasets = [{
         label: 'Jumlah',
         data: values,
-        backgroundColor: chartColorsEks.bar.backgroundColor,
-        hoverBackgroundColor: chartColorsEks.bar.hoverBg,
+        backgroundColor: bgColors,
+        hoverBackgroundColor: hoverColors,
         borderRadius: 4,
         borderSkipped: false,
         barPercentage: 0.7
@@ -383,12 +393,13 @@ function saveAllData() {
         });
     });
 
-    // Dir values for P-48 and BA-17
+    // Dir values for P-48 and BA-17 (keyed by label for persistence)
+    const tpListSave = getTindakPidanaListEks();
     Object.keys(DIR_CHARTS).forEach(key => {
         allData[`${key}Dir`] = {};
-        TINDAK_PIDANA_LIST_EKS.forEach((_, idx) => {
+        tpListSave.forEach((dir, idx) => {
             const input = document.getElementById(`dir-${key}-${idx}`);
-            if (input) allData[`${key}Dir`][idx] = input.value;
+            if (input) allData[`${key}Dir`][dir] = input.value;
         });
     });
 
@@ -439,13 +450,23 @@ function loadAllData() {
             }
         });
 
-        // Dir
+        // Dir (support both label-based and index-based keys)
+        const tpListLoad = getTindakPidanaListEks();
         Object.keys(DIR_CHARTS).forEach(key => {
             if (data[`${key}Dir`]) {
-                Object.keys(data[`${key}Dir`]).forEach(idx => {
-                    const input = document.getElementById(`dir-${key}-${idx}`);
-                    if (input) input.value = data[`${key}Dir`][idx];
-                });
+                const keys = Object.keys(data[`${key}Dir`]);
+                const isLabelBased = keys.length > 0 && isNaN(parseInt(keys[0]));
+                if (isLabelBased) {
+                    tpListLoad.forEach((dir, idx) => {
+                        const input = document.getElementById(`dir-${key}-${idx}`);
+                        if (input && data[`${key}Dir`][dir]) input.value = data[`${key}Dir`][dir];
+                    });
+                } else {
+                    keys.forEach(idx => {
+                        const input = document.getElementById(`dir-${key}-${idx}`);
+                        if (input) input.value = data[`${key}Dir`][idx];
+                    });
+                }
             }
         });
     } catch (e) {
@@ -469,8 +490,9 @@ function resetAllData() {
         updateTrendChart(key);
     });
 
+    const tpListReset = getTindakPidanaListEks();
     Object.keys(DIR_CHARTS).forEach(key => {
-        TINDAK_PIDANA_LIST_EKS.forEach((_, idx) => {
+        tpListReset.forEach((_, idx) => {
             const el = document.getElementById(`dir-${key}-${idx}`);
             if (el) el.value = '';
         });
@@ -512,4 +534,61 @@ function resetFilters() {
     Object.keys(DIR_CHARTS).forEach(key => updateDirChart(key));
 
     showToast('Filter telah direset', 'success');
+}
+
+// ============================================
+// DIREKTORAT MANAGEMENT UI
+// ============================================
+
+function renderDirektoratTags() {
+    const container = document.getElementById('direktoratTagsContainer');
+    if (!container) return;
+    const list = getDirektoratList();
+    container.innerHTML = '';
+    list.forEach(dir => {
+        const tag = document.createElement('span');
+        tag.className = 'year-tag';
+        tag.textContent = dir + ' ';
+        const btn = document.createElement('button');
+        btn.className = 'year-tag-delete';
+        btn.title = 'Hapus ' + dir;
+        btn.innerHTML = '&times;';
+        btn.addEventListener('click', function () { handleDeleteDirektorat(dir); });
+        tag.appendChild(btn);
+        container.appendChild(tag);
+    });
+}
+
+function handleAddDirektorat() {
+    const input = document.getElementById('inputDirektoratBaru');
+    if (!input) return;
+    const val = input.value.trim();
+    if (!val) { showToast('Masukkan nama kategori tindak pidana', 'error'); return; }
+    if (addDirektorat(val)) {
+        showToast('Kategori "' + val + '" berhasil ditambahkan', 'success');
+        input.value = '';
+        renderDirektoratTags();
+        rebuildDirektoratUI();
+    } else {
+        showToast('Kategori sudah ada atau tidak valid', 'error');
+    }
+}
+
+function handleDeleteDirektorat(label) {
+    if (!confirm('Hapus kategori "' + label + '" dari daftar?')) return;
+    if (deleteDirektorat(label)) {
+        showToast('Kategori "' + label + '" berhasil dihapus', 'success');
+        renderDirektoratTags();
+        rebuildDirektoratUI();
+    } else {
+        showToast('Tidak dapat menghapus kategori terakhir', 'error');
+    }
+}
+
+function rebuildDirektoratUI() {
+    Object.keys(DIR_CHARTS).forEach(key => {
+        generateDirInputs(key, DIR_CHARTS[key].dirGrid);
+    });
+    loadAllData();
+    Object.keys(DIR_CHARTS).forEach(key => updateDirChart(key));
 }

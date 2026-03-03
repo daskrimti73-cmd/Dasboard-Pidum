@@ -407,6 +407,41 @@
                 </button>
             </div>
 
+            <!-- Kelola Kategori Tindak Pidana -->
+            <div class="year-management-section animate-in" id="direktoratManagement">
+                <h3><i class="fas fa-tags" style="margin-right: 8px; color: var(--accent-gold);"></i>Kelola Kategori
+                    Tindak Pidana</h3>
+                <p style="color: #888; font-size: 0.85rem; margin-bottom: 12px;">Tambahkan atau hapus kategori tindak
+                    pidana (Direktorat) yang digunakan pada grafik. Anda dapat memilih dari daftar atau mengetik
+                    sendiri.</p>
+                <div class="year-add-form">
+                    <input type="text" id="inputDirektoratBaru" list="direktoratSuggestions"
+                        placeholder="Pilih atau ketik kategori baru..." class="year-input" autocomplete="off">
+                    <datalist id="direktoratSuggestions">
+                        <option value="Direktorat A">
+                        <option value="Direktorat B">
+                        <option value="Direktorat C">
+                        <option value="Direktorat D">
+                        <option value="Direktorat E">
+                        <option value="Mnegtibum dan TPUL">
+                        <option value="Oharda">
+                        <option value="Terorisme">
+                        <option value="Narkotika">
+                        <option value="Cyber Crime">
+                        <option value="Lingkungan Hidup">
+                        <option value="Perdagangan Orang">
+                        <option value="Korupsi">
+                        <option value="Pencucian Uang">
+                    </datalist>
+                    <button class="btn btn-primary btn-sm" onclick="handleAddDirektorat()">
+                        <i class="fas fa-plus"></i> Tambah Kategori
+                    </button>
+                </div>
+                <div class="year-tags" id="direktoratTagsContainer">
+                    <!-- Direktorat tags populated by JS -->
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -423,6 +458,11 @@
         populateSatkerDropdowns();
         initPenuntutan();
         applyViewMode();
+
+        // Enter key to add direktorat
+        document.getElementById('inputDirektoratBaru')?.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') { e.preventDefault(); handleAddDirektorat(); }
+        });
     </script>
 </body>
 

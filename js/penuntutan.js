@@ -2,6 +2,7 @@
    PENUNTUTAN - JAVASCRIPT
    Charts, data management, auto-update logic
    3 sections: Tahap II, Pelimpahan, Tuntutan
+   Now with dynamic direktorat/tindak pidana
    ============================================ */
 
 const BULAN_NAMES_P = [
@@ -9,33 +10,10 @@ const BULAN_NAMES_P = [
     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
 ];
 
-// Direktorat list untuk Tahap II (tambah Narkotika dan Oharda)
-const DIREKTORAT_TAHAP2 = [
-    'Direktorat A', 'Direktorat B', 'Direktorat C',
-    'Direktorat D', 'Direktorat E', 'Mnegtibum dan TPUL',
-    'Narkotika', 'Oharda'
-];
-
-// Direktorat list untuk Pelimpahan (tanpa Mnegtibum dan TPUL)
-const DIREKTORAT_PELIMPAHAN = [
-    'Direktorat A', 'Direktorat B', 'Direktorat C',
-    'Direktorat D', 'Direktorat E',
-    'Narkotika', 'Oharda'
-];
-
-// Direktorat list untuk Tuntutan (tambah Narkotika, Oharda, dan Terorisme)
-const DIREKTORAT_TUNTUTAN = [
-    'Direktorat A', 'Direktorat B', 'Direktorat C',
-    'Direktorat D', 'Direktorat E', 'Mnegtibum dan TPUL',
-    'Narkotika', 'Oharda', 'Terorisme'
-];
-
-// Mapping section ke direktorat list
-const DIREKTORAT_MAP = {
-    'tahap2': DIREKTORAT_TAHAP2,
-    'pelimpahan': DIREKTORAT_PELIMPAHAN,
-    'tuntutan': DIREKTORAT_TUNTUTAN
-};
+// ---- Get direktorat list dynamically for each section ----
+function getDirListForSectionP(section) {
+    return getDirektoratList();
+}
 
 // ---- All sections config ----
 const SECTIONS = {
@@ -86,7 +64,10 @@ const chartColorsP = {
             'rgba(15, 52, 96, 0.65)',
             'rgba(15, 52, 96, 0.55)',
             'rgba(15, 52, 96, 0.45)',
-            'rgba(15, 52, 96, 0.80)'
+            'rgba(15, 52, 96, 0.80)',
+            'rgba(26, 26, 46, 0.75)',
+            'rgba(139, 0, 0, 0.70)',
+            'rgba(200, 168, 85, 0.75)'
         ],
         hoverBg: [
             'rgba(15, 52, 96, 1)',
@@ -94,7 +75,10 @@ const chartColorsP = {
             'rgba(15, 52, 96, 0.8)',
             'rgba(15, 52, 96, 0.7)',
             'rgba(15, 52, 96, 0.6)',
-            'rgba(15, 52, 96, 0.95)'
+            'rgba(15, 52, 96, 0.95)',
+            'rgba(26, 26, 46, 0.9)',
+            'rgba(139, 0, 0, 0.85)',
+            'rgba(200, 168, 85, 0.9)'
         ]
     }
 };
@@ -129,6 +113,7 @@ function initPenuntutan() {
     });
     loadAllData();
     initAllChartsP();
+    renderDirektoratTags();
 }
 
 // ---- Generate monthly inputs ----
@@ -149,15 +134,14 @@ function generateMonthlyInputsP(section, gridId) {
     });
 }
 
-// ---- Generate direktorat inputs ----
+// ---- Generate direktorat inputs (dynamic) ----
 function generateDirInputsP(section, gridId) {
     const grid = document.getElementById(gridId);
     if (!grid) return;
     grid.innerHTML = '';
-    
-    // Gunakan direktorat list yang sesuai dengan section
-    const dirList = DIREKTORAT_MAP[section] || DIREKTORAT_TAHAP2;
-    
+
+    const dirList = getDirListForSectionP(section);
+
     dirList.forEach((dir, idx) => {
         const div = document.createElement('div');
         div.className = 'dir-input-group';
@@ -320,26 +304,93 @@ function updateDirChartP(section) {
     const chart = SECTIONS[section]?.dirChart;
     if (!chart) return;
 
-    // Gunakan direktorat list yang sesuai dengan section
-    const dirList = DIREKTORAT_MAP[section] || DIREKTORAT_TAHAP2;
+    const dirList = getDirListForSectionP(section);
 
     const values = dirList.map((_, idx) => {
         const input = document.getElementById(`dir-${section}-${idx}`);
         return input ? (parseInt(input.value) || 0) : 0;
     });
 
+    // Generate enough colors
+    const bgColors = [];
+    const hoverColors = [];
+    for (let i = 0; i < dirList.length; i++) {
+        bgColors.push(chartColorsP.bar.backgroundColor[i % chartColorsP.bar.backgroundColor.length]);
+        hoverColors.push(chartColorsP.bar.hoverBg[i % chartColorsP.bar.hoverBg.length]);
+    }
+
     chart.data.labels = dirList;
     chart.data.datasets = [{
         label: 'Jumlah',
         data: values,
-        backgroundColor: chartColorsP.bar.backgroundColor,
-        hoverBackgroundColor: chartColorsP.bar.hoverBg,
+        backgroundColor: bgColors,
+        hoverBackgroundColor: hoverColors,
         borderRadius: 4,
         borderSkipped: false,
         barPercentage: 0.7
     }];
 
     chart.update('none');
+}
+
+// ============================================
+// DIREKTORAT MANAGEMENT UI
+// ============================================
+
+function renderDirektoratTags() {
+    const container = document.getElementById('direktoratTagsContainer');
+    if (!container) return;
+    const list = getDirektoratList();
+    container.innerHTML = '';
+    list.forEach(dir => {
+        const tag = document.createElement('span');
+        tag.className = 'year-tag';
+        tag.textContent = dir + ' ';
+        const btn = document.createElement('button');
+        btn.className = 'year-tag-delete';
+        btn.title = 'Hapus ' + dir;
+        btn.innerHTML = '&times;';
+        btn.addEventListener('click', function () { handleDeleteDirektorat(dir); });
+        tag.appendChild(btn);
+        container.appendChild(tag);
+    });
+}
+
+function handleAddDirektorat() {
+    const input = document.getElementById('inputDirektoratBaru');
+    if (!input) return;
+    const val = input.value.trim();
+    if (!val) { showToast('Masukkan nama kategori tindak pidana', 'error'); return; }
+
+    if (addDirektorat(val)) {
+        showToast('Kategori "' + val + '" berhasil ditambahkan', 'success');
+        input.value = '';
+        renderDirektoratTags();
+        rebuildDirektoratUI();
+    } else {
+        showToast('Kategori sudah ada atau tidak valid', 'error');
+    }
+}
+
+function handleDeleteDirektorat(label) {
+    if (!confirm('Hapus kategori "' + label + '" dari daftar?')) return;
+    if (deleteDirektorat(label)) {
+        showToast('Kategori "' + label + '" berhasil dihapus', 'success');
+        renderDirektoratTags();
+        rebuildDirektoratUI();
+    } else {
+        showToast('Tidak dapat menghapus kategori terakhir', 'error');
+    }
+}
+
+function rebuildDirektoratUI() {
+    Object.keys(SECTIONS).forEach(sec => {
+        generateDirInputsP(sec, SECTIONS[sec].dirGrid);
+    });
+    loadAllData();
+    Object.keys(SECTIONS).forEach(sec => {
+        updateDirChartP(sec);
+    });
 }
 
 // ============================================
@@ -364,12 +415,12 @@ function saveAllData() {
             if (input) allData[`${sec}Monthly`][m.index] = input.value;
         });
 
-        // Dir values
+        // Dir values (keyed by label for persistence)
         allData[`${sec}Dir`] = {};
-        const dirList = DIREKTORAT_MAP[sec] || DIREKTORAT_TAHAP2;
-        dirList.forEach((_, idx) => {
+        const dirList = getDirListForSectionP(sec);
+        dirList.forEach((dir, idx) => {
             const input = document.getElementById(`dir-${sec}-${idx}`);
-            if (input) allData[`${sec}Dir`][idx] = input.value;
+            if (input) allData[`${sec}Dir`][dir] = input.value;
         });
     });
 
@@ -409,10 +460,21 @@ function loadAllData() {
                 });
             }
             if (data[`${sec}Dir`]) {
-                Object.keys(data[`${sec}Dir`]).forEach(idx => {
-                    const input = document.getElementById(`dir-${sec}-${idx}`);
-                    if (input) input.value = data[`${sec}Dir`][idx];
-                });
+                const dirList = getDirListForSectionP(sec);
+                const keys = Object.keys(data[`${sec}Dir`]);
+                const isLabelBased = keys.length > 0 && isNaN(parseInt(keys[0]));
+
+                if (isLabelBased) {
+                    dirList.forEach((dir, idx) => {
+                        const input = document.getElementById(`dir-${sec}-${idx}`);
+                        if (input && data[`${sec}Dir`][dir]) input.value = data[`${sec}Dir`][dir];
+                    });
+                } else {
+                    keys.forEach(idx => {
+                        const input = document.getElementById(`dir-${sec}-${idx}`);
+                        if (input) input.value = data[`${sec}Dir`][idx];
+                    });
+                }
             }
         });
     } catch (e) {
@@ -432,7 +494,7 @@ function resetAllData() {
             const el = document.getElementById(`monthly-${sec}-${m.index}`);
             if (el) el.value = '';
         });
-        const dirList = DIREKTORAT_MAP[sec] || DIREKTORAT_TAHAP2;
+        const dirList = getDirListForSectionP(sec);
         dirList.forEach((_, idx) => {
             const el = document.getElementById(`dir-${sec}-${idx}`);
             if (el) el.value = '';

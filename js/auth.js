@@ -13,6 +13,7 @@ const AUTH_KEY = 'cms_auth_session';
 const TAHUN_KEY = 'cms_tahun_list';
 const SATKER1_KEY = 'cms_satker1_list';
 const SATKER2_KEY = 'cms_satker2_list';
+const DIREKTORAT_KEY = 'cms_direktorat_list';
 
 // ---- Year Management ----
 function getTahunList() {
@@ -177,6 +178,54 @@ function deleteSatker2(value) {
 
     list = list.filter(item => item.value !== value);
     saveSatker2List(list);
+    return true;
+}
+
+// ---- Direktorat / Tindak Pidana Management ----
+const DEFAULT_DIREKTORAT = [
+    'Direktorat A',
+    'Direktorat B',
+    'Direktorat C',
+    'Direktorat D',
+    'Direktorat E',
+    'Mnegtibum dan TPUL',
+    'Oharda',
+    'Terorisme',
+    'Narkotika'
+];
+
+function getDirektoratList() {
+    try {
+        const saved = localStorage.getItem(DIREKTORAT_KEY);
+        if (saved) {
+            const list = JSON.parse(saved);
+            if (Array.isArray(list) && list.length > 0) return list;
+        }
+    } catch (e) { }
+    localStorage.setItem(DIREKTORAT_KEY, JSON.stringify(DEFAULT_DIREKTORAT));
+    return [...DEFAULT_DIREKTORAT];
+}
+
+function saveDirektoratList(list) {
+    localStorage.setItem(DIREKTORAT_KEY, JSON.stringify(list));
+    return list;
+}
+
+function addDirektorat(label) {
+    const trimmed = label.trim();
+    if (!trimmed) return false;
+    const list = getDirektoratList();
+    if (list.some(d => d.toLowerCase() === trimmed.toLowerCase())) return false;
+    list.push(trimmed);
+    saveDirektoratList(list);
+    return true;
+}
+
+function deleteDirektorat(label) {
+    let list = getDirektoratList();
+    if (list.length <= 1) return false;
+    list = list.filter(d => d !== label);
+    saveDirektoratList(list);
     return true;
 }
 
