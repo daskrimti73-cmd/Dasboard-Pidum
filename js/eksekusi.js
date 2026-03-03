@@ -115,13 +115,19 @@ function generateMonthlyInputs(key, gridId) {
         div.className = 'month-input-group';
         if (isCurrency) {
             div.innerHTML = `
-                <label>${m.name} <button class="year-tag-delete" title="Hapus ${m.name}" onclick="handleDeleteBulan(${m.index})" style="margin-left:4px;font-size:10px;">&times;</button></label>
+                <label style="display:flex;justify-content:space-between;align-items:center;">${m.name}
+                    <button type="button" class="year-tag-delete" title="Hapus ${m.name}" onclick="handleDeleteBulan(${m.index})"
+                        style="margin-left:6px;font-size:14px;color:#dc3545;background:#fff0f0;border:1px solid #dc3545;border-radius:4px;cursor:pointer;padding:0 5px;line-height:1.4;font-weight:bold;">&times;</button>
+                </label>
                 <input type="text" id="monthly-${key}-${m.index}" placeholder="0" inputmode="numeric"
                        oninput="formatCurrencyInput(this); onMonthlyInput('${key}')">
             `;
         } else {
             div.innerHTML = `
-                <label>${m.name} <button class="year-tag-delete" title="Hapus ${m.name}" onclick="handleDeleteBulan(${m.index})" style="margin-left:4px;font-size:10px;">&times;</button></label>
+                <label style="display:flex;justify-content:space-between;align-items:center;">${m.name}
+                    <button type="button" class="year-tag-delete" title="Hapus ${m.name}" onclick="handleDeleteBulan(${m.index})"
+                        style="margin-left:6px;font-size:14px;color:#dc3545;background:#fff0f0;border:1px solid #dc3545;border-radius:4px;cursor:pointer;padding:0 5px;line-height:1.4;font-weight:bold;">&times;</button>
+                </label>
                 <input type="number" id="monthly-${key}-${m.index}" placeholder="0" min="0"
                        oninput="onMonthlyInput('${key}')">
             `;
