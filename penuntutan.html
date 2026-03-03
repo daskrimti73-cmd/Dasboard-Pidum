@@ -407,40 +407,65 @@
                 </button>
             </div>
 
-            <!-- Kelola Kategori Tindak Pidana -->
-            <div class="year-management-section animate-in" id="direktoratManagement">
-                <h3><i class="fas fa-tags" style="margin-right: 8px; color: var(--accent-gold);"></i>Kelola Kategori
-                    Tindak Pidana</h3>
-                <p style="color: #888; font-size: 0.85rem; margin-bottom: 12px;">Tambahkan atau hapus kategori tindak
-                    pidana (Direktorat) yang digunakan pada grafik. Anda dapat memilih dari daftar atau mengetik
-                    sendiri.</p>
+            <!-- Kelola Kategori - Tahap II -->
+            <div class="year-management-section animate-in">
+                <h3><i class="fas fa-tags" style="margin-right: 8px; color: var(--accent-gold);"></i>Kelola Kategori -
+                    Grafik Tahap II</h3>
+                <p style="color: #888; font-size: 0.85rem; margin-bottom: 12px;">Kategori tindak pidana untuk grafik
+                    Tahap II. Perubahan hanya mempengaruhi grafik Tahap II.</p>
                 <div class="year-add-form">
-                    <input type="text" id="inputDirektoratBaru" list="direktoratSuggestions"
+                    <input type="text" id="inputDirektoratBaru_tahap2" list="dirSuggestions"
                         placeholder="Pilih atau ketik kategori baru..." class="year-input" autocomplete="off">
-                    <datalist id="direktoratSuggestions">
-                        <option value="Direktorat A">
-                        <option value="Direktorat B">
-                        <option value="Direktorat C">
-                        <option value="Direktorat D">
-                        <option value="Direktorat E">
-                        <option value="Mnegtibum dan TPUL">
-                        <option value="Oharda">
-                        <option value="Terorisme">
-                        <option value="Narkotika">
-                        <option value="Cyber Crime">
-                        <option value="Lingkungan Hidup">
-                        <option value="Perdagangan Orang">
-                        <option value="Korupsi">
-                        <option value="Pencucian Uang">
-                    </datalist>
-                    <button class="btn btn-primary btn-sm" onclick="handleAddDirektorat()">
-                        <i class="fas fa-plus"></i> Tambah Kategori
+                    <button class="btn btn-primary btn-sm" onclick="handleAddDirektorat('tahap2')">
+                        <i class="fas fa-plus"></i> Tambah
                     </button>
                 </div>
-                <div class="year-tags" id="direktoratTagsContainer">
-                    <!-- Direktorat tags populated by JS -->
-                </div>
+                <div class="year-tags" id="direktoratTagsContainer_tahap2"></div>
             </div>
+
+            <!-- Kelola Kategori - Pelimpahan -->
+            <div class="year-management-section animate-in">
+                <h3><i class="fas fa-tags" style="margin-right: 8px; color: var(--accent-gold);"></i>Kelola Kategori -
+                    Grafik Pelimpahan</h3>
+                <p style="color: #888; font-size: 0.85rem; margin-bottom: 12px;">Kategori tindak pidana untuk grafik
+                    Pelimpahan. Perubahan hanya mempengaruhi grafik Pelimpahan.</p>
+                <div class="year-add-form">
+                    <input type="text" id="inputDirektoratBaru_pelimpahan" list="dirSuggestions"
+                        placeholder="Pilih atau ketik kategori baru..." class="year-input" autocomplete="off">
+                    <button class="btn btn-primary btn-sm" onclick="handleAddDirektorat('pelimpahan')">
+                        <i class="fas fa-plus"></i> Tambah
+                    </button>
+                </div>
+                <div class="year-tags" id="direktoratTagsContainer_pelimpahan"></div>
+            </div>
+
+            <!-- Kelola Kategori - Tuntutan -->
+            <div class="year-management-section animate-in">
+                <h3><i class="fas fa-tags" style="margin-right: 8px; color: var(--accent-gold);"></i>Kelola Kategori -
+                    Grafik Tuntutan</h3>
+                <p style="color: #888; font-size: 0.85rem; margin-bottom: 12px;">Kategori tindak pidana untuk grafik
+                    Tuntutan. Perubahan hanya mempengaruhi grafik Tuntutan.</p>
+                <div class="year-add-form">
+                    <input type="text" id="inputDirektoratBaru_tuntutan" list="dirSuggestions"
+                        placeholder="Pilih atau ketik kategori baru..." class="year-input" autocomplete="off">
+                    <button class="btn btn-primary btn-sm" onclick="handleAddDirektorat('tuntutan')">
+                        <i class="fas fa-plus"></i> Tambah
+                    </button>
+                </div>
+                <div class="year-tags" id="direktoratTagsContainer_tuntutan"></div>
+            </div>
+
+            <datalist id="dirSuggestions">
+                <option value="Direktorat A">
+                <option value="Direktorat B">
+                <option value="Direktorat C">
+                <option value="Direktorat D">
+                <option value="Direktorat E">
+                <option value="Mnegtibum dan TPUL">
+                <option value="Oharda">
+                <option value="Terorisme">
+                <option value="Narkotika">
+            </datalist>
 
         </div>
     </div>
@@ -459,9 +484,10 @@
         initPenuntutan();
         applyViewMode();
 
-        // Enter key to add direktorat
-        document.getElementById('inputDirektoratBaru')?.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter') { e.preventDefault(); handleAddDirektorat(); }
+        ['tahap2', 'pelimpahan', 'tuntutan'].forEach(function (sec) {
+            document.getElementById('inputDirektoratBaru_' + sec)?.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') { e.preventDefault(); handleAddDirektorat(sec); }
+            });
         });
     </script>
 </body>

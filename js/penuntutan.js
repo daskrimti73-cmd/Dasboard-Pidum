@@ -10,9 +10,9 @@ const BULAN_NAMES_P = [
     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
 ];
 
-// ---- Get direktorat list dynamically for each section ----
+// ---- Get direktorat list per section ----
 function getDirListForSectionP(section) {
-    return getDirektoratList();
+    return getDirektoratList('penuntutan_' + section);
 }
 
 // ---- All sections config ----
@@ -113,7 +113,7 @@ function initPenuntutan() {
     });
     loadAllData();
     initAllChartsP();
-    renderDirektoratTags();
+    renderAllDirektoratTags();
 }
 
 // ---- Generate monthly inputs ----
@@ -334,13 +334,13 @@ function updateDirChartP(section) {
 }
 
 // ============================================
-// DIREKTORAT MANAGEMENT UI
+// DIREKTORAT MANAGEMENT UI (per-section)
 // ============================================
 
-function renderDirektoratTags() {
-    const container = document.getElementById('direktoratTagsContainer');
+function renderDirektoratTags(section) {
+    const container = document.getElementById('direktoratTagsContainer_' + section);
     if (!container) return;
-    const list = getDirektoratList();
+    const list = getDirListForSectionP(section);
     container.innerHTML = '';
     list.forEach(dir => {
         const tag = document.createElement('span');
@@ -350,47 +350,46 @@ function renderDirektoratTags() {
         btn.className = 'year-tag-delete';
         btn.title = 'Hapus ' + dir;
         btn.innerHTML = '&times;';
-        btn.addEventListener('click', function () { handleDeleteDirektorat(dir); });
+        btn.addEventListener('click', function () { handleDeleteDirektorat(section, dir); });
         tag.appendChild(btn);
         container.appendChild(tag);
     });
 }
 
-function handleAddDirektorat() {
-    const input = document.getElementById('inputDirektoratBaru');
+function renderAllDirektoratTags() {
+    Object.keys(SECTIONS).forEach(sec => renderDirektoratTags(sec));
+}
+
+function handleAddDirektorat(section) {
+    const input = document.getElementById('inputDirektoratBaru_' + section);
     if (!input) return;
     const val = input.value.trim();
     if (!val) { showToast('Masukkan nama kategori tindak pidana', 'error'); return; }
-
-    if (addDirektorat(val)) {
+    if (addDirektorat(val, 'penuntutan_' + section)) {
         showToast('Kategori "' + val + '" berhasil ditambahkan', 'success');
         input.value = '';
-        renderDirektoratTags();
-        rebuildDirektoratUI();
+        renderDirektoratTags(section);
+        rebuildSectionUI(section);
     } else {
         showToast('Kategori sudah ada atau tidak valid', 'error');
     }
 }
 
-function handleDeleteDirektorat(label) {
+function handleDeleteDirektorat(section, label) {
     if (!confirm('Hapus kategori "' + label + '" dari daftar?')) return;
-    if (deleteDirektorat(label)) {
+    if (deleteDirektorat(label, 'penuntutan_' + section)) {
         showToast('Kategori "' + label + '" berhasil dihapus', 'success');
-        renderDirektoratTags();
-        rebuildDirektoratUI();
+        renderDirektoratTags(section);
+        rebuildSectionUI(section);
     } else {
         showToast('Tidak dapat menghapus kategori terakhir', 'error');
     }
 }
 
-function rebuildDirektoratUI() {
-    Object.keys(SECTIONS).forEach(sec => {
-        generateDirInputsP(sec, SECTIONS[sec].dirGrid);
-    });
+function rebuildSectionUI(section) {
+    generateDirInputsP(section, SECTIONS[section].dirGrid);
     loadAllData();
-    Object.keys(SECTIONS).forEach(sec => {
-        updateDirChartP(sec);
-    });
+    updateDirChartP(section);
 }
 
 // ============================================

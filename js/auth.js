@@ -181,7 +181,7 @@ function deleteSatker2(value) {
     return true;
 }
 
-// ---- Direktorat / Tindak Pidana Management ----
+// ---- Direktorat / Tindak Pidana Management (per-section) ----
 const DEFAULT_DIREKTORAT = [
     'Direktorat A',
     'Direktorat B',
@@ -194,38 +194,44 @@ const DEFAULT_DIREKTORAT = [
     'Narkotika'
 ];
 
-function getDirektoratList() {
+// Get list for a specific section. Each section has its own localStorage key.
+// sectionKey examples: 'pra_spdp', 'pra_tahap1', 'penuntutan_tahap2', 'eks_p48', etc.
+// If no sectionKey, uses global key (backward compat)
+function getDirektoratList(sectionKey) {
+    const key = sectionKey ? (DIREKTORAT_KEY + '_' + sectionKey) : DIREKTORAT_KEY;
     try {
-        const saved = localStorage.getItem(DIREKTORAT_KEY);
+        const saved = localStorage.getItem(key);
         if (saved) {
             const list = JSON.parse(saved);
             if (Array.isArray(list) && list.length > 0) return list;
         }
     } catch (e) { }
-    localStorage.setItem(DIREKTORAT_KEY, JSON.stringify(DEFAULT_DIREKTORAT));
+    // First time: initialize from default
+    localStorage.setItem(key, JSON.stringify(DEFAULT_DIREKTORAT));
     return [...DEFAULT_DIREKTORAT];
 }
 
-function saveDirektoratList(list) {
-    localStorage.setItem(DIREKTORAT_KEY, JSON.stringify(list));
+function saveDirektoratList(list, sectionKey) {
+    const key = sectionKey ? (DIREKTORAT_KEY + '_' + sectionKey) : DIREKTORAT_KEY;
+    localStorage.setItem(key, JSON.stringify(list));
     return list;
 }
 
-function addDirektorat(label) {
+function addDirektorat(label, sectionKey) {
     const trimmed = label.trim();
     if (!trimmed) return false;
-    const list = getDirektoratList();
+    const list = getDirektoratList(sectionKey);
     if (list.some(d => d.toLowerCase() === trimmed.toLowerCase())) return false;
     list.push(trimmed);
-    saveDirektoratList(list);
+    saveDirektoratList(list, sectionKey);
     return true;
 }
 
-function deleteDirektorat(label) {
-    let list = getDirektoratList();
+function deleteDirektorat(label, sectionKey) {
+    let list = getDirektoratList(sectionKey);
     if (list.length <= 1) return false;
     list = list.filter(d => d !== label);
-    saveDirektoratList(list);
+    saveDirektoratList(list, sectionKey);
     return true;
 }
 

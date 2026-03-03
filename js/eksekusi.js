@@ -10,9 +10,9 @@ const BULAN_NAMES_EKS = [
     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
 ];
 
-// Tindak Pidana list now comes from shared dynamic management
-function getTindakPidanaListEks() {
-    return getDirektoratList();
+// Tindak Pidana list per section
+function getTindakPidanaListEks(key) {
+    return getDirektoratList('eks_' + key);
 }
 
 // Card field IDs
@@ -99,7 +99,7 @@ function initEksekusi() {
     });
     loadAllData();
     initAllCharts();
-    renderDirektoratTags();
+    renderAllDirektoratTags();
 }
 
 // ---- Generate monthly inputs ----
@@ -134,7 +134,7 @@ function generateDirInputs(key, gridId) {
     const grid = document.getElementById(gridId);
     if (!grid) return;
     grid.innerHTML = '';
-    const tpList = getTindakPidanaListEks();
+    const tpList = getTindakPidanaListEks(key);
     tpList.forEach((dir, idx) => {
         const div = document.createElement('div');
         div.className = 'dir-input-group';
@@ -342,7 +342,7 @@ function updateDirChart(key) {
     const cfg = DIR_CHARTS[key];
     if (!cfg || !cfg.chart) return;
 
-    const tpList = getTindakPidanaListEks();
+    const tpList = getTindakPidanaListEks(key);
     const values = tpList.map((_, idx) => {
         const input = document.getElementById(`dir-${key}-${idx}`);
         return input ? (parseInt(input.value) || 0) : 0;
@@ -394,9 +394,9 @@ function saveAllData() {
     });
 
     // Dir values for P-48 and BA-17 (keyed by label for persistence)
-    const tpListSave = getTindakPidanaListEks();
     Object.keys(DIR_CHARTS).forEach(key => {
         allData[`${key}Dir`] = {};
+        const tpListSave = getTindakPidanaListEks(key);
         tpListSave.forEach((dir, idx) => {
             const input = document.getElementById(`dir-${key}-${idx}`);
             if (input) allData[`${key}Dir`][dir] = input.value;
@@ -451,9 +451,9 @@ function loadAllData() {
         });
 
         // Dir (support both label-based and index-based keys)
-        const tpListLoad = getTindakPidanaListEks();
         Object.keys(DIR_CHARTS).forEach(key => {
             if (data[`${key}Dir`]) {
+                const tpListLoad = getTindakPidanaListEks(key);
                 const keys = Object.keys(data[`${key}Dir`]);
                 const isLabelBased = keys.length > 0 && isNaN(parseInt(keys[0]));
                 if (isLabelBased) {
@@ -490,8 +490,8 @@ function resetAllData() {
         updateTrendChart(key);
     });
 
-    const tpListReset = getTindakPidanaListEks();
     Object.keys(DIR_CHARTS).forEach(key => {
+        const tpListReset = getTindakPidanaListEks(key);
         tpListReset.forEach((_, idx) => {
             const el = document.getElementById(`dir-${key}-${idx}`);
             if (el) el.value = '';
@@ -537,13 +537,13 @@ function resetFilters() {
 }
 
 // ============================================
-// DIREKTORAT MANAGEMENT UI
+// DIREKTORAT MANAGEMENT UI (per-section)
 // ============================================
 
-function renderDirektoratTags() {
-    const container = document.getElementById('direktoratTagsContainer');
+function renderDirektoratTags(key) {
+    const container = document.getElementById('direktoratTagsContainer_' + key);
     if (!container) return;
-    const list = getDirektoratList();
+    const list = getTindakPidanaListEks(key);
     container.innerHTML = '';
     list.forEach(dir => {
         const tag = document.createElement('span');
@@ -553,42 +553,44 @@ function renderDirektoratTags() {
         btn.className = 'year-tag-delete';
         btn.title = 'Hapus ' + dir;
         btn.innerHTML = '&times;';
-        btn.addEventListener('click', function () { handleDeleteDirektorat(dir); });
+        btn.addEventListener('click', function () { handleDeleteDirektorat(key, dir); });
         tag.appendChild(btn);
         container.appendChild(tag);
     });
 }
 
-function handleAddDirektorat() {
-    const input = document.getElementById('inputDirektoratBaru');
+function renderAllDirektoratTags() {
+    Object.keys(DIR_CHARTS).forEach(key => renderDirektoratTags(key));
+}
+
+function handleAddDirektorat(key) {
+    const input = document.getElementById('inputDirektoratBaru_' + key);
     if (!input) return;
     const val = input.value.trim();
     if (!val) { showToast('Masukkan nama kategori tindak pidana', 'error'); return; }
-    if (addDirektorat(val)) {
+    if (addDirektorat(val, 'eks_' + key)) {
         showToast('Kategori "' + val + '" berhasil ditambahkan', 'success');
         input.value = '';
-        renderDirektoratTags();
-        rebuildDirektoratUI();
+        renderDirektoratTags(key);
+        rebuildSectionUI(key);
     } else {
         showToast('Kategori sudah ada atau tidak valid', 'error');
     }
 }
 
-function handleDeleteDirektorat(label) {
+function handleDeleteDirektorat(key, label) {
     if (!confirm('Hapus kategori "' + label + '" dari daftar?')) return;
-    if (deleteDirektorat(label)) {
+    if (deleteDirektorat(label, 'eks_' + key)) {
         showToast('Kategori "' + label + '" berhasil dihapus', 'success');
-        renderDirektoratTags();
-        rebuildDirektoratUI();
+        renderDirektoratTags(key);
+        rebuildSectionUI(key);
     } else {
         showToast('Tidak dapat menghapus kategori terakhir', 'error');
     }
 }
 
-function rebuildDirektoratUI() {
-    Object.keys(DIR_CHARTS).forEach(key => {
-        generateDirInputs(key, DIR_CHARTS[key].dirGrid);
-    });
+function rebuildSectionUI(key) {
+    generateDirInputs(key, DIR_CHARTS[key].dirGrid);
     loadAllData();
-    Object.keys(DIR_CHARTS).forEach(key => updateDirChart(key));
+    updateDirChart(key);
 }

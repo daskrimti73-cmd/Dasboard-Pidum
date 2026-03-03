@@ -9,9 +9,9 @@ const BULAN_NAMES_UH = [
     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
 ];
 
-// Direktorat list untuk Banding - now dynamically managed
+// Direktorat list untuk Banding - per-section key
 function getDirektoratBanding() {
-    return getDirektoratList();
+    return getDirektoratList('uh_banding');
 }
 
 // Kasasi menggunakan angka 0-5 (bukan direktorat)
@@ -565,7 +565,7 @@ function resetFilters() {
 function renderDirektoratTags() {
     const container = document.getElementById('direktoratTagsContainer');
     if (!container) return;
-    const list = getDirektoratList();
+    const list = getDirektoratBanding();
     container.innerHTML = '';
     list.forEach(dir => {
         const tag = document.createElement('span');
@@ -586,7 +586,7 @@ function handleAddDirektorat() {
     if (!input) return;
     const val = input.value.trim();
     if (!val) { showToast('Masukkan nama kategori tindak pidana', 'error'); return; }
-    if (addDirektorat(val)) {
+    if (addDirektorat(val, 'uh_banding')) {
         showToast('Kategori "' + val + '" berhasil ditambahkan', 'success');
         input.value = '';
         renderDirektoratTags();
@@ -598,7 +598,7 @@ function handleAddDirektorat() {
 
 function handleDeleteDirektorat(label) {
     if (!confirm('Hapus kategori "' + label + '" dari daftar?')) return;
-    if (deleteDirektorat(label)) {
+    if (deleteDirektorat(label, 'uh_banding')) {
         showToast('Kategori "' + label + '" berhasil dihapus', 'success');
         renderDirektoratTags();
         rebuildDirektoratUI();
@@ -608,7 +608,6 @@ function handleDeleteDirektorat(label) {
 }
 
 function rebuildDirektoratUI() {
-    // Only rebuild banding section (kasasi uses fixed numeric labels)
     generateDirInputsUH('banding', SECTIONS_UH.banding.dirGrid);
     loadAllData();
     updateDirChartUH('banding');

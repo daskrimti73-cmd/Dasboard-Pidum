@@ -10,10 +10,9 @@ const BULAN_NAMES = [
     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
 ];
 
-// ---- Get current direktorat list from shared management ----
+// ---- Get current direktorat list per section ----
 function getDirListForSection(section) {
-    // All sections now use the shared dynamic list
-    return getDirektoratList();
+    return getDirektoratList('pra_' + section);
 }
 
 // ---- Chart instances ----
@@ -58,7 +57,7 @@ function initPraPenuntutan() {
     generateDirektoratInputs('tahap1', 'tahap1DirGrid');
     loadAllData();
     initAllCharts();
-    renderDirektoratTags();
+    renderAllDirektoratTags();
 }
 
 // ---- Generate monthly input fields ----
@@ -386,13 +385,13 @@ function updateDirChart(section) {
 }
 
 // ============================================
-// DIREKTORAT MANAGEMENT UI
+// DIREKTORAT MANAGEMENT UI (per-section)
 // ============================================
 
-function renderDirektoratTags() {
-    const container = document.getElementById('direktoratTagsContainer');
+function renderDirektoratTags(section) {
+    const container = document.getElementById('direktoratTagsContainer_' + section);
     if (!container) return;
-    const list = getDirektoratList();
+    const list = getDirListForSection(section);
     container.innerHTML = '';
     list.forEach(dir => {
         const tag = document.createElement('span');
@@ -402,47 +401,48 @@ function renderDirektoratTags() {
         btn.className = 'year-tag-delete';
         btn.title = 'Hapus ' + dir;
         btn.innerHTML = '&times;';
-        btn.addEventListener('click', function () { handleDeleteDirektorat(dir); });
+        btn.addEventListener('click', function () { handleDeleteDirektorat(section, dir); });
         tag.appendChild(btn);
         container.appendChild(tag);
     });
 }
 
-function handleAddDirektorat() {
-    const input = document.getElementById('inputDirektoratBaru');
-    if (!input) return;
+function renderAllDirektoratTags() {
+    renderDirektoratTags('spdp');
+    renderDirektoratTags('tahap1');
+}
 
-    // Support both text input and datalist selection
+function handleAddDirektorat(section) {
+    const input = document.getElementById('inputDirektoratBaru_' + section);
+    if (!input) return;
     const val = input.value.trim();
     if (!val) { showToast('Masukkan nama kategori tindak pidana', 'error'); return; }
-
-    if (addDirektorat(val)) {
+    if (addDirektorat(val, 'pra_' + section)) {
         showToast('Kategori "' + val + '" berhasil ditambahkan', 'success');
         input.value = '';
-        renderDirektoratTags();
-        rebuildDirektoratUI();
+        renderDirektoratTags(section);
+        rebuildSectionUI(section);
     } else {
         showToast('Kategori sudah ada atau tidak valid', 'error');
     }
 }
 
-function handleDeleteDirektorat(label) {
+function handleDeleteDirektorat(section, label) {
     if (!confirm('Hapus kategori "' + label + '" dari daftar?')) return;
-    if (deleteDirektorat(label)) {
+    if (deleteDirektorat(label, 'pra_' + section)) {
         showToast('Kategori "' + label + '" berhasil dihapus', 'success');
-        renderDirektoratTags();
-        rebuildDirektoratUI();
+        renderDirektoratTags(section);
+        rebuildSectionUI(section);
     } else {
         showToast('Tidak dapat menghapus kategori terakhir', 'error');
     }
 }
 
-function rebuildDirektoratUI() {
-    generateDirektoratInputs('spdp', 'spdpDirGrid');
-    generateDirektoratInputs('tahap1', 'tahap1DirGrid');
+function rebuildSectionUI(section) {
+    const gridId = section === 'spdp' ? 'spdpDirGrid' : 'tahap1DirGrid';
+    generateDirektoratInputs(section, gridId);
     loadAllData();
-    updateDirChart('spdp');
-    updateDirChart('tahap1');
+    updateDirChart(section);
 }
 
 // ============================================

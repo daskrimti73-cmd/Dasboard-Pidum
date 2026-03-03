@@ -10,7 +10,7 @@ const BULAN_NAMES_HM = [
 ];
 
 function getTindakPidanaListHm() {
-    return getDirektoratList();
+    return getDirektoratList('hm');
 }
 
 // ---- Chart instances ----
@@ -387,7 +387,7 @@ function resetFilters() {
 function renderDirektoratTags() {
     const container = document.getElementById('direktoratTagsContainer');
     if (!container) return;
-    const list = getDirektoratList();
+    const list = getTindakPidanaListHm();
     container.innerHTML = '';
     list.forEach(dir => {
         const tag = document.createElement('span');
@@ -408,7 +408,7 @@ function handleAddDirektorat() {
     if (!input) return;
     const val = input.value.trim();
     if (!val) { showToast('Masukkan nama kategori tindak pidana', 'error'); return; }
-    if (addDirektorat(val)) {
+    if (addDirektorat(val, 'hm')) {
         showToast('Kategori "' + val + '" berhasil ditambahkan', 'success');
         input.value = '';
         renderDirektoratTags();
@@ -420,7 +420,7 @@ function handleAddDirektorat() {
 
 function handleDeleteDirektorat(label) {
     if (!confirm('Hapus kategori "' + label + '" dari daftar?')) return;
-    if (deleteDirektorat(label)) {
+    if (deleteDirektorat(label, 'hm')) {
         showToast('Kategori "' + label + '" berhasil dihapus', 'success');
         renderDirektoratTags();
         rebuildDirektoratUI();
