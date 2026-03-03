@@ -1088,6 +1088,15 @@ function resetAllData() {
 
 // ---- Filters ----
 function applyFilters() {
+    // Sync Bulan Awal/Akhir to localStorage
+    const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
+    const start = Math.min(bulanAwal, bulanAkhir);
+    const end = Math.max(bulanAwal, bulanAkhir);
+    const newList = [];
+    for (let i = start; i <= end; i++) newList.push(i);
+    saveSelectedBulanList(newList);
+
     generateMonthlyInputsPerempuan();
     generateMonthlyInputsAnak();
     loadAllData();
@@ -1108,6 +1117,12 @@ function resetFilters() {
     document.getElementById('filterTahun').value = getTahunList()[0]?.toString() || '2026';
     document.getElementById('filterBulan1').value = '01';
     document.getElementById('filterBulan2').value = getDefaultBulanAkhir();
+
+    // Sync reset bulan to localStorage
+    const bulanAkhirVal = parseInt(getDefaultBulanAkhir());
+    const resetList = [];
+    for (let i = 1; i <= bulanAkhirVal; i++) resetList.push(i);
+    saveSelectedBulanList(resetList);
 
     ['korban-perempuan', 'korban-anak'].forEach(id => {
         const el = document.getElementById(id);

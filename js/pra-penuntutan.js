@@ -674,6 +674,15 @@ function resetAllData() {
 
 // ---- Apply/Reset Filters (override for this page) ----
 function applyFilters() {
+    // Read Bulan Awal/Akhir from filter dropdowns and sync to localStorage
+    const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
+    const start = Math.min(bulanAwal, bulanAkhir);
+    const end = Math.max(bulanAwal, bulanAkhir);
+    const newList = [];
+    for (let i = start; i <= end; i++) newList.push(i);
+    saveSelectedBulanList(newList);
+
     // Regenerate monthly grids for new date range
     generateMonthlyInputs('spdp', 'spdpMonthlyGrid');
     generateMonthlyInputs('tahap1', 'tahap1MonthlyGrid');
@@ -698,6 +707,12 @@ function resetFilters() {
     document.getElementById('filterTahun').value = getTahunList()[0]?.toString() || '2026';
     document.getElementById('filterBulan1').value = '01';
     document.getElementById('filterBulan2').value = getDefaultBulanAkhir();
+
+    // Sync reset bulan range to localStorage
+    const bulanAkhir = parseInt(getDefaultBulanAkhir());
+    const newList = [];
+    for (let i = 1; i <= bulanAkhir; i++) newList.push(i);
+    saveSelectedBulanList(newList);
 
     // Regenerate and clear
     generateMonthlyInputs('spdp', 'spdpMonthlyGrid');
