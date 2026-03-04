@@ -33,9 +33,7 @@ function getPrapenStorageKey(prefix) {
     const satker1 = document.getElementById('filterSatker1')?.value || '';
     const satker2 = document.getElementById('filterSatker2')?.value || '';
     const tahun = document.getElementById('filterTahun')?.value || '';
-    const bulan1 = document.getElementById('filterBulan1')?.value || '';
-    const bulan2 = document.getElementById('filterBulan2')?.value || '';
-    return `prapen_${prefix}_${wilayah}_${satker1}_${satker2}_${tahun}_${bulan1}_${bulan2}`;
+    return `prapen_${prefix}_${wilayah}_${satker1}_${satker2}_${tahun}`;
 }
 
 // ---- Get month range from filter (for charts - only visible months) ----
@@ -689,11 +687,12 @@ function resetAllData() {
 
 // ---- Apply/Reset Filters (override for this page) ----
 function applyFilters() {
+    // AUTO-SAVE current data before switching (prevents data loss on year change)
+    saveAllData();
+
     // Read Bulan Awal/Akhir from filter dropdowns
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
     const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
-    const start = Math.min(bulanAwal, bulanAkhir);
-    const end = Math.max(bulanAwal, bulanAkhir);
 
     // Only update VISIBLE list (chart display) with exact months selected
     const visibleList = [bulanAwal];
@@ -704,7 +703,17 @@ function applyFilters() {
     generateMonthlyInputs('spdp', 'spdpMonthlyGrid');
     generateMonthlyInputs('tahap1', 'tahap1MonthlyGrid');
 
-    // Load saved data for new filter combo
+    // Clear all inputs before loading new data (for new year/filter)
+    SPDP_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    TAHAP1_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    getSelectedMonths().forEach(m => {
+        const s1 = document.getElementById(`monthly-spdp-${m.index}`);
+        const s2 = document.getElementById(`monthly-tahap1-${m.index}`);
+        if (s1) s1.value = '';
+        if (s2) s2.value = '';
+    });
+
+    // Load saved data for new filter (year) - if exists, fills inputs; if not, stays empty
     loadAllData();
 
     // Update charts (will use visible months only)

@@ -364,10 +364,8 @@
             const satker1 = document.getElementById('filterSatker1')?.value || '';
             const satker2 = document.getElementById('filterSatker2')?.value || '';
             const tahun = document.getElementById('filterTahun')?.value || '';
-            const bulan1 = document.getElementById('filterBulan1')?.value || '';
-            const bulan2 = document.getElementById('filterBulan2')?.value || '';
 
-            return `pidum_${wilayah}_${satker1}_${satker2}_${tahun}_${bulan1}_${bulan2}`;
+            return `pidum_${wilayah}_${satker1}_${satker2}_${tahun}`;
         }
 
         // ---- Field mapping ----

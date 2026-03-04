@@ -86,9 +86,7 @@ function getKorbanStorageKey() {
     const s1 = document.getElementById('filterSatker1')?.value || '';
     const s2 = document.getElementById('filterSatker2')?.value || '';
     const t = document.getElementById('filterTahun')?.value || '';
-    const b1 = document.getElementById('filterBulan1')?.value || '';
-    const b2 = document.getElementById('filterBulan2')?.value || '';
-    return `korban_${w}_${s1}_${s2}_${t}_${b1}_${b2}`;
+    return `korban_${w}_${s1}_${s2}_${t}`;
 }
 
 function getKorbanTableKey() {
