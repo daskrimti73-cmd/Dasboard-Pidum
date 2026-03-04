@@ -108,7 +108,7 @@ function generateMonthlyInputs(section, gridId) {
 function handleAddBulanAlt(btn) {
     const sel = btn.parentElement.querySelector('select');
     if (!sel || !sel.value) { showToast('Pilih bulan yang ingin ditambahkan', 'error'); return; }
-    if (addBulan(sel.value)) {
+    if (addBulanWithVisible(sel.value)) {
         const name = BULAN_NAMES_ALL[parseInt(sel.value) - 1]?.name || '';
         showToast('Bulan ' + name + ' berhasil ditambahkan', 'success');
         sel.value = '';
@@ -699,6 +699,11 @@ function applyFilters() {
     const visibleList = [];
     for (let i = start; i <= end; i++) visibleList.push(i);
     saveVisibleBulanList(visibleList);
+
+    console.log('[applyFilters] Bulan range:', start, '-', end);
+    console.log('[applyFilters] Visible list saved:', visibleList);
+    console.log('[applyFilters] Selected (admin) months:', getSelectedBulanList());
+    console.log('[applyFilters] Visible months for chart:', getVisibleBulanList());
 
     // Regenerate monthly grids to update eye icon states
     generateMonthlyInputs('spdp', 'spdpMonthlyGrid');
