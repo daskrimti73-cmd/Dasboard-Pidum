@@ -103,7 +103,7 @@ function getKorbanTableKey() {
 
 // ---- Month range ----
 function getMonthRangeKb() {
-    return getVisibleMonths();
+    return getChartMonthRange();
 }
 
 // ---- Page-specific ----

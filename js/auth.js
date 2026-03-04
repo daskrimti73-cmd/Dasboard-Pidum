@@ -345,6 +345,20 @@ function getVisibleMonths() {
     return visible.map(idx => BULAN_NAMES_ALL[idx - 1]).filter(Boolean);
 }
 
+// Get months for CHART display - reads directly from filter dropdowns
+// This is the definitive source for what months the chart should show
+function getChartMonthRange() {
+    const b1 = document.getElementById('filterBulan1');
+    const b2 = document.getElementById('filterBulan2');
+    if (b1 && b2 && b1.value && b2.value) {
+        const start = Math.min(parseInt(b1.value), parseInt(b2.value));
+        const end = Math.max(parseInt(b1.value), parseInt(b2.value));
+        return BULAN_NAMES_ALL.filter(m => m.index >= start && m.index <= end);
+    }
+    // Fallback to visible months
+    return getVisibleMonths();
+}
+
 // When a month is added to selectedBulanList, also add to visible
 function addBulanWithVisible(monthNum) {
     const result = addBulan(monthNum);

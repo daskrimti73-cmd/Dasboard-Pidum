@@ -96,7 +96,7 @@ function getPenuntutanStorageKey() {
 
 // ---- Month range from filter ----
 function getMonthRangeP() {
-    return getVisibleMonths();
+    return getChartMonthRange();
 }
 
 // ---- Page-specific: rebuild monthly UI when months change ----

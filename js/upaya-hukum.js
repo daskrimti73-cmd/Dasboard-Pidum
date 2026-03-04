@@ -88,7 +88,7 @@ function getUpayaHukumStorageKey() {
 
 // ---- Month range from filter ----
 function getMonthRangeUH() {
-    return getVisibleMonths();
+    return getChartMonthRange();
 }
 
 // ---- Page-specific ----

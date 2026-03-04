@@ -48,7 +48,7 @@ function getHmStorageKey() {
 
 // ---- Month range ----
 function getMonthRangeHm() {
-    return getVisibleMonths();
+    return getChartMonthRange();
 }
 
 // ---- Page-specific ----

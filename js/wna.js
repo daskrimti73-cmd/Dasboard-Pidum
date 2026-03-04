@@ -273,7 +273,7 @@ function getWnaStorageKey() {
 
 // ---- Month range ----
 function getMonthRangeWna() {
-    return getVisibleMonths();
+    return getChartMonthRange();
 }
 
 // ---- Page-specific ----

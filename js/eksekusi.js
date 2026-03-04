@@ -78,7 +78,7 @@ function getEksekusiStorageKey() {
 
 // ---- Month range from filter ----
 function getMonthRangeEks() {
-    return getVisibleMonths();
+    return getChartMonthRange();
 }
 
 // ---- Page-specific: rebuild monthly UI when months change ----

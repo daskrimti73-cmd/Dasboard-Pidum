@@ -40,7 +40,7 @@ function getPrapenStorageKey(prefix) {
 
 // ---- Get month range from filter (for charts - only visible months) ----
 function getMonthRange() {
-    return getVisibleMonths();
+    return getChartMonthRange();
 }
 
 // ---- Get all selected months (for input section - all months admin added) ----
