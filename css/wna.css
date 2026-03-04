@@ -7,12 +7,15 @@
 .card-wna-tersangka {
     background: linear-gradient(135deg, #eb3349, #f45c43);
 }
+
 .card-wna-negara {
     background: linear-gradient(135deg, #11998e, #38ef7d);
 }
+
 .card-wna-laki {
     background: linear-gradient(135deg, #2193b0, #6dd5ed);
 }
+
 .card-wna-perempuan {
     background: linear-gradient(135deg, #f7971e, #ffd200);
 }
@@ -102,7 +105,7 @@
 
 .negara-item:hover,
 .klasifikasi-item:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .negara-flag {
@@ -115,7 +118,7 @@
     height: 22px;
     object-fit: cover;
     border-radius: 3px;
-    border: 1px solid rgba(0,0,0,0.1);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     flex-shrink: 0;
 }
 
@@ -143,22 +146,34 @@
 }
 
 .btn-remove {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
     border: none;
-    background: #fee2e2;
-    color: #ef4444;
+    background: transparent;
+    color: #cbd5e1;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
+    transition: all 0.25s ease;
     font-size: 12px;
+    opacity: 0;
+    transform: scale(0.8);
+    flex-shrink: 0;
 }
+
+.negara-item:hover .btn-remove,
+.klasifikasi-item:hover .btn-remove,
+.perkara-item:hover .btn-remove {
+    opacity: 1;
+    transform: scale(1);
+}
+
 .btn-remove:hover {
-    background: #ef4444;
-    color: #fff;
+    background: #fef2f2;
+    color: #ef4444;
+    transform: scale(1.1);
 }
 
 .empty-list {
@@ -171,10 +186,12 @@
 
 /* ---- Responsive ---- */
 @media (max-width: 600px) {
+
     .negara-add-row,
     .klasifikasi-add-row {
         flex-direction: column;
     }
+
     .negara-select,
     .klasifikasi-nama-input {
         min-width: 100%;

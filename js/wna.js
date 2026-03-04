@@ -411,7 +411,7 @@ function renderNegaraList() {
                 <span class="negara-name">${n.name}</span>
                 <span class="negara-count">${n.jumlah} <small>(${pct}%)</small></span>
                 <button class="btn-remove" onclick="removeNegara('${n.code}')" title="Hapus">
-                    <i class="fas fa-times"></i>
+                    <i class="fas fa-trash-alt"></i>
                 </button>
             </div>
         `;
@@ -474,7 +474,7 @@ function renderKlasifikasiList() {
             <span class="klasifikasi-name">${k.nama}</span>
             <span class="klasifikasi-count">${k.jumlah}</span>
             <button class="btn-remove" onclick="removeKlasifikasi(${idx})" title="Hapus">
-                <i class="fas fa-times"></i>
+                <i class="fas fa-trash-alt"></i>
             </button>
         </div>
     `).join('');
@@ -926,7 +926,7 @@ function renderDirektoratTags() {
         const btn = document.createElement('button');
         btn.className = 'year-tag-delete';
         btn.title = 'Hapus ' + dir;
-        btn.innerHTML = '<i class="fas fa-times"></i>';
+        btn.innerHTML = '<i class="fas fa-trash-alt"></i>';
         btn.addEventListener('click', function () { handleDeleteDirektorat(dir); });
         tag.appendChild(btn);
         container.appendChild(tag);

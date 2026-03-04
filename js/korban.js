@@ -239,7 +239,7 @@ function renderPerkaraPerempuanList() {
             <span class="perkara-name">${p.nama}</span>
             <span class="perkara-count">${p.jumlah}</span>
             <button class="btn-remove" onclick="removePerkaraPerempuan(${idx})" title="Hapus">
-                <i class="fas fa-times"></i>
+                <i class="fas fa-trash-alt"></i>
             </button>
         </div>
     `).join('');
@@ -294,7 +294,7 @@ function renderPerkaraAnakList() {
             <span class="perkara-name">${p.nama}</span>
             <span class="perkara-count">${p.jumlah}</span>
             <button class="btn-remove" onclick="removePerkaraAnak(${idx})" title="Hapus">
-                <i class="fas fa-times"></i>
+                <i class="fas fa-trash-alt"></i>
             </button>
         </div>
     `).join('');

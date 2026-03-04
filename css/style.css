@@ -1075,18 +1075,28 @@ body.view-mode .toggle-btn {
     gap: 6px;
     background: linear-gradient(135deg, var(--sidebar-bg), var(--sidebar-active));
     color: #fff;
-    padding: 6px 12px;
+    padding: 7px 14px;
     border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 500;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    position: relative;
+    transition: all 0.25s ease;
+    cursor: default;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.year-tag:hover {
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    transform: translateY(-1px);
 }
 
 .year-tag-delete {
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    color: rgba(255, 255, 255, 0.75);
-    width: 18px;
-    height: 18px;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     cursor: pointer;
     display: flex;
@@ -1096,13 +1106,22 @@ body.view-mode .toggle-btn {
     line-height: 1;
     transition: all 0.25s ease;
     padding: 0;
+    opacity: 0;
+    transform: scale(0.7);
+    margin-left: -2px;
+    margin-right: -6px;
+}
+
+.year-tag:hover .year-tag-delete {
+    opacity: 1;
+    transform: scale(1);
 }
 
 .year-tag-delete:hover {
-    background: rgba(231, 76, 60, 0.85);
-    border-color: rgba(231, 76, 60, 0.9);
+    background: rgba(231, 76, 60, 0.9);
     color: #fff;
     transform: scale(1.15);
+    box-shadow: 0 0 8px rgba(231, 76, 60, 0.4);
 }
 
 /* ---- Month Delete Button (in input section) ---- */
