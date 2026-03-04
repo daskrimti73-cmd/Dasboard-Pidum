@@ -48,6 +48,8 @@ function getAllInputMonths() {
 
 // ---- Page-specific: rebuild monthly inputs/charts when months change ----
 function rebuildMonthlyUI() {
+    // SAVE current data first (prevents data loss when toggling visibility)
+    saveAllData(true);
     generateMonthlyInputs('spdp', 'spdpMonthlyGrid');
     generateMonthlyInputs('tahap1', 'tahap1MonthlyGrid');
     loadAllData();
@@ -482,7 +484,7 @@ function rebuildSectionUI(section) {
 // SAVE & LOAD
 // ============================================
 
-function saveAllData() {
+function saveAllData(silent) {
     const dirList = getDirListForSection('spdp');
 
     // Save SPDP card values
@@ -540,7 +542,7 @@ function saveAllData() {
 
     try {
         localStorage.setItem(getPrapenStorageKey('all'), JSON.stringify(allData));
-        showToast('Semua data berhasil disimpan!', 'success');
+        if (!silent) showToast('Semua data berhasil disimpan!', 'success');
 
         const btn = document.getElementById('btnSave');
         if (btn) {
@@ -688,7 +690,7 @@ function resetAllData() {
 // ---- Apply/Reset Filters (override for this page) ----
 function applyFilters() {
     // AUTO-SAVE current data before switching (prevents data loss on year change)
-    saveAllData();
+    saveAllData(true);
 
     // Read Bulan Awal/Akhir from filter dropdowns
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');

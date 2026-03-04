@@ -51,6 +51,7 @@ function getMonthRangeHm() {
 
 // ---- Page-specific ----
 function rebuildMonthlyUI() {
+    saveAllDataHm();
     generateMonthlyInputsHm();
     loadAllDataHm();
     updateTrendChartHm();

@@ -91,6 +91,7 @@ function getMonthRangeUH() {
 
 // ---- Page-specific ----
 function rebuildMonthlyUI() {
+    saveAllData(true);
     Object.keys(SECTIONS_UH).forEach(sec => {
         generateMonthlyInputsUH(sec, SECTIONS_UH[sec].monthlyGrid);
     });
@@ -427,7 +428,7 @@ function updateDirChartUH(section) {
 // SAVE & LOAD
 // ============================================
 
-function saveAllData() {
+function saveAllData(silent) {
     const allData = { savedAt: new Date().toISOString() };
 
     Object.keys(SECTIONS_UH).forEach(sec => {
@@ -459,7 +460,7 @@ function saveAllData() {
 
     try {
         localStorage.setItem(getUpayaHukumStorageKey(), JSON.stringify(allData));
-        showToast('Semua data berhasil disimpan!', 'success');
+        if (!silent) showToast('Semua data berhasil disimpan!', 'success');
         hasUnsaved = false;
 
         const btn = document.getElementById('btnSave');

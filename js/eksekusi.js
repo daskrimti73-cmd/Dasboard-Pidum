@@ -81,6 +81,7 @@ function getMonthRangeEks() {
 
 // ---- Page-specific: rebuild monthly UI when months change ----
 function rebuildMonthlyUI() {
+    saveAllData(true);
     Object.keys(TREND_CHARTS).forEach(key => {
         generateMonthlyInputs(key, TREND_CHARTS[key].monthlyGrid);
     });
@@ -386,7 +387,7 @@ function updateDirChart(key) {
 // SAVE & LOAD
 // ============================================
 
-function saveAllData() {
+function saveAllData(silent) {
     const allData = { savedAt: new Date().toISOString() };
 
     // Card values
@@ -417,7 +418,7 @@ function saveAllData() {
 
     try {
         localStorage.setItem(getEksekusiStorageKey(), JSON.stringify(allData));
-        showToast('Semua data berhasil disimpan!', 'success');
+        if (!silent) showToast('Semua data berhasil disimpan!', 'success');
         hasUnsaved = false;
 
         const btn = document.getElementById('btnSave');

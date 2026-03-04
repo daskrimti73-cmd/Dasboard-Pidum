@@ -106,6 +106,7 @@ function getMonthRangeKb() {
 
 // ---- Page-specific ----
 function rebuildMonthlyUI() {
+    saveAllData(true);
     generateMonthlyInputsPerempuan();
     generateMonthlyInputsAnak();
     loadAllData();
@@ -981,7 +982,7 @@ function exportCSV() {
 // ============================================
 // SAVE & LOAD (Charts + Cards)
 // ============================================
-function saveAllData() {
+function saveAllData(silent) {
     const allData = { savedAt: new Date().toISOString() };
 
     // Cards
@@ -1013,7 +1014,7 @@ function saveAllData() {
         localStorage.setItem(getKorbanStorageKey(), JSON.stringify(allData));
         // Also save table data
         saveTableData();
-        showToast('Semua data berhasil disimpan!', 'success');
+        if (!silent) showToast('Semua data berhasil disimpan!', 'success');
         hasUnsaved = false;
         const btn = document.getElementById('btnSave');
         if (btn) {

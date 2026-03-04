@@ -99,6 +99,7 @@ function getMonthRangeP() {
 
 // ---- Page-specific: rebuild monthly UI when months change ----
 function rebuildMonthlyUI() {
+    saveAllData(true);
     Object.keys(SECTIONS).forEach(sec => {
         generateMonthlyInputsP(sec, SECTIONS[sec].monthlyGrid);
     });
@@ -410,7 +411,7 @@ function rebuildSectionUI(section) {
 // SAVE & LOAD
 // ============================================
 
-function saveAllData() {
+function saveAllData(silent) {
     const allData = { savedAt: new Date().toISOString() };
 
     Object.keys(SECTIONS).forEach(sec => {
@@ -439,7 +440,7 @@ function saveAllData() {
 
     try {
         localStorage.setItem(getPenuntutanStorageKey(), JSON.stringify(allData));
-        showToast('Semua data berhasil disimpan!', 'success');
+        if (!silent) showToast('Semua data berhasil disimpan!', 'success');
         hasUnsaved = false;
 
         const btn = document.getElementById('btnSave');

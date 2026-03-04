@@ -276,6 +276,7 @@ function getMonthRangeWna() {
 
 // ---- Page-specific ----
 function rebuildMonthlyUI() {
+    saveAllData(true);
     generateMonthlyInputs();
     loadAllData();
     updateTrendChart();
@@ -725,7 +726,7 @@ function updateDirChart() {
 // ============================================
 // SAVE & LOAD
 // ============================================
-function saveAllData() {
+function saveAllData(silent) {
     const allData = { savedAt: new Date().toISOString() };
 
     // Cards
@@ -758,7 +759,7 @@ function saveAllData() {
 
     try {
         localStorage.setItem(getWnaStorageKey(), JSON.stringify(allData));
-        showToast('Semua data berhasil disimpan!', 'success');
+        if (!silent) showToast('Semua data berhasil disimpan!', 'success');
         hasUnsaved = false;
         const btn = document.getElementById('btnSave');
         if (btn) {
