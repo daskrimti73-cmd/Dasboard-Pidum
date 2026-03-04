@@ -87,8 +87,8 @@ function applyFilters() {
     const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
     const start = Math.min(bulanAwal, bulanAkhir);
     const end = Math.max(bulanAwal, bulanAkhir);
-    const visibleList = [];
-    for (let i = start; i <= end; i++) visibleList.push(i);
+    const visibleList = [bulanAwal];
+    if (bulanAkhir !== bulanAwal) visibleList.push(bulanAkhir);
     saveVisibleBulanList(visibleList);
 
     loadAllData();

@@ -695,15 +695,10 @@ function applyFilters() {
     const start = Math.min(bulanAwal, bulanAkhir);
     const end = Math.max(bulanAwal, bulanAkhir);
 
-    // Only update VISIBLE list (chart display) - do NOT change admin's selected months
-    const visibleList = [];
-    for (let i = start; i <= end; i++) visibleList.push(i);
+    // Only update VISIBLE list (chart display) with exact months selected
+    const visibleList = [bulanAwal];
+    if (bulanAkhir !== bulanAwal) visibleList.push(bulanAkhir);
     saveVisibleBulanList(visibleList);
-
-    console.log('[applyFilters] Bulan range:', start, '-', end);
-    console.log('[applyFilters] Visible list saved:', visibleList);
-    console.log('[applyFilters] Selected (admin) months:', getSelectedBulanList());
-    console.log('[applyFilters] Visible months for chart:', getVisibleBulanList());
 
     // Regenerate monthly grids to update eye icon states
     generateMonthlyInputs('spdp', 'spdpMonthlyGrid');
