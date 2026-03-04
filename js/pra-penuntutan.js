@@ -689,25 +689,25 @@ function resetAllData() {
 
 // ---- Apply/Reset Filters (override for this page) ----
 function applyFilters() {
-    // Read Bulan Awal/Akhir from filter dropdowns and sync to localStorage
+    // Read Bulan Awal/Akhir from filter dropdowns
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
     const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
     const start = Math.min(bulanAwal, bulanAkhir);
     const end = Math.max(bulanAwal, bulanAkhir);
-    const newList = [];
-    for (let i = start; i <= end; i++) newList.push(i);
-    saveSelectedBulanList(newList);
-    // Also make all filtered months visible on chart
-    saveVisibleBulanList(newList);
 
-    // Regenerate monthly grids for new date range
+    // Only update VISIBLE list (chart display) - do NOT change admin's selected months
+    const visibleList = [];
+    for (let i = start; i <= end; i++) visibleList.push(i);
+    saveVisibleBulanList(visibleList);
+
+    // Regenerate monthly grids to update eye icon states
     generateMonthlyInputs('spdp', 'spdpMonthlyGrid');
     generateMonthlyInputs('tahap1', 'tahap1MonthlyGrid');
 
     // Load saved data for new filter combo
     loadAllData();
 
-    // Update charts
+    // Update charts (will use visible months only)
     updateTrendChart('spdp');
     updateTrendChart('tahap1');
     updateDirChart('spdp');
@@ -725,12 +725,8 @@ function resetFilters() {
     document.getElementById('filterBulan1').value = '01';
     document.getElementById('filterBulan2').value = getDefaultBulanAkhir();
 
-    // Sync reset bulan range to localStorage
-    const bulanAkhir = parseInt(getDefaultBulanAkhir());
-    const newList = [];
-    for (let i = 1; i <= bulanAkhir; i++) newList.push(i);
-    saveSelectedBulanList(newList);
-    saveVisibleBulanList(newList);
+    // Reset visible to show ALL admin's selected months
+    saveVisibleBulanList(getSelectedBulanList());
 
     // Regenerate and clear
     generateMonthlyInputs('spdp', 'spdpMonthlyGrid');

@@ -523,15 +523,13 @@ function resetAllData() {
 
 // ---- Filters (override) ----
 function applyFilters() {
-    // Sync Bulan Awal/Akhir to localStorage
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
     const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
     const start = Math.min(bulanAwal, bulanAkhir);
     const end = Math.max(bulanAwal, bulanAkhir);
-    const newList = [];
-    for (let i = start; i <= end; i++) newList.push(i);
-    saveSelectedBulanList(newList);
-    saveVisibleBulanList(newList);
+    const visibleList = [];
+    for (let i = start; i <= end; i++) visibleList.push(i);
+    saveVisibleBulanList(visibleList);
 
     Object.keys(SECTIONS).forEach(sec => {
         generateMonthlyInputsP(sec, SECTIONS[sec].monthlyGrid);
@@ -553,12 +551,7 @@ function resetFilters() {
     document.getElementById('filterBulan1').value = '01';
     document.getElementById('filterBulan2').value = getDefaultBulanAkhir();
 
-    // Sync reset bulan range to localStorage
-    const bulanAkhirVal = parseInt(getDefaultBulanAkhir());
-    const resetList = [];
-    for (let i = 1; i <= bulanAkhirVal; i++) resetList.push(i);
-    saveSelectedBulanList(resetList);
-    saveVisibleBulanList(resetList);
+    saveVisibleBulanList(getSelectedBulanList());
 
     Object.keys(SECTIONS).forEach(sec => {
         generateMonthlyInputsP(sec, SECTIONS[sec].monthlyGrid);

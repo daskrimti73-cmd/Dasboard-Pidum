@@ -87,10 +87,9 @@ function applyFilters() {
     const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
     const start = Math.min(bulanAwal, bulanAkhir);
     const end = Math.max(bulanAwal, bulanAkhir);
-    const newList = [];
-    for (let i = start; i <= end; i++) newList.push(i);
-    saveSelectedBulanList(newList);
-    saveVisibleBulanList(newList);
+    const visibleList = [];
+    for (let i = start; i <= end; i++) visibleList.push(i);
+    saveVisibleBulanList(visibleList);
 
     loadAllData();
     setUpdateDate();
@@ -105,12 +104,7 @@ function resetFilters() {
     document.getElementById('filterBulan1').value = '01';
     document.getElementById('filterBulan2').value = getDefaultBulanAkhir();
 
-    // Sync reset bulan to localStorage
-    const bulanAkhirVal = parseInt(getDefaultBulanAkhir());
-    const resetList = [];
-    for (let i = 1; i <= bulanAkhirVal; i++) resetList.push(i);
-    saveSelectedBulanList(resetList);
-    saveVisibleBulanList(resetList);
+    saveVisibleBulanList(getSelectedBulanList());
 
     ['tppu-count', 'tpa-count'].forEach(id => {
         const el = document.getElementById(id);
