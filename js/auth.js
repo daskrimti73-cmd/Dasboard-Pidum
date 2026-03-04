@@ -301,11 +301,16 @@ function getSelectedMonths() {
 }
 
 // ---- Visible Bulan Management (controls which months appear on chart) ----
+// Each section (spdp, tahap1, etc.) has its own visible months list
 const VISIBLE_BULAN_KEY = 'cms_visible_bulan';
 
-function getVisibleBulanList() {
+function _getVisibleKey(section) {
+    return section ? VISIBLE_BULAN_KEY + '_' + section : VISIBLE_BULAN_KEY;
+}
+
+function getVisibleBulanList(section) {
     try {
-        const saved = localStorage.getItem(VISIBLE_BULAN_KEY);
+        const saved = localStorage.getItem(_getVisibleKey(section));
         if (saved) {
             const list = JSON.parse(saved);
             if (Array.isArray(list)) return list.sort((a, b) => a - b);
@@ -315,19 +320,19 @@ function getVisibleBulanList() {
     return getSelectedBulanList();
 }
 
-function saveVisibleBulanList(list) {
+function saveVisibleBulanList(list, section) {
     const sorted = [...list].sort((a, b) => a - b);
-    localStorage.setItem(VISIBLE_BULAN_KEY, JSON.stringify(sorted));
+    localStorage.setItem(_getVisibleKey(section), JSON.stringify(sorted));
     return sorted;
 }
 
-function isMonthVisible(monthNum) {
-    return getVisibleBulanList().includes(monthNum);
+function isMonthVisible(monthNum, section) {
+    return getVisibleBulanList(section).includes(monthNum);
 }
 
-function toggleMonthVisibility(monthNum) {
+function toggleMonthVisibility(monthNum, section) {
     const num = parseInt(monthNum);
-    let list = getVisibleBulanList();
+    let list = getVisibleBulanList(section);
     if (list.includes(num)) {
         // Don't allow hiding all months
         if (list.length <= 1) return false;
@@ -335,23 +340,23 @@ function toggleMonthVisibility(monthNum) {
     } else {
         list.push(num);
     }
-    saveVisibleBulanList(list);
+    saveVisibleBulanList(list, section);
     return true;
 }
 
 // Get visible months as objects for charts [{index, name}], sorted
-function getVisibleMonths() {
-    const visible = getVisibleBulanList();
+function getVisibleMonths(section) {
+    const visible = getVisibleBulanList(section);
     return visible.map(idx => BULAN_NAMES_ALL[idx - 1]).filter(Boolean);
 }
 
 // Get months for CHART display
-// ADMIN (logged in): shows months based on eye icon visibility settings
+// ADMIN (logged in): shows months based on eye icon visibility settings per section
 // PUBLIC (not logged in): shows ONLY the 2 specific months from filter dropdowns
-function getChartMonthRange() {
-    // Admin mode: use visible months from eye icon settings
+function getChartMonthRange(section) {
+    // Admin mode: use visible months from eye icon settings (per section)
     if (isLoggedIn()) {
-        return getVisibleMonths();
+        return getVisibleMonths(section);
     }
 
     // Public mode: show only the 2 months selected in filter
@@ -366,7 +371,7 @@ function getChartMonthRange() {
         return selectedIndices.map(idx => BULAN_NAMES_ALL[idx - 1]).filter(Boolean);
     }
     // Fallback to visible months
-    return getVisibleMonths();
+    return getVisibleMonths(section);
 }
 
 // When a month is added to selectedBulanList, also add to visible
@@ -440,11 +445,11 @@ function handleDeleteBulan(monthNum) {
     }
 }
 
-function handleToggleVisibility(monthNum) {
+function handleToggleVisibility(monthNum, section) {
     const num = parseInt(monthNum);
     const name = BULAN_NAMES_ALL[num - 1]?.name || '';
-    if (toggleMonthVisibility(num)) {
-        const isVisible = isMonthVisible(num);
+    if (toggleMonthVisibility(num, section)) {
+        const isVisible = isMonthVisible(num, section);
         showToast(name + (isVisible ? ' ditampilkan di grafik' : ' disembunyikan dari grafik'), 'success');
         if (typeof rebuildMonthlyUI === 'function') rebuildMonthlyUI();
     } else {

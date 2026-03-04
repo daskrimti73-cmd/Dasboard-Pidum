@@ -93,8 +93,8 @@ function getPenuntutanStorageKey() {
 }
 
 // ---- Month range from filter ----
-function getMonthRangeP() {
-    return getChartMonthRange();
+function getMonthRangeP(section) {
+    return getChartMonthRange(section);
 }
 
 // ---- Page-specific: rebuild monthly UI when months change ----
@@ -127,12 +127,12 @@ function generateMonthlyInputsP(section, gridId) {
     months.forEach(m => {
         const div = document.createElement('div');
         div.className = 'month-input-group';
-        const visible = isMonthVisible(m.index);
+        const visible = isMonthVisible(m.index, section);
         div.innerHTML = `
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
                 <label style="margin:0;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:${visible ? '#2c3e50' : '#adb5bd'};">${m.name}</label>
                 <div style="display:flex;gap:4px;">
-                    <button type="button" class="btn-hapus-bulan" title="${visible ? 'Sembunyikan dari grafik' : 'Tampilkan di grafik'}" onclick="event.preventDefault();event.stopPropagation();handleToggleVisibility(${m.index})"
+                    <button type="button" class="btn-hapus-bulan" title="${visible ? 'Sembunyikan dari grafik' : 'Tampilkan di grafik'}" onclick="event.preventDefault();event.stopPropagation();handleToggleVisibility(${m.index},'${section}')"
                         style="${visible ? '' : 'background:#e2e8f0;color:#64748b;border-color:#cbd5e1;'}">
                         <i class="fas ${visible ? 'fa-eye' : 'fa-eye-slash'}"></i>
                     </button>
@@ -290,7 +290,7 @@ function updateTrendChartP(section) {
     const chart = SECTIONS[section]?.trendChart;
     if (!chart) return;
 
-    const months = getMonthRangeP();
+    const months = getMonthRangeP(section);
     const labels = months.map(m => m.name);
     const values = months.map(m => {
         const input = document.getElementById(`monthly-${section}-${m.index}`);
