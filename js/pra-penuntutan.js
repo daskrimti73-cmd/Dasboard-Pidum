@@ -73,7 +73,7 @@ function generateMonthlyInputs(section, gridId) {
     const grid = document.getElementById(gridId);
     if (!grid) return;
 
-    const months = getMonthRange();
+    const months = getSelectedMonths(); // Show ALL months in input (not just visible)
     grid.innerHTML = '';
 
     months.forEach(m => {

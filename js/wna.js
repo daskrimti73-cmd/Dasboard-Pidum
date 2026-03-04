@@ -312,7 +312,7 @@ function populateNegaraSelect() {
 function generateMonthlyInputs() {
     const grid = document.getElementById('trenMonthlyGrid');
     if (!grid) return;
-    const months = getMonthRangeWna();
+    const months = getSelectedMonths(); // Show ALL months in input
     grid.innerHTML = '';
     months.forEach(m => {
         const div = document.createElement('div');

@@ -132,7 +132,7 @@ function initKorban() {
 function generateMonthlyInputsPerempuan() {
     const grid = document.getElementById('trenPerempuanGrid');
     if (!grid) return;
-    const months = getMonthRangeKb();
+    const months = getSelectedMonths(); // Show ALL months in input
     grid.innerHTML = '';
     months.forEach(m => {
         const div = document.createElement('div');
@@ -163,7 +163,7 @@ function generateMonthlyInputsPerempuan() {
 function generateMonthlyInputsAnak() {
     const grid = document.getElementById('trenAnakGrid');
     if (!grid) return;
-    const months = getMonthRangeKb();
+    const months = getSelectedMonths(); // Show ALL months in input
     grid.innerHTML = '';
     months.forEach(m => {
         const div = document.createElement('div');

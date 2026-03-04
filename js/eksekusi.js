@@ -107,7 +107,7 @@ function initEksekusi() {
 function generateMonthlyInputs(key, gridId) {
     const grid = document.getElementById(gridId);
     if (!grid) return;
-    const months = getMonthRangeEks();
+    const months = getSelectedMonths(); // Show ALL months in input
     const isCurrency = TREND_CHARTS[key]?.isCurrency || false;
     grid.innerHTML = '';
     months.forEach(m => {

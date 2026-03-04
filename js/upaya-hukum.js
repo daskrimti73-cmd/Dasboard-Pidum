@@ -115,7 +115,7 @@ function initUpayaHukum() {
 function generateMonthlyInputsUH(section, gridId) {
     const grid = document.getElementById(gridId);
     if (!grid) return;
-    const months = getMonthRangeUH();
+    const months = getSelectedMonths(); // Show ALL months in input
     grid.innerHTML = '';
     months.forEach(m => {
         const div = document.createElement('div');

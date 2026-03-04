@@ -73,7 +73,7 @@ function initHukumanMati() {
 function generateMonthlyInputsHm() {
     const grid = document.getElementById('trenMonthlyGrid');
     if (!grid) return;
-    const months = getMonthRangeHm();
+    const months = getSelectedMonths(); // Show ALL months in input
     grid.innerHTML = '';
     months.forEach(m => {
         const div = document.createElement('div');

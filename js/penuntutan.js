@@ -123,7 +123,7 @@ function initPenuntutan() {
 function generateMonthlyInputsP(section, gridId) {
     const grid = document.getElementById(gridId);
     if (!grid) return;
-    const months = getMonthRangeP();
+    const months = getSelectedMonths(); // Show ALL months in input
     grid.innerHTML = '';
     months.forEach(m => {
         const div = document.createElement('div');
