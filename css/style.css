@@ -415,6 +415,23 @@ a {
     z-index: 1;
 }
 
+.dashboard-banner .source-info {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 2px;
+}
+
+.dashboard-banner .source-info a {
+    color: #8ec8f2;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.dashboard-banner .source-info a:hover {
+    color: #b8dcf8;
+    text-decoration: underline;
+}
+
 /* ---- Filter Section ---- */
 .filter-section {
     background: var(--card-bg);
