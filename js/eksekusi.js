@@ -551,6 +551,7 @@ function resetFilters() {
     const resetList = [];
     for (let i = 1; i <= bulanAkhirVal; i++) resetList.push(i);
     saveSelectedBulanList(resetList);
+    saveVisibleBulanList(resetList);
 
     CARD_FIELDS.forEach(id => {
         const el = document.getElementById(id);

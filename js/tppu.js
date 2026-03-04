@@ -90,6 +90,7 @@ function applyFilters() {
     const newList = [];
     for (let i = start; i <= end; i++) newList.push(i);
     saveSelectedBulanList(newList);
+    saveVisibleBulanList(newList);
 
     loadAllData();
     setUpdateDate();
@@ -109,6 +110,7 @@ function resetFilters() {
     const resetList = [];
     for (let i = 1; i <= bulanAkhirVal; i++) resetList.push(i);
     saveSelectedBulanList(resetList);
+    saveVisibleBulanList(resetList);
 
     ['tppu-count', 'tpa-count'].forEach(id => {
         const el = document.getElementById(id);
