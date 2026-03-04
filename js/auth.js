@@ -300,6 +300,76 @@ function getSelectedMonths() {
     return selected.map(idx => BULAN_NAMES_ALL[idx - 1]).filter(Boolean);
 }
 
+// ---- Visible Bulan Management (controls which months appear on chart) ----
+const VISIBLE_BULAN_KEY = 'cms_visible_bulan';
+
+function getVisibleBulanList() {
+    try {
+        const saved = localStorage.getItem(VISIBLE_BULAN_KEY);
+        if (saved) {
+            const list = JSON.parse(saved);
+            if (Array.isArray(list)) return list.sort((a, b) => a - b);
+        }
+    } catch (e) { }
+    // Default: same as selected bulan list
+    return getSelectedBulanList();
+}
+
+function saveVisibleBulanList(list) {
+    const sorted = [...list].sort((a, b) => a - b);
+    localStorage.setItem(VISIBLE_BULAN_KEY, JSON.stringify(sorted));
+    return sorted;
+}
+
+function isMonthVisible(monthNum) {
+    return getVisibleBulanList().includes(monthNum);
+}
+
+function toggleMonthVisibility(monthNum) {
+    const num = parseInt(monthNum);
+    let list = getVisibleBulanList();
+    if (list.includes(num)) {
+        // Don't allow hiding all months
+        if (list.length <= 1) return false;
+        list = list.filter(m => m !== num);
+    } else {
+        list.push(num);
+    }
+    saveVisibleBulanList(list);
+    return true;
+}
+
+// Get visible months as objects for charts [{index, name}], sorted
+function getVisibleMonths() {
+    const visible = getVisibleBulanList();
+    return visible.map(idx => BULAN_NAMES_ALL[idx - 1]).filter(Boolean);
+}
+
+// When a month is added to selectedBulanList, also add to visible
+function addBulanWithVisible(monthNum) {
+    const result = addBulan(monthNum);
+    if (result) {
+        const visibleList = getVisibleBulanList();
+        if (!visibleList.includes(parseInt(monthNum))) {
+            visibleList.push(parseInt(monthNum));
+            saveVisibleBulanList(visibleList);
+        }
+    }
+    return result;
+}
+
+// When a month is deleted from selectedBulanList, also remove from visible
+function deleteBulanWithVisible(monthNum) {
+    const result = deleteBulan(monthNum);
+    if (result) {
+        let visibleList = getVisibleBulanList();
+        visibleList = visibleList.filter(m => m !== parseInt(monthNum));
+        if (visibleList.length === 0) visibleList = getSelectedBulanList();
+        saveVisibleBulanList(visibleList);
+    }
+    return result;
+}
+
 // ---- Bulan Management UI (global, used by all pages) ----
 function renderBulanTags() {
     const container = document.getElementById('bulanTagsContainer');
@@ -325,7 +395,7 @@ function renderBulanTags() {
 function handleAddBulan() {
     const sel = document.getElementById('selectBulanBaru');
     if (!sel || !sel.value) { showToast('Pilih bulan yang ingin ditambahkan', 'error'); return; }
-    if (addBulan(sel.value)) {
+    if (addBulanWithVisible(sel.value)) {
         const name = BULAN_NAMES_ALL[parseInt(sel.value) - 1]?.name || '';
         showToast('Bulan ' + name + ' berhasil ditambahkan', 'success');
         sel.value = '';
@@ -337,12 +407,24 @@ function handleAddBulan() {
 
 function handleDeleteBulan(monthNum) {
     const name = BULAN_NAMES_ALL[monthNum - 1]?.name || '';
-    if (!confirm('Hapus bulan ' + name + ' dari tampilan?')) return;
-    if (deleteBulan(monthNum)) {
+    if (!confirm('Hapus bulan ' + name + ' beserta datanya?')) return;
+    if (deleteBulanWithVisible(monthNum)) {
         showToast('Bulan ' + name + ' berhasil dihapus', 'success');
         if (typeof rebuildMonthlyUI === 'function') rebuildMonthlyUI();
     } else {
         showToast('Tidak dapat menghapus bulan terakhir', 'error');
+    }
+}
+
+function handleToggleVisibility(monthNum) {
+    const num = parseInt(monthNum);
+    const name = BULAN_NAMES_ALL[num - 1]?.name || '';
+    if (toggleMonthVisibility(num)) {
+        const isVisible = isMonthVisible(num);
+        showToast(name + (isVisible ? ' ditampilkan di grafik' : ' disembunyikan dari grafik'), 'success');
+        if (typeof rebuildMonthlyUI === 'function') rebuildMonthlyUI();
+    } else {
+        showToast('Minimal 1 bulan harus ditampilkan', 'error');
     }
 }
 
