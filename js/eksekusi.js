@@ -401,7 +401,7 @@ function saveAllData() {
     // Monthly values for all 4 trend charts
     Object.keys(TREND_CHARTS).forEach(key => {
         allData[`${key}Monthly`] = {};
-        getMonthRangeEks().forEach(m => {
+        getSelectedMonths().forEach(m => {
             const input = document.getElementById(`monthly-${key}-${m.index}`);
             if (input) allData[`${key}Monthly`][m.index] = input.value;
         });
@@ -497,7 +497,7 @@ function resetAllData() {
     });
 
     Object.keys(TREND_CHARTS).forEach(key => {
-        getMonthRangeEks().forEach(m => {
+        getSelectedMonths().forEach(m => {
             const el = document.getElementById(`monthly-${key}-${m.index}`);
             if (el) el.value = '';
         });

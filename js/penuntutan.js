@@ -425,7 +425,7 @@ function saveAllData() {
 
         // Monthly values
         allData[`${sec}Monthly`] = {};
-        getMonthRangeP().forEach(m => {
+        getSelectedMonths().forEach(m => {
             const input = document.getElementById(`monthly-${sec}-${m.index}`);
             if (input) allData[`${sec}Monthly`][m.index] = input.value;
         });
@@ -505,7 +505,7 @@ function resetAllData() {
             const el = document.getElementById(id);
             if (el) el.value = '';
         });
-        getMonthRangeP().forEach(m => {
+        getSelectedMonths().forEach(m => {
             const el = document.getElementById(`monthly-${sec}-${m.index}`);
             if (el) el.value = '';
         });

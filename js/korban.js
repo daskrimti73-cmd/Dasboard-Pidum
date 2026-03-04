@@ -999,14 +999,14 @@ function saveAllData() {
 
     // Monthly trend - Perempuan
     allData.trenPerempuan = {};
-    getMonthRangeKb().forEach(m => {
+    getSelectedMonths().forEach(m => {
         const el = document.getElementById(`monthly-perempuan-${m.index}`);
         if (el) allData.trenPerempuan[m.index] = el.value;
     });
 
     // Monthly trend - Anak
     allData.trenAnak = {};
-    getMonthRangeKb().forEach(m => {
+    getSelectedMonths().forEach(m => {
         const el = document.getElementById(`monthly-anak-${m.index}`);
         if (el) allData.trenAnak[m.index] = el.value;
     });
@@ -1089,7 +1089,7 @@ function resetAllData() {
     updatePerempuanBarChart();
     updateAnakBarChart();
 
-    getMonthRangeKb().forEach(m => {
+    getSelectedMonths().forEach(m => {
         const el1 = document.getElementById(`monthly-perempuan-${m.index}`);
         const el2 = document.getElementById(`monthly-anak-${m.index}`);
         if (el1) el1.value = '';

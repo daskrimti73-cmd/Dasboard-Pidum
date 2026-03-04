@@ -269,7 +269,7 @@ function saveAllData() {
 
     // Monthly trend
     allData.trenMonthly = {};
-    getMonthRangeHm().forEach(m => {
+    getSelectedMonths().forEach(m => {
         const el = document.getElementById(`monthly-tren-${m.index}`);
         if (el) allData.trenMonthly[m.index] = el.value;
     });
@@ -349,7 +349,7 @@ function resetAllData() {
         if (el) el.value = '';
     });
 
-    getMonthRangeHm().forEach(m => {
+    getSelectedMonths().forEach(m => {
         const el = document.getElementById(`monthly-tren-${m.index}`);
         if (el) el.value = '';
     });

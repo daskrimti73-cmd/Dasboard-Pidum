@@ -745,7 +745,7 @@ function saveAllData() {
 
     // Monthly trend
     allData.trenMonthly = {};
-    getMonthRangeWna().forEach(m => {
+    getSelectedMonths().forEach(m => {
         const el = document.getElementById(`monthly-tren-${m.index}`);
         if (el) allData.trenMonthly[m.index] = el.value;
     });
@@ -845,7 +845,7 @@ function resetAllData() {
     updatePieChart();
     updateKlasifikasiChart();
 
-    getMonthRangeWna().forEach(m => {
+    getSelectedMonths().forEach(m => {
         const el = document.getElementById(`monthly-tren-${m.index}`);
         if (el) el.value = '';
     });

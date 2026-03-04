@@ -503,14 +503,14 @@ function saveAllData() {
 
     // Save monthly SPDP
     const spdpMonthly = {};
-    getMonthRange().forEach(m => {
+    getSelectedMonths().forEach(m => {
         const input = document.getElementById(`monthly-spdp-${m.index}`);
         if (input) spdpMonthly[m.index] = input.value;
     });
 
     // Save monthly Tahap I
     const tahap1Monthly = {};
-    getMonthRange().forEach(m => {
+    getSelectedMonths().forEach(m => {
         const input = document.getElementById(`monthly-tahap1-${m.index}`);
         if (input) tahap1Monthly[m.index] = input.value;
     });
@@ -659,7 +659,7 @@ function resetAllData() {
     });
 
     // Clear monthly inputs
-    getMonthRange().forEach(m => {
+    getSelectedMonths().forEach(m => {
         const s1 = document.getElementById(`monthly-spdp-${m.index}`);
         const s2 = document.getElementById(`monthly-tahap1-${m.index}`);
         if (s1) s1.value = '';
