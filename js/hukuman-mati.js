@@ -368,16 +368,34 @@ function resetAllData() {
 
 // ---- Filters ----
 function applyFilters() {
+    // AUTO-SAVE current data before switching year
+    saveAllData(true);
+
     // Sync Bulan Awal/Akhir to localStorage
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
     const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
-    const start = Math.min(bulanAwal, bulanAkhir);
-    const end = Math.max(bulanAwal, bulanAkhir);
     const visibleList = [bulanAwal];
     if (bulanAkhir !== bulanAwal) visibleList.push(bulanAkhir);
     saveVisibleBulanList(visibleList);
 
+    // Regenerate inputs
     generateMonthlyInputsHm();
+
+    // Clear ALL inputs before loading new year data
+    ['hm-pn', 'hm-pt', 'hm-ma'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.value = '';
+    });
+    getSelectedMonths().forEach(m => {
+        const el = document.getElementById(`monthly-tren-${m.index}`);
+        if (el) el.value = '';
+    });
+    const tpList = getTindakPidanaListHm();
+    tpList.forEach((_, idx) => {
+        const el = document.getElementById(`tp-hm-${idx}`);
+        if (el) el.value = '';
+    });
+
+    // Load saved data for new year - if exists fills inputs, if not stays empty
     loadAllDataHm();
     updateTrendChartHm();
     updateTpChartHm();

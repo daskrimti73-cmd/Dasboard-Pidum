@@ -459,18 +459,38 @@ function resetAllData() {
 
 // ---- Filters ----
 function applyFilters() {
+    // AUTO-SAVE current data before switching year
+    saveAllData(true);
+
     // Sync Bulan Awal/Akhir to localStorage
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
     const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
-    const start = Math.min(bulanAwal, bulanAkhir);
-    const end = Math.max(bulanAwal, bulanAkhir);
     const visibleList = [bulanAwal];
     if (bulanAkhir !== bulanAwal) visibleList.push(bulanAkhir);
     saveVisibleBulanList(visibleList);
 
+    // Regenerate inputs
     Object.keys(SECTIONS_UH).forEach(sec => {
         generateMonthlyInputsUH(sec, SECTIONS_UH[sec].monthlyGrid);
     });
+
+    // Clear ALL inputs before loading new year data
+    Object.keys(SECTIONS_UH).forEach(sec => {
+        SECTIONS_UH[sec].fields.forEach(id => {
+            const el = document.getElementById(id); if (el) el.value = '';
+        });
+        getSelectedMonths().forEach(m => {
+            const el = document.getElementById(`monthly-${sec}-${m.index}`);
+            if (el) el.value = '';
+        });
+        const dirList = getDirektoratMapUH(sec);
+        dirList.forEach((_, idx) => {
+            const el = document.getElementById(`dir-${sec}-${idx}`);
+            if (el) el.value = '';
+        });
+    });
+
+    // Load saved data for new year
     loadAllData();
     Object.keys(SECTIONS_UH).forEach(sec => {
         updateTrendChartUH(sec);

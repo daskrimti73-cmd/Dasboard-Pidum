@@ -517,18 +517,33 @@ function resetAllData() {
 
 // ---- Filters ----
 function applyFilters() {
+    // AUTO-SAVE current data before switching year
+    saveAllData(true);
+
     // Sync Bulan Awal/Akhir to localStorage
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
     const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
-    const start = Math.min(bulanAwal, bulanAkhir);
-    const end = Math.max(bulanAwal, bulanAkhir);
     const visibleList = [bulanAwal];
     if (bulanAkhir !== bulanAwal) visibleList.push(bulanAkhir);
     saveVisibleBulanList(visibleList);
 
+    // Regenerate inputs
     Object.keys(TREND_CHARTS).forEach(key => {
         generateMonthlyInputs(key, TREND_CHARTS[key].monthlyGrid);
     });
+
+    // Clear ALL inputs before loading new year data
+    Object.keys(TREND_CHARTS).forEach(key => {
+        TREND_CHARTS[key].fields.forEach(id => {
+            const el = document.getElementById(id); if (el) el.value = '';
+        });
+        getSelectedMonths().forEach(m => {
+            const el = document.getElementById(`monthly-${key}-${m.index}`);
+            if (el) el.value = '';
+        });
+    });
+
+    // Load saved data for new year
     loadAllData();
     Object.keys(TREND_CHARTS).forEach(key => updateTrendChart(key));
     Object.keys(DIR_CHARTS).forEach(key => updateDirChart(key));

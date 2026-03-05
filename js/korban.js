@@ -1107,17 +1107,32 @@ function resetAllData() {
 
 // ---- Filters ----
 function applyFilters() {
+    // AUTO-SAVE current data before switching year
+    saveAllData(true);
+
     // Sync Bulan Awal/Akhir to localStorage
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
     const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
-    const start = Math.min(bulanAwal, bulanAkhir);
-    const end = Math.max(bulanAwal, bulanAkhir);
     const visibleList = [bulanAwal];
     if (bulanAkhir !== bulanAwal) visibleList.push(bulanAkhir);
     saveVisibleBulanList(visibleList);
 
+    // Regenerate inputs
     generateMonthlyInputsPerempuan();
     generateMonthlyInputsAnak();
+
+    // Clear ALL inputs before loading new year data
+    ['korban-perempuan', 'korban-anak'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.value = '';
+    });
+    getSelectedMonths().forEach(m => {
+        const e1 = document.getElementById(`monthly-perempuan-${m.index}`);
+        const e2 = document.getElementById(`monthly-anak-${m.index}`);
+        if (e1) e1.value = '';
+        if (e2) e2.value = '';
+    });
+
+    // Load saved data for new year
     loadAllData();
     updatePerempuanBarChart();
     updateAnakBarChart();
