@@ -352,29 +352,23 @@ function getVisibleMonths(section) {
 
 // Get months for CHART display
 // ADMIN (logged in): shows months based on eye icon visibility settings per section
-// PUBLIC (not logged in): shows ALL months in the RANGE between bulan1 and bulan2
+// PUBLIC (not logged in): shows ONLY the 2 specific months from filter dropdowns
 function getChartMonthRange(section) {
     // Admin mode: use visible months from eye icon settings (per section)
     if (isLoggedIn()) {
         return getVisibleMonths(section);
     }
 
-    // Public mode: show ALL months in range between bulan1 and bulan2
+    // Public mode: show only the 2 specific months selected in filter
     const b1 = document.getElementById('filterBulan1');
     const b2 = document.getElementById('filterBulan2');
     if (b1 && b2 && b1.value && b2.value) {
         const m1 = parseInt(b1.value);
         const m2 = parseInt(b2.value);
-        const start = Math.min(m1, m2);
-        const end = Math.max(m1, m2);
-        const rangeIndices = [];
-        for (let i = start; i <= end; i++) {
-            rangeIndices.push(i);
-        }
-        // Only include months that exist in the selected bulan list
-        const selected = getSelectedBulanList();
-        const filtered = rangeIndices.filter(idx => selected.includes(idx));
-        return filtered.map(idx => BULAN_NAMES_ALL[idx - 1]).filter(Boolean);
+        const selectedIndices = [m1];
+        if (m2 !== m1) selectedIndices.push(m2);
+        selectedIndices.sort((a, b) => a - b);
+        return selectedIndices.map(idx => BULAN_NAMES_ALL[idx - 1]).filter(Boolean);
     }
     // Fallback to visible months
     return getVisibleMonths(section);
