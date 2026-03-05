@@ -110,6 +110,7 @@ function initUpayaHukum() {
     loadAllData();
     initAllChartsUH();
     renderDirektoratTags();
+    renderDirektoratKasasiTags();
 }
 
 // ---- Generate monthly inputs ----
@@ -530,28 +531,80 @@ function handleAddDirektorat() {
     const val = input.value.trim();
     if (!val) { showToast('Masukkan nama kategori tindak pidana', 'error'); return; }
     if (addDirektorat(val, 'uh_banding')) {
-        showToast('Kategori "' + val + '" berhasil ditambahkan', 'success');
+        showToast('Kategori "' + val + '" berhasil ditambahkan (Banding)', 'success');
         input.value = '';
         renderDirektoratTags();
-        rebuildDirektoratUI();
+        rebuildDirektoratUI('banding');
     } else {
         showToast('Kategori sudah ada atau tidak valid', 'error');
     }
 }
 
 function handleDeleteDirektorat(label) {
-    if (!confirm('Hapus kategori "' + label + '" dari daftar?')) return;
+    if (!confirm('Hapus kategori "' + label + '" dari daftar Banding?')) return;
     if (deleteDirektorat(label, 'uh_banding')) {
-        showToast('Kategori "' + label + '" berhasil dihapus', 'success');
+        showToast('Kategori "' + label + '" berhasil dihapus (Banding)', 'success');
         renderDirektoratTags();
-        rebuildDirektoratUI();
+        rebuildDirektoratUI('banding');
     } else {
         showToast('Tidak dapat menghapus kategori terakhir', 'error');
     }
 }
 
-function rebuildDirektoratUI() {
-    generateDirInputsUH('banding', SECTIONS_UH.banding.dirGrid);
+// ---- Kasasi Direktorat Management ----
+function renderDirektoratKasasiTags() {
+    const container = document.getElementById('direktoratKasasiTagsContainer');
+    if (!container) return;
+    const dirs = getDirektoratKasasi();
+    container.innerHTML = '';
+    dirs.forEach(dir => {
+        const tag = document.createElement('span');
+        tag.className = 'year-tag';
+        tag.textContent = dir + ' ';
+        const btn = document.createElement('button');
+        btn.className = 'year-tag-delete';
+        btn.title = 'Hapus ' + dir;
+        btn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+        btn.addEventListener('click', function () { handleDeleteDirektoratKasasi(dir); });
+        tag.appendChild(btn);
+        container.appendChild(tag);
+    });
+}
+
+function handleAddDirektoratKasasi() {
+    const input = document.getElementById('inputDirektoratKasasiBaru');
+    if (!input) return;
+    const val = input.value.trim();
+    if (!val) { showToast('Masukkan nama kategori tindak pidana', 'error'); return; }
+    if (addDirektorat(val, 'uh_kasasi')) {
+        showToast('Kategori "' + val + '" berhasil ditambahkan (Kasasi)', 'success');
+        input.value = '';
+        renderDirektoratKasasiTags();
+        rebuildDirektoratUI('kasasi');
+    } else {
+        showToast('Kategori sudah ada atau tidak valid', 'error');
+    }
+}
+
+function handleDeleteDirektoratKasasi(label) {
+    if (!confirm('Hapus kategori "' + label + '" dari daftar Kasasi?')) return;
+    if (deleteDirektorat(label, 'uh_kasasi')) {
+        showToast('Kategori "' + label + '" berhasil dihapus (Kasasi)', 'success');
+        renderDirektoratKasasiTags();
+        rebuildDirektoratUI('kasasi');
+    } else {
+        showToast('Tidak dapat menghapus kategori terakhir', 'error');
+    }
+}
+
+function rebuildDirektoratUI(section) {
+    if (!section || section === 'banding') {
+        generateDirInputsUH('banding', SECTIONS_UH.banding.dirGrid);
+        updateDirChartUH('banding');
+    }
+    if (!section || section === 'kasasi') {
+        generateDirInputsUH('kasasi', SECTIONS_UH.kasasi.dirGrid);
+        updateDirChartUH('kasasi');
+    }
     loadAllData();
-    updateDirChartUH('banding');
 }

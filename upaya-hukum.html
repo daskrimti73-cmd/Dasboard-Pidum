@@ -339,12 +339,13 @@
                 </button>
             </div>
 
-            <!-- Kelola Kategori Tindak Pidana -->
+            <!-- Kelola Kategori Tindak Pidana - BANDING -->
             <div class="year-management-section animate-in" id="direktoratManagement">
                 <h3><i class="fas fa-tags" style="margin-right: 8px; color: var(--accent-gold);"></i>Kelola Kategori
-                    Tindak Pidana</h3>
+                    Tindak Pidana — Banding</h3>
                 <p style="color: #888; font-size: 0.85rem; margin-bottom: 12px;">Tambahkan atau hapus kategori tindak
-                    pidana (Direktorat) yang digunakan pada grafik Banding. Anda dapat memilih dari daftar atau mengetik
+                    pidana (Direktorat) yang digunakan pada grafik <strong>Banding</strong>. Anda dapat memilih dari
+                    daftar atau mengetik
                     sendiri.</p>
                 <div class="year-add-form">
                     <input type="text" id="inputDirektoratBaru" list="direktoratSuggestions"
@@ -367,6 +368,35 @@
                 <div class="year-tags" id="direktoratTagsContainer"></div>
             </div>
 
+            <!-- Kelola Kategori Tindak Pidana - KASASI -->
+            <div class="year-management-section animate-in" id="direktoratKasasiManagement">
+                <h3><i class="fas fa-tags" style="margin-right: 8px; color: var(--accent-gold);"></i>Kelola Kategori
+                    Tindak Pidana — Kasasi</h3>
+                <p style="color: #888; font-size: 0.85rem; margin-bottom: 12px;">Tambahkan atau hapus kategori tindak
+                    pidana (Direktorat) yang digunakan pada grafik <strong>Kasasi</strong>. Anda dapat memilih dari
+                    daftar atau mengetik
+                    sendiri.</p>
+                <div class="year-add-form">
+                    <input type="text" id="inputDirektoratKasasiBaru" list="direktoratKasasiSuggestions"
+                        placeholder="Pilih atau ketik kategori baru..." class="year-input" autocomplete="off">
+                    <datalist id="direktoratKasasiSuggestions">
+                        <option value="Direktorat A">
+                        <option value="Direktorat B">
+                        <option value="Direktorat C">
+                        <option value="Direktorat D">
+                        <option value="Direktorat E">
+                        <option value="Mnegtibum dan TPUL">
+                        <option value="Oharda">
+                        <option value="Terorisme">
+                        <option value="Narkotika">
+                    </datalist>
+                    <button class="btn btn-primary btn-sm" onclick="handleAddDirektoratKasasi()">
+                        <i class="fas fa-plus"></i> Tambah Kategori
+                    </button>
+                </div>
+                <div class="year-tags" id="direktoratKasasiTagsContainer"></div>
+            </div>
+
         </div>
     </div>
 
@@ -374,7 +404,7 @@
     <div class="toast" id="toast"></div>
 
     <script src="js/app.js?v=20260304"></script>
-    <script src="js/upaya-hukum.js?v=20260304"></script>
+    <script src="js/upaya-hukum.js?v=20260305"></script>
     <script>
         setGreeting();
         setUpdateDate();
@@ -386,6 +416,9 @@
 
         document.getElementById('inputDirektoratBaru')?.addEventListener('keydown', function (e) {
             if (e.key === 'Enter') { e.preventDefault(); handleAddDirektorat(); }
+        });
+        document.getElementById('inputDirektoratKasasiBaru')?.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') { e.preventDefault(); handleAddDirektoratKasasi(); }
         });
     </script>
 </body>
