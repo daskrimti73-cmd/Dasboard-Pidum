@@ -51,7 +51,7 @@ function getMonthRangeHm(section) {
 
 // ---- Page-specific ----
 function rebuildMonthlyUI() {
-    saveAllDataHm();
+    saveAllData(true);
     generateMonthlyInputsHm();
     loadAllDataHm();
     updateTrendChartHm();
@@ -256,7 +256,7 @@ function updateTpChartHm() {
 // ============================================
 // SAVE & LOAD
 // ============================================
-function saveAllData() {
+function saveAllData(silent) {
     const allData = { savedAt: new Date().toISOString() };
 
     // Cards
@@ -283,12 +283,14 @@ function saveAllData() {
 
     try {
         localStorage.setItem(getHmStorageKey(), JSON.stringify(allData));
-        showToast('Semua data berhasil disimpan!', 'success');
-        hasUnsaved = false;
-        const btn = document.getElementById('btnSave');
-        if (btn) {
-            btn.innerHTML = '<i class="fas fa-check"></i> Tersimpan';
-            setTimeout(() => { btn.innerHTML = '<i class="fas fa-save"></i> Simpan Semua Data'; }, 2000);
+        if (!silent) {
+            showToast('Semua data berhasil disimpan!', 'success');
+            hasUnsaved = false;
+            const btn = document.getElementById('btnSave');
+            if (btn) {
+                btn.innerHTML = '<i class="fas fa-check"></i> Tersimpan';
+                setTimeout(() => { btn.innerHTML = '<i class="fas fa-save"></i> Simpan Semua Data'; }, 2000);
+            }
         }
     } catch (e) {
         showToast('Gagal menyimpan data!', 'error');
