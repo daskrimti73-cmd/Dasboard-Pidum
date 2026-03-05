@@ -334,8 +334,7 @@ function toggleMonthVisibility(monthNum, section) {
     const num = parseInt(monthNum);
     let list = getVisibleBulanList(section);
     if (list.includes(num)) {
-        // Allow hiding down to 1 visible month minimum
-        if (list.length <= 1) return false;
+        // Admin bebas sembunyikan bulan mana saja tanpa batasan
         list = list.filter(m => m !== num);
     } else {
         list.push(num);
