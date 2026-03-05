@@ -14,12 +14,14 @@ function getDirektoratBanding() {
     return getDirektoratList('uh_banding');
 }
 
-// Kasasi menggunakan angka 0-5 (bukan direktorat)
-const KASASI_LABELS = ['0', '1', '2', '3', '4', '5'];
+// Direktorat list untuk Kasasi - per-section key
+function getDirektoratKasasi() {
+    return getDirektoratList('uh_kasasi');
+}
 
 // Mapping section ke direktorat list
 function getDirektoratMapUH(section) {
-    if (section === 'kasasi') return KASASI_LABELS;
+    if (section === 'kasasi') return getDirektoratKasasi();
     return getDirektoratBanding();
 }
 
@@ -154,8 +156,7 @@ function generateDirInputsUH(section, gridId) {
         const div = document.createElement('div');
         div.className = 'dir-input-group';
 
-        // Untuk kasasi, gunakan label yang lebih deskriptif
-        const label = section === 'kasasi' ? `Angka ${dir}` : dir;
+        const label = dir;
 
         div.innerHTML = `
             <label>${label}</label>
@@ -236,32 +237,16 @@ function getLineOptsUH() {
     };
 }
 
-function getBarOptsUH(section) {
-    // Kasasi menggunakan horizontal bar chart
-    const isHorizontal = section === 'kasasi';
-
+function getBarOptsUH() {
     return {
         responsive: true,
         maintainAspectRatio: false,
-        indexAxis: isHorizontal ? 'y' : 'x', // Horizontal untuk kasasi
+        indexAxis: 'x',
         plugins: {
             legend: { display: false },
             tooltip: makeBarTooltip()
         },
-        scales: isHorizontal ? {
-            // Horizontal bar (kasasi)
-            x: {
-                beginAtZero: true,
-                title: { display: true, text: 'JUMLAH', font: { size: 11, weight: '700' } },
-                grid: { color: 'rgba(0,0,0,0.06)' },
-                ticks: { precision: 0 }
-            },
-            y: {
-                grid: { display: false },
-                ticks: { font: { size: 10, weight: '600' } }
-            }
-        } : {
-            // Vertical bar (banding)
+        scales: {
             x: { grid: { display: false }, ticks: { font: { size: 10, weight: '600' }, maxRotation: 45, minRotation: 30 } },
             y: { beginAtZero: true, title: { display: true, text: 'JUMLAH', font: { size: 11, weight: '700' } }, grid: { color: 'rgba(0,0,0,0.06)' }, ticks: { precision: 0 } }
         }
@@ -282,69 +267,16 @@ function initAllChartsUH() {
 
         const dirCanvas = document.getElementById(SECTIONS_UH[sec].dirCanvasId);
         if (dirCanvas) {
-            // Kasasi menggunakan line chart dengan sumbu X numerik
-            if (sec === 'kasasi') {
-                SECTIONS_UH[sec].dirChart = new Chart(dirCanvas.getContext('2d'), {
-                    type: 'line',
-                    data: {
-                        labels: KASASI_LABELS,
-                        datasets: [{
-                            data: [0, 0, 0, 0, 0, 0],
-                            borderColor: chartColorsUH.line.borderColor,
-                            backgroundColor: 'transparent',
-                            pointBackgroundColor: chartColorsUH.line.pointBg,
-                            pointBorderColor: chartColorsUH.line.pointBorder,
-                            borderWidth: 2,
-                            tension: 0
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                backgroundColor: 'rgba(26,26,46,0.9)',
-                                padding: 12,
-                                cornerRadius: 8,
-                                callbacks: {
-                                    title: ctx => `Angka ${ctx[0].label}`,
-                                    label: ctx => `Jumlah: ${ctx.parsed.y}`
-                                }
-                            }
-                        },
-                        scales: {
-                            x: {
-                                title: { display: false },
-                                grid: { display: true, color: 'rgba(0,0,0,0.06)' },
-                                ticks: { font: { size: 11 } }
-                            },
-                            y: {
-                                beginAtZero: true,
-                                title: { display: true, text: 'JUMLAH', font: { size: 11, weight: '700' } },
-                                grid: { color: 'rgba(0,0,0,0.06)' },
-                                ticks: { precision: 0, stepSize: 1.0 }
-                            }
-                        },
-                        elements: {
-                            point: { radius: 4, hoverRadius: 6 }
-                        }
-                    }
-                });
-            } else {
-                // Banding menggunakan bar chart
-                SECTIONS_UH[sec].dirChart = new Chart(dirCanvas.getContext('2d'), {
-                    type: 'bar',
-                    data: { labels: [], datasets: [{ data: [] }] },
-                    options: getBarOptsUH(sec)
-                });
-            }
+            // Both Banding & Kasasi use bar chart
+            SECTIONS_UH[sec].dirChart = new Chart(dirCanvas.getContext('2d'), {
+                type: 'bar',
+                data: { labels: [], datasets: [{ data: [] }] },
+                options: getBarOptsUH(sec)
+            });
         }
 
         updateTrendChartUH(sec);
-        if (sec !== 'kasasi') {
-            updateDirChartUH(sec);
-        }
+        updateDirChartUH(sec);
     });
 }
 
@@ -390,36 +322,21 @@ function updateDirChartUH(section) {
         return input ? (parseInt(input.value) || 0) : 0;
     });
 
-    // Update chart untuk kasasi (line chart)
-    if (section === 'kasasi') {
-        chart.data.labels = KASASI_LABELS;
-        chart.data.datasets = [{
-            label: 'Jumlah',
-            data: values,
-            borderColor: chartColorsUH.line.borderColor,
-            backgroundColor: 'transparent',
-            pointBackgroundColor: chartColorsUH.line.pointBg,
-            pointBorderColor: chartColorsUH.line.pointBorder,
-            borderWidth: 2,
-            tension: 0
-        }];
-    } else {
-        // Generate enough colors for dynamic list
-        const bgColors = dirList.map((_, i) => chartColorsUH.bar.backgroundColor[i % chartColorsUH.bar.backgroundColor.length]);
-        const hoverColors = dirList.map((_, i) => chartColorsUH.bar.hoverBg[i % chartColorsUH.bar.hoverBg.length]);
+    // Generate enough colors for dynamic list
+    const bgColors = dirList.map((_, i) => chartColorsUH.bar.backgroundColor[i % chartColorsUH.bar.backgroundColor.length]);
+    const hoverColors = dirList.map((_, i) => chartColorsUH.bar.hoverBg[i % chartColorsUH.bar.hoverBg.length]);
 
-        // Update chart untuk banding (bar chart)
-        chart.data.labels = dirList;
-        chart.data.datasets = [{
-            label: 'Jumlah',
-            data: values,
-            backgroundColor: bgColors,
-            hoverBackgroundColor: hoverColors,
-            borderRadius: 4,
-            borderSkipped: false,
-            barPercentage: 0.7
-        }];
-    }
+    // Update chart (bar chart for both banding & kasasi)
+    chart.data.labels = dirList;
+    chart.data.datasets = [{
+        label: 'Jumlah',
+        data: values,
+        backgroundColor: bgColors,
+        hoverBackgroundColor: hoverColors,
+        borderRadius: 4,
+        borderSkipped: false,
+        barPercentage: 0.7
+    }];
 
     chart.update('none');
 }
