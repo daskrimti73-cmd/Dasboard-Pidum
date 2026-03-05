@@ -434,6 +434,20 @@ function handleAddBulan() {
     }
 }
 
+// Version that works from any button (no ID dependency)
+function handleAddBulanFrom(btn) {
+    const sel = btn.parentElement.querySelector('select');
+    if (!sel || !sel.value) { showToast('Pilih bulan yang ingin ditambahkan', 'error'); return; }
+    if (addBulanWithVisible(sel.value)) {
+        const name = BULAN_NAMES_ALL[parseInt(sel.value) - 1]?.name || '';
+        showToast('Bulan ' + name + ' berhasil ditambahkan', 'success');
+        sel.value = '';
+        if (typeof rebuildMonthlyUI === 'function') rebuildMonthlyUI();
+    } else {
+        showToast('Bulan sudah ada dalam daftar', 'error');
+    }
+}
+
 function handleDeleteBulan(monthNum) {
     const name = BULAN_NAMES_ALL[monthNum - 1]?.name || '';
     if (!confirm('Hapus bulan ' + name + ' beserta datanya?')) return;
