@@ -522,8 +522,7 @@ function resetAllData() {
 
 // ---- Filters (override) ----
 function applyFilters() {
-    // AUTO-SAVE current data before switching year
-    saveAllData(true);
+    // NOTE: Admin harus klik "Simpan" sebelum ganti tahun agar data tersimpan
 
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
     const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);

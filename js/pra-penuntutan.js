@@ -689,8 +689,7 @@ function resetAllData() {
 
 // ---- Apply/Reset Filters (override for this page) ----
 function applyFilters() {
-    // AUTO-SAVE current data before switching (prevents data loss on year change)
-    saveAllData(true);
+    // NOTE: Admin harus klik "Simpan" sebelum ganti tahun agar data tersimpan
 
     // Read Bulan Awal/Akhir from filter dropdowns
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');

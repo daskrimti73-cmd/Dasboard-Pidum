@@ -1107,8 +1107,7 @@ function resetAllData() {
 
 // ---- Filters ----
 function applyFilters() {
-    // AUTO-SAVE current data before switching year
-    saveAllData(true);
+    // NOTE: Admin harus klik "Simpan" sebelum ganti tahun agar data tersimpan
 
     // Sync Bulan Awal/Akhir to localStorage
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
