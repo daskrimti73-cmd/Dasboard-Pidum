@@ -110,8 +110,8 @@ function rebuildMonthlyUI() {
     generateMonthlyInputsPerempuan();
     generateMonthlyInputsAnak();
     loadAllData();
-    updateTrendChartPerempuan();
-    updateTrendChartAnak();
+    updatePerempuanTrendChart();
+    updateAnakTrendChart();
 }
 
 // ============================================
