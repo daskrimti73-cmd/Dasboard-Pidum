@@ -485,44 +485,41 @@ function rebuildSectionUI(section) {
 // ============================================
 
 function saveAllData(silent) {
+    // Determine which month admin is saving data for
+    const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
+
+    // If range mode (awal != akhir), don't save - aggregated view is read-only
+    if (bulanAwal !== bulanAkhir) {
+        if (!silent) showToast('Pilih 1 bulan yang sama (Bulan Awal = Bulan Akhir) untuk menyimpan data.', 'error');
+        return;
+    }
+
+    const bulan = bulanAwal;
     const dirList = getDirListForSection('spdp');
 
-    // Save SPDP card values
+    // Collect SPDP card values
     const spdpData = {};
     SPDP_FIELDS.forEach(id => {
         const input = document.getElementById(id);
         if (input) spdpData[id] = input.value;
     });
 
-    // Save Tahap I card values
+    // Collect Tahap I card values
     const tahap1Data = {};
     TAHAP1_FIELDS.forEach(id => {
         const input = document.getElementById(id);
         if (input) tahap1Data[id] = input.value;
     });
 
-    // Save monthly SPDP
-    const spdpMonthly = {};
-    getSelectedMonths().forEach(m => {
-        const input = document.getElementById(`monthly-spdp-${m.index}`);
-        if (input) spdpMonthly[m.index] = input.value;
-    });
-
-    // Save monthly Tahap I
-    const tahap1Monthly = {};
-    getSelectedMonths().forEach(m => {
-        const input = document.getElementById(`monthly-tahap1-${m.index}`);
-        if (input) tahap1Monthly[m.index] = input.value;
-    });
-
-    // Save direktorat SPDP (keyed by label for persistence)
+    // Collect direktorat SPDP
     const spdpDir = {};
     dirList.forEach((dir, idx) => {
         const input = document.getElementById(`dir-spdp-${idx}`);
         if (input) spdpDir[dir] = input.value;
     });
 
-    // Save direktorat Tahap I (keyed by label for persistence)
+    // Collect direktorat Tahap I
     const tahap1DirList = getDirListForSection('tahap1');
     const tahap1Dir = {};
     tahap1DirList.forEach((dir, idx) => {
@@ -530,19 +527,32 @@ function saveAllData(silent) {
         if (input) tahap1Dir[dir] = input.value;
     });
 
-    const allData = {
+    // Load existing data to preserve other months
+    const storageKey = getPrapenStorageKey('all');
+    let existing = {};
+    try {
+        const saved = localStorage.getItem(storageKey);
+        if (saved) existing = JSON.parse(saved);
+    } catch (e) { }
+
+    // Ensure perBulan structure exists
+    if (!existing.perBulan) existing.perBulan = {};
+
+    // Save data for this specific month
+    existing.perBulan[bulan] = {
         spdpCards: spdpData,
         tahap1Cards: tahap1Data,
-        spdpMonthly: spdpMonthly,
-        tahap1Monthly: tahap1Monthly,
         spdpDir: spdpDir,
-        tahap1Dir: tahap1Dir,
-        savedAt: new Date().toISOString()
+        tahap1Dir: tahap1Dir
     };
+    existing.savedAt = new Date().toISOString();
 
     try {
-        localStorage.setItem(getPrapenStorageKey('all'), JSON.stringify(allData));
-        if (!silent) showToast('Semua data berhasil disimpan!', 'success');
+        localStorage.setItem(storageKey, JSON.stringify(existing));
+        if (!silent) {
+            const namaBulan = BULAN_NAMES[bulan - 1] || bulan;
+            showToast('Data bulan ' + namaBulan + ' berhasil disimpan!', 'success');
+        }
 
         const btn = document.getElementById('btnSave');
         if (btn) {
@@ -566,81 +576,126 @@ function loadAllData() {
     try {
         const data = JSON.parse(saved);
 
-        // Restore SPDP cards
+        // Determine which months to load
+        const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
+        const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
+        const isSingleMonth = (bulanAwal === bulanAkhir);
+
+        // --- NEW FORMAT: perBulan ---
+        if (data.perBulan) {
+            if (isSingleMonth) {
+                // Single month: load data for that specific month
+                const monthData = data.perBulan[bulanAwal] || {};
+                _restoreCards(monthData.spdpCards, SPDP_FIELDS);
+                _restoreCards(monthData.tahap1Cards, TAHAP1_FIELDS);
+                _restoreDir(monthData.spdpDir, 'spdp');
+                _restoreDir(monthData.tahap1Dir, 'tahap1');
+            } else {
+                // Range: sum data from bulanAwal to bulanAkhir
+                const start = Math.min(bulanAwal, bulanAkhir);
+                const end = Math.max(bulanAwal, bulanAkhir);
+                const sumSpdp = {};
+                const sumTahap1 = {};
+                const sumSpdpDir = {};
+                const sumTahap1Dir = {};
+
+                for (let m = start; m <= end; m++) {
+                    const md = data.perBulan[m];
+                    if (!md) continue;
+                    _sumCards(sumSpdp, md.spdpCards);
+                    _sumCards(sumTahap1, md.tahap1Cards);
+                    _sumDir(sumSpdpDir, md.spdpDir);
+                    _sumDir(sumTahap1Dir, md.tahap1Dir);
+                }
+                _restoreCards(sumSpdp, SPDP_FIELDS);
+                _restoreCards(sumTahap1, TAHAP1_FIELDS);
+                _restoreDir(sumSpdpDir, 'spdp');
+                _restoreDir(sumTahap1Dir, 'tahap1');
+            }
+
+            // Auto-populate monthly trend inputs from perBulan data
+            for (let m = 1; m <= 12; m++) {
+                const md = data.perBulan[m];
+                const spdpInput = document.getElementById(`monthly-spdp-${m}`);
+                const tahap1Input = document.getElementById(`monthly-tahap1-${m}`);
+                if (spdpInput) spdpInput.value = md?.spdpCards?.['spdp-spdp'] || '';
+                if (tahap1Input) tahap1Input.value = md?.tahap1Cards?.['tahap1-tahap1'] || '';
+            }
+            return;
+        }
+
+        // --- LEGACY FORMAT: flat structure (backward compatible) ---
         if (data.spdpCards) {
-            Object.keys(data.spdpCards).forEach(id => {
-                const input = document.getElementById(id);
-                if (input) input.value = data.spdpCards[id];
-            });
+            _restoreCards(data.spdpCards, SPDP_FIELDS);
         }
-
-        // Restore Tahap I cards
         if (data.tahap1Cards) {
-            Object.keys(data.tahap1Cards).forEach(id => {
-                const input = document.getElementById(id);
-                if (input) input.value = data.tahap1Cards[id];
-            });
+            _restoreCards(data.tahap1Cards, TAHAP1_FIELDS);
         }
-
-        // Restore monthly SPDP
         if (data.spdpMonthly) {
             Object.keys(data.spdpMonthly).forEach(idx => {
                 const input = document.getElementById(`monthly-spdp-${idx}`);
                 if (input) input.value = data.spdpMonthly[idx];
             });
         }
-
-        // Restore monthly Tahap I
         if (data.tahap1Monthly) {
             Object.keys(data.tahap1Monthly).forEach(idx => {
                 const input = document.getElementById(`monthly-tahap1-${idx}`);
                 if (input) input.value = data.tahap1Monthly[idx];
             });
         }
-
-        // Restore direktorat SPDP (keyed by label)
-        if (data.spdpDir) {
-            const dirList = getDirListForSection('spdp');
-            // Check if data uses label-based keys (new) or index-based keys (old)
-            const keys = Object.keys(data.spdpDir);
-            const isLabelBased = keys.length > 0 && isNaN(parseInt(keys[0]));
-
-            if (isLabelBased) {
-                dirList.forEach((dir, idx) => {
-                    const input = document.getElementById(`dir-spdp-${idx}`);
-                    if (input && data.spdpDir[dir]) input.value = data.spdpDir[dir];
-                });
-            } else {
-                // Old format: index-based
-                Object.keys(data.spdpDir).forEach(idx => {
-                    const input = document.getElementById(`dir-spdp-${idx}`);
-                    if (input) input.value = data.spdpDir[idx];
-                });
-            }
-        }
-
-        // Restore direktorat Tahap I (keyed by label)
-        if (data.tahap1Dir) {
-            const dirList = getDirListForSection('tahap1');
-            const keys = Object.keys(data.tahap1Dir);
-            const isLabelBased = keys.length > 0 && isNaN(parseInt(keys[0]));
-
-            if (isLabelBased) {
-                dirList.forEach((dir, idx) => {
-                    const input = document.getElementById(`dir-tahap1-${idx}`);
-                    if (input && data.tahap1Dir[dir]) input.value = data.tahap1Dir[dir];
-                });
-            } else {
-                Object.keys(data.tahap1Dir).forEach(idx => {
-                    const input = document.getElementById(`dir-tahap1-${idx}`);
-                    if (input) input.value = data.tahap1Dir[idx];
-                });
-            }
-        }
+        _restoreDir(data.spdpDir, 'spdp');
+        _restoreDir(data.tahap1Dir, 'tahap1');
 
     } catch (e) {
         console.error('Load error:', e);
     }
+}
+
+// ---- Helper: restore card values ----
+function _restoreCards(cardData, fieldIds) {
+    if (!cardData) return;
+    fieldIds.forEach(id => {
+        const input = document.getElementById(id);
+        if (input && cardData[id] !== undefined) input.value = cardData[id];
+    });
+}
+
+// ---- Helper: sum card values ----
+function _sumCards(target, cardData) {
+    if (!cardData) return;
+    Object.keys(cardData).forEach(id => {
+        const val = parseInt(cardData[id]) || 0;
+        target[id] = ((parseInt(target[id]) || 0) + val).toString();
+    });
+}
+
+// ---- Helper: restore direktorat values ----
+function _restoreDir(dirData, section) {
+    if (!dirData) return;
+    const dirList = getDirListForSection(section);
+    const keys = Object.keys(dirData);
+    const isLabelBased = keys.length > 0 && isNaN(parseInt(keys[0]));
+
+    if (isLabelBased) {
+        dirList.forEach((dir, idx) => {
+            const input = document.getElementById(`dir-${section}-${idx}`);
+            if (input && dirData[dir]) input.value = dirData[dir];
+        });
+    } else {
+        Object.keys(dirData).forEach(idx => {
+            const input = document.getElementById(`dir-${section}-${idx}`);
+            if (input) input.value = dirData[idx];
+        });
+    }
+}
+
+// ---- Helper: sum direktorat values ----
+function _sumDir(target, dirData) {
+    if (!dirData) return;
+    Object.keys(dirData).forEach(key => {
+        const val = parseInt(dirData[key]) || 0;
+        target[key] = ((parseInt(target[key]) || 0) + val).toString();
+    });
 }
 
 function resetAllData() {
