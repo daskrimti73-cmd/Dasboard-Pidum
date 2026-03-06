@@ -350,26 +350,24 @@ function getVisibleMonths(section) {
 }
 
 // Get months for CHART display
-// ADMIN (logged in): shows months based on eye icon visibility settings per section
-// PUBLIC (not logged in): shows ONLY the 2 specific months from filter dropdowns
+// ADMIN (not in view mode): shows months based on eye icon visibility settings per section
+// PUBLIC (view mode / iframe): shows ONLY the 2 specific months from filter dropdowns
 function getChartMonthRange(section) {
-    // Admin mode: use visible months from eye icon settings (per section)
-    if (isLoggedIn()) {
-        return getVisibleMonths(section);
+    // Public/View mode: show only the 2 specific months selected in filter
+    if (isViewMode()) {
+        const b1 = document.getElementById('filterBulan1');
+        const b2 = document.getElementById('filterBulan2');
+        if (b1 && b2 && b1.value && b2.value) {
+            const m1 = parseInt(b1.value);
+            const m2 = parseInt(b2.value);
+            const selectedIndices = [m1];
+            if (m2 !== m1) selectedIndices.push(m2);
+            selectedIndices.sort((a, b) => a - b);
+            return selectedIndices.map(idx => BULAN_NAMES_ALL[idx - 1]).filter(Boolean);
+        }
     }
 
-    // Public mode: show only the 2 specific months selected in filter
-    const b1 = document.getElementById('filterBulan1');
-    const b2 = document.getElementById('filterBulan2');
-    if (b1 && b2 && b1.value && b2.value) {
-        const m1 = parseInt(b1.value);
-        const m2 = parseInt(b2.value);
-        const selectedIndices = [m1];
-        if (m2 !== m1) selectedIndices.push(m2);
-        selectedIndices.sort((a, b) => a - b);
-        return selectedIndices.map(idx => BULAN_NAMES_ALL[idx - 1]).filter(Boolean);
-    }
-    // Fallback to visible months
+    // Admin mode: use visible months from eye icon settings (per section)
     return getVisibleMonths(section);
 }
 
