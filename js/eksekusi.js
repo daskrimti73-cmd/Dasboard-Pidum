@@ -525,6 +525,7 @@ function applyFilters() {
     const visibleList = [bulanAwal];
     if (bulanAkhir !== bulanAwal) visibleList.push(bulanAkhir);
     saveVisibleBulanList(visibleList);
+    Object.keys(TREND_CHARTS).forEach(key => saveVisibleBulanList(visibleList, key));
 
     // Regenerate inputs
     Object.keys(TREND_CHARTS).forEach(key => {

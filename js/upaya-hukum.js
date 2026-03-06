@@ -467,6 +467,7 @@ function applyFilters() {
     const visibleList = [bulanAwal];
     if (bulanAkhir !== bulanAwal) visibleList.push(bulanAkhir);
     saveVisibleBulanList(visibleList);
+    Object.keys(SECTIONS_UH).forEach(sec => saveVisibleBulanList(visibleList, sec));
 
     // Regenerate inputs
     Object.keys(SECTIONS_UH).forEach(sec => {

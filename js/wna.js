@@ -870,6 +870,7 @@ function applyFilters() {
     const visibleList = [bulanAwal];
     if (bulanAkhir !== bulanAwal) visibleList.push(bulanAkhir);
     saveVisibleBulanList(visibleList);
+    saveVisibleBulanList(visibleList, 'tren');
 
     // Regenerate inputs
     generateMonthlyInputs();

@@ -1115,6 +1115,8 @@ function applyFilters() {
     const visibleList = [bulanAwal];
     if (bulanAkhir !== bulanAwal) visibleList.push(bulanAkhir);
     saveVisibleBulanList(visibleList);
+    saveVisibleBulanList(visibleList, 'perempuan');
+    saveVisibleBulanList(visibleList, 'anak');
 
     // Regenerate inputs
     generateMonthlyInputsPerempuan();

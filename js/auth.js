@@ -350,13 +350,15 @@ function getVisibleMonths(section) {
 }
 
 // Get months for CHART display
-// ADMIN (not in view mode): shows months based on eye icon visibility settings per section
-// PUBLIC (view mode / iframe): shows ONLY the 2 specific months from filter dropdowns
+// Uses filter dropdowns (Bulan Awal / Bulan Akhir) for BOTH admin and public
+// Admin can additionally use eye icon to hide specific months within the filtered range
 function getChartMonthRange(section) {
-    // Public/View mode: show only the 2 specific months selected in filter
+    // Read filter dropdown values
+    const b1 = document.getElementById('filterBulan1');
+    const b2 = document.getElementById('filterBulan2');
+
+    // If in view mode (public/iframe): show ONLY the 2 specific months from filter
     if (isViewMode()) {
-        const b1 = document.getElementById('filterBulan1');
-        const b2 = document.getElementById('filterBulan2');
         if (b1 && b2 && b1.value && b2.value) {
             const m1 = parseInt(b1.value);
             const m2 = parseInt(b2.value);
@@ -367,7 +369,7 @@ function getChartMonthRange(section) {
         }
     }
 
-    // Admin mode: use visible months from eye icon settings (per section)
+    // Admin mode: use per-section eye icon visibility settings
     return getVisibleMonths(section);
 }
 

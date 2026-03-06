@@ -699,6 +699,8 @@ function applyFilters() {
     const visibleList = [bulanAwal];
     if (bulanAkhir !== bulanAwal) visibleList.push(bulanAkhir);
     saveVisibleBulanList(visibleList);
+    saveVisibleBulanList(visibleList, 'spdp');
+    saveVisibleBulanList(visibleList, 'tahap1');
 
     // Regenerate monthly grids to update eye icon states
     generateMonthlyInputs('spdp', 'spdpMonthlyGrid');
