@@ -524,6 +524,7 @@ function resetFilters() {
     document.getElementById('filterBulan2').value = getDefaultBulanAkhir();
     loadTableData();
     filterTable();
+    clearTempFilter();
     showToast('Filter telah direset', 'success');
 }
 

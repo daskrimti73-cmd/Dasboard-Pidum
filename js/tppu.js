@@ -80,14 +80,10 @@ function resetAllData() {
 
 // ---- Filters ----
 function applyFilters() {
-    // Sync Bulan Awal/Akhir to localStorage
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
     const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
-    const start = Math.min(bulanAwal, bulanAkhir);
-    const end = Math.max(bulanAwal, bulanAkhir);
-    const visibleList = [bulanAwal];
-    if (bulanAkhir !== bulanAwal) visibleList.push(bulanAkhir);
-    saveVisibleBulanList(visibleList);
+    // Set temporary filter (session-only, resets on page reload)
+    setTempFilter(bulanAwal, bulanAkhir);
 
     loadAllData();
     setUpdateDate();
@@ -109,6 +105,7 @@ function resetFilters() {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
+    clearTempFilter();
     showToast('Filter telah direset', 'success');
 }
 

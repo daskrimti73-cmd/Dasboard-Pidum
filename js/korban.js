@@ -1112,11 +1112,8 @@ function applyFilters() {
     // Sync Bulan Awal/Akhir to localStorage
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
     const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
-    const visibleList = [bulanAwal];
-    if (bulanAkhir !== bulanAwal) visibleList.push(bulanAkhir);
-    saveVisibleBulanList(visibleList);
-    saveVisibleBulanList(visibleList, 'perempuan');
-    saveVisibleBulanList(visibleList, 'anak');
+    // Set temporary filter (session-only, resets on page reload)
+    setTempFilter(bulanAwal, bulanAkhir);
 
     // Regenerate inputs
     generateMonthlyInputsPerempuan();
@@ -1176,6 +1173,7 @@ function resetFilters() {
     tableData = [];
     filterTable();
 
+    clearTempFilter();
     showToast('Filter telah direset', 'success');
 }
 

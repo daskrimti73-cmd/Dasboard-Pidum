@@ -464,10 +464,8 @@ function applyFilters() {
     // Sync Bulan Awal/Akhir to localStorage
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
     const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
-    const visibleList = [bulanAwal];
-    if (bulanAkhir !== bulanAwal) visibleList.push(bulanAkhir);
-    saveVisibleBulanList(visibleList);
-    Object.keys(SECTIONS_UH).forEach(sec => saveVisibleBulanList(visibleList, sec));
+    // Set temporary filter (session-only, resets on page reload)
+    setTempFilter(bulanAwal, bulanAkhir);
 
     // Regenerate inputs
     Object.keys(SECTIONS_UH).forEach(sec => {
@@ -521,6 +519,7 @@ function resetFilters() {
         updateDirChartUH(sec);
     });
 
+    clearTempFilter();
     showToast('Filter telah direset', 'success');
 }
 

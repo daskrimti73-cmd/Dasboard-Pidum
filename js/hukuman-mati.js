@@ -373,10 +373,8 @@ function applyFilters() {
     // Sync Bulan Awal/Akhir to localStorage
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
     const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
-    const visibleList = [bulanAwal];
-    if (bulanAkhir !== bulanAwal) visibleList.push(bulanAkhir);
-    saveVisibleBulanList(visibleList);
-    saveVisibleBulanList(visibleList, 'tren');
+    // Set temporary filter (session-only, resets on page reload)
+    setTempFilter(bulanAwal, bulanAkhir);
 
     // Regenerate inputs
     generateMonthlyInputsHm();
@@ -423,6 +421,7 @@ function resetFilters() {
     updateTrendChartHm();
     updateTpChartHm();
 
+    clearTempFilter();
     showToast('Filter telah direset', 'success');
 }
 

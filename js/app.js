@@ -361,6 +361,7 @@ function resetFilters() {
     document.getElementById('filterBulan2').value = getDefaultBulanAkhir();
 
     clearDataFields();
+    clearTempFilter();
     showToast('Filter telah direset', 'success');
 }
 

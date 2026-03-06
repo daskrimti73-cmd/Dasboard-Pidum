@@ -349,27 +349,36 @@ function getVisibleMonths(section) {
     return visible.map(idx => BULAN_NAMES_ALL[idx - 1]).filter(Boolean);
 }
 
-// Get months for CHART display
-// Uses filter dropdowns (Bulan Awal / Bulan Akhir) for BOTH admin and public
-// Admin can additionally use eye icon to hide specific months within the filtered range
-function getChartMonthRange(section) {
-    // Read filter dropdown values
-    const b1 = document.getElementById('filterBulan1');
-    const b2 = document.getElementById('filterBulan2');
+// ---- Temporary filter (session-only, NOT saved to localStorage) ----
+// User/publik filter hanya sementara, hilang saat refresh
+// Admin eye icon = permanen, tersimpan di localStorage
+let _tempFilterActive = false;
+let _tempFilterMonths = [];
 
-    // If in view mode (public/iframe): show ONLY the 2 specific months from filter
-    if (isViewMode()) {
-        if (b1 && b2 && b1.value && b2.value) {
-            const m1 = parseInt(b1.value);
-            const m2 = parseInt(b2.value);
-            const selectedIndices = [m1];
-            if (m2 !== m1) selectedIndices.push(m2);
-            selectedIndices.sort((a, b) => a - b);
-            return selectedIndices.map(idx => BULAN_NAMES_ALL[idx - 1]).filter(Boolean);
-        }
+// Set temporary filter (called by applyFilters)
+function setTempFilter(bulanAwal, bulanAkhir) {
+    const months = [bulanAwal];
+    if (bulanAkhir !== bulanAwal) months.push(bulanAkhir);
+    months.sort((a, b) => a - b);
+    _tempFilterMonths = months;
+    _tempFilterActive = true;
+}
+
+// Clear temporary filter (called by resetFilters or page load)
+function clearTempFilter() {
+    _tempFilterActive = false;
+    _tempFilterMonths = [];
+}
+
+// Get months for CHART display
+// Priority: 1) Temporary filter (user applied) → 2) Admin eye icon settings (default)
+function getChartMonthRange(section) {
+    // If user has applied a temporary filter → show those specific months
+    if (_tempFilterActive && _tempFilterMonths.length > 0) {
+        return _tempFilterMonths.map(idx => BULAN_NAMES_ALL[idx - 1]).filter(Boolean);
     }
 
-    // Admin mode: use per-section eye icon visibility settings
+    // Default: use admin's per-section eye icon visibility settings
     return getVisibleMonths(section);
 }
 

@@ -995,6 +995,7 @@ function resetFilters() {
 
     loadTableData();
     filterTable();
+    clearTempFilter();
     showToast('Filter telah direset', 'success');
 }
 

@@ -526,10 +526,8 @@ function applyFilters() {
 
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
     const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
-    const visibleList = [bulanAwal];
-    if (bulanAkhir !== bulanAwal) visibleList.push(bulanAkhir);
-    saveVisibleBulanList(visibleList);
-    Object.keys(SECTIONS).forEach(sec => saveVisibleBulanList(visibleList, sec));
+    // Set temporary filter (session-only, resets on page reload)
+    setTempFilter(bulanAwal, bulanAkhir);
 
     // Regenerate inputs
     Object.keys(SECTIONS).forEach(sec => {
@@ -578,5 +576,6 @@ function resetFilters() {
         updateDirChartP(sec);
     });
 
+    clearTempFilter();
     showToast('Filter telah direset', 'success');
 }

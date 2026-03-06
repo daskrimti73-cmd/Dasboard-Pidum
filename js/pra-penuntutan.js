@@ -695,12 +695,8 @@ function applyFilters() {
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
     const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
 
-    // Only update VISIBLE list (chart display) with exact months selected
-    const visibleList = [bulanAwal];
-    if (bulanAkhir !== bulanAwal) visibleList.push(bulanAkhir);
-    saveVisibleBulanList(visibleList);
-    saveVisibleBulanList(visibleList, 'spdp');
-    saveVisibleBulanList(visibleList, 'tahap1');
+    // Set temporary filter (session-only, resets on page reload)
+    setTempFilter(bulanAwal, bulanAkhir);
 
     // Regenerate monthly grids to update eye icon states
     generateMonthlyInputs('spdp', 'spdpMonthlyGrid');
@@ -753,5 +749,6 @@ function resetFilters() {
     updateDirChart('spdp');
     updateDirChart('tahap1');
 
+    clearTempFilter();
     showToast('Filter telah direset', 'success');
 }
