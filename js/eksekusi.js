@@ -547,6 +547,7 @@ function applyFilters() {
     Object.keys(TREND_CHARTS).forEach(key => updateTrendChart(key));
     Object.keys(DIR_CHARTS).forEach(key => updateDirChart(key));
     setUpdateDate();
+    saveActiveFilters();
     showToast('Filter diterapkan', 'success');
 }
 

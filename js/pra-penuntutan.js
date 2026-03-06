@@ -724,6 +724,7 @@ function applyFilters() {
     updateDirChart('tahap1');
 
     setUpdateDate();
+    saveActiveFilters();
     showToast('Filter diterapkan', 'success');
 }
 

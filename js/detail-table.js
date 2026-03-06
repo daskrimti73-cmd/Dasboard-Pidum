@@ -981,6 +981,7 @@ function exportCSV() {
 function applyFilters() {
     loadTableData();
     filterTable();
+    saveActiveFilters();
     showToast('Filter diterapkan', 'success');
 }
 

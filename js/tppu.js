@@ -91,6 +91,7 @@ function applyFilters() {
 
     loadAllData();
     setUpdateDate();
+    saveActiveFilters();
     showToast('Filter diterapkan', 'success');
 }
 

@@ -1140,6 +1140,7 @@ function applyFilters() {
     loadTableData();
     filterTable();
     setUpdateDate();
+    saveActiveFilters();
     showToast('Filter diterapkan', 'success');
 }
 

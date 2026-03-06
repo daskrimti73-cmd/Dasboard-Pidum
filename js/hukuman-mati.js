@@ -399,6 +399,7 @@ function applyFilters() {
     updateTrendChartHm();
     updateTpChartHm();
     setUpdateDate();
+    saveActiveFilters();
     showToast('Filter diterapkan', 'success');
 }
 

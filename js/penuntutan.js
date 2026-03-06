@@ -553,6 +553,7 @@ function applyFilters() {
         updateDirChartP(sec);
     });
     setUpdateDate();
+    saveActiveFilters();
     showToast('Filter diterapkan', 'success');
 }
 

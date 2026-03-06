@@ -342,6 +342,7 @@ function resetData() {
 function applyFilters() {
     // Load data for current filter values without overriding filter selection
     loadSavedData(false);
+    saveActiveFilters();
     showToast('Filter diterapkan', 'success');
 
     // Update the date display

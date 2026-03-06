@@ -696,7 +696,22 @@ function getViewFilterParams() {
     };
 }
 
-// ---- Restore filters from URL params (view mode) ----
+// ---- Save active filter values to localStorage (persists across pages) ----
+function saveActiveFilters() {
+    const filters = {
+        wilayah: document.getElementById('filterWilayah')?.value || '',
+        satker1: document.getElementById('filterSatker1')?.value || '',
+        satker2: document.getElementById('filterSatker2')?.value || '',
+        tahun: document.getElementById('filterTahun')?.value || '',
+        bulan1: document.getElementById('filterBulan1')?.value || '',
+        bulan2: document.getElementById('filterBulan2')?.value || ''
+    };
+    try {
+        localStorage.setItem('cms_active_filters', JSON.stringify(filters));
+    } catch (e) { }
+}
+
+// ---- Restore filters from localStorage OR URL params ----
 function restoreViewFilters() {
     // Populate Tahun dropdown first (dynamic from localStorage)
     populateTahunDropdown();
@@ -704,14 +719,31 @@ function restoreViewFilters() {
     // Set default Bulan Akhir to current month
     initDefaultBulanFilter();
 
-    if (!isViewMode()) return;
-    const filters = getViewFilterParams();
-    if (filters.wilayah) setSelectValueSafe('filterWilayah', filters.wilayah);
-    if (filters.satker1) setSelectValueSafe('filterSatker1', filters.satker1);
-    if (filters.satker2) setSelectValueSafe('filterSatker2', filters.satker2);
-    if (filters.tahun) setSelectValueSafe('filterTahun', filters.tahun);
-    if (filters.bulan1) setSelectValueSafe('filterBulan1', filters.bulan1);
-    if (filters.bulan2) setSelectValueSafe('filterBulan2', filters.bulan2);
+    // For view mode: use URL params
+    if (isViewMode()) {
+        const filters = getViewFilterParams();
+        if (filters.wilayah) setSelectValueSafe('filterWilayah', filters.wilayah);
+        if (filters.satker1) setSelectValueSafe('filterSatker1', filters.satker1);
+        if (filters.satker2) setSelectValueSafe('filterSatker2', filters.satker2);
+        if (filters.tahun) setSelectValueSafe('filterTahun', filters.tahun);
+        if (filters.bulan1) setSelectValueSafe('filterBulan1', filters.bulan1);
+        if (filters.bulan2) setSelectValueSafe('filterBulan2', filters.bulan2);
+        return;
+    }
+
+    // For ALL modes (admin & public): restore saved filters from localStorage
+    try {
+        const saved = localStorage.getItem('cms_active_filters');
+        if (saved) {
+            const filters = JSON.parse(saved);
+            if (filters.wilayah) setSelectValueSafe('filterWilayah', filters.wilayah);
+            if (filters.satker1) setSelectValueSafe('filterSatker1', filters.satker1);
+            if (filters.satker2) setSelectValueSafe('filterSatker2', filters.satker2);
+            if (filters.tahun) setSelectValueSafe('filterTahun', filters.tahun);
+            if (filters.bulan1) setSelectValueSafe('filterBulan1', filters.bulan1);
+            if (filters.bulan2) setSelectValueSafe('filterBulan2', filters.bulan2);
+        }
+    } catch (e) { }
 }
 
 function setSelectValueSafe(id, value) {

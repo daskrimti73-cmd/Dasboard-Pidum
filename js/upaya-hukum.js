@@ -496,6 +496,7 @@ function applyFilters() {
         updateDirChartUH(sec);
     });
     setUpdateDate();
+    saveActiveFilters();
     showToast('Filter diterapkan', 'success');
 }
 

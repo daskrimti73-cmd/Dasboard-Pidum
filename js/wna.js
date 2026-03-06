@@ -888,6 +888,7 @@ function applyFilters() {
     updateTrendChart();
     updateDirChart();
     setUpdateDate();
+    saveActiveFilters();
     showToast('Filter diterapkan', 'success');
 }
 
