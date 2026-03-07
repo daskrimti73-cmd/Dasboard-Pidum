@@ -347,91 +347,68 @@ function updateDirChartUH(section) {
 // ============================================
 
 function saveAllData(silent) {
-    const allData = { savedAt: new Date().toISOString() };
-
+    const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
+    if (bulanAwal !== bulanAkhir) { if (!silent) showToast('Untuk menyimpan data, Bulan Awal dan Bulan Akhir harus sama.', 'error'); return; }
+    const bulan = bulanAwal;
+    const monthData = {};
     Object.keys(SECTIONS_UH).forEach(sec => {
-        // Card values
-        allData[`${sec}Cards`] = {};
-        SECTIONS_UH[sec].fields.forEach(id => {
-            const input = document.getElementById(id);
-            if (input) allData[`${sec}Cards`][id] = input.value;
-        });
-
-        // Monthly values
-        allData[`${sec}Monthly`] = {};
-        getSelectedMonths().forEach(m => {
-            const input = document.getElementById(`monthly-${sec}-${m.index}`);
-            if (input) allData[`${sec}Monthly`][m.index] = input.value;
-        });
-
-        // Dir values (keyed by label for banding, index for kasasi)
-        allData[`${sec}Dir`] = {};
-        const dirList = getDirektoratMapUH(sec);
-        dirList.forEach((dir, idx) => {
-            const input = document.getElementById(`dir-${sec}-${idx}`);
-            if (input) {
-                const key = sec === 'kasasi' ? idx : dir;
-                allData[`${sec}Dir`][key] = input.value;
-            }
+        monthData[sec + 'Cards'] = {};
+        SECTIONS_UH[sec].fields.forEach(id => { const el = document.getElementById(id); if (el) monthData[sec + 'Cards'][id] = el.value; });
+        monthData[sec + 'Dir'] = {};
+        getDirektoratMapUH(sec).forEach((dir, idx) => {
+            const el = document.getElementById('dir-' + sec + '-' + idx);
+            if (el) { const key = sec === 'kasasi' ? idx : dir; monthData[sec + 'Dir'][key] = el.value; }
         });
     });
-
+    const storageKey = getUpayaHukumStorageKey();
+    let existing = {}; try { const s = localStorage.getItem(storageKey); if (s) existing = JSON.parse(s); } catch (e) { }
+    if (!existing.perBulan) existing.perBulan = {};
+    existing.perBulan[bulan] = monthData;
+    existing.savedAt = new Date().toISOString();
     try {
-        localStorage.setItem(getUpayaHukumStorageKey(), JSON.stringify(allData));
-        if (!silent) showToast('Semua data berhasil disimpan!', 'success');
+        localStorage.setItem(storageKey, JSON.stringify(existing));
+        const nb = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'][bulan - 1];
+        if (!silent) showToast('Data bulan ' + nb + ' berhasil disimpan!', 'success');
         hasUnsaved = false;
-
         const btn = document.getElementById('btnSave');
-        if (btn) {
-            btn.innerHTML = '<i class="fas fa-check"></i> Tersimpan';
-            setTimeout(() => { btn.innerHTML = '<i class="fas fa-save"></i> Simpan Semua Data'; }, 2000);
-        }
-    } catch (e) {
-        showToast('Gagal menyimpan data!', 'error');
-    }
+        if (btn) { btn.innerHTML = '<i class="fas fa-check"></i> Tersimpan'; setTimeout(() => { btn.innerHTML = '<i class="fas fa-save"></i> Simpan Semua Data'; }, 2000); }
+    } catch (e) { showToast('Gagal menyimpan data!', 'error'); }
 }
 
 function loadAllData() {
     const saved = localStorage.getItem(getUpayaHukumStorageKey());
     if (!saved) return;
-
     try {
         const data = JSON.parse(saved);
-
+        const bA = parseInt(document.getElementById('filterBulan1')?.value || '1');
+        const bB = parseInt(document.getElementById('filterBulan2')?.value || bA);
+        const start = Math.min(bA, bB), end = Math.max(bA, bB);
+        if (data.perBulan) {
+            Object.keys(SECTIONS_UH).forEach(sec => {
+                const sumC = {}, sumD = {};
+                for (let m = start; m <= end; m++) { const md = data.perBulan[m]; if (!md) continue; _sumUH(sumC, md[sec + 'Cards']); _sumUH(sumD, md[sec + 'Dir']); }
+                SECTIONS_UH[sec].fields.forEach(id => { const el = document.getElementById(id); if (el && sumC[id] !== undefined) el.value = sumC[id]; });
+                const dl = getDirektoratMapUH(sec), ks = Object.keys(sumD), isL = sec !== 'kasasi' && ks.length > 0 && isNaN(parseInt(ks[0]));
+                if (isL) { dl.forEach((d, i) => { const el = document.getElementById('dir-' + sec + '-' + i); if (el && sumD[d]) el.value = sumD[d]; }); }
+                else { ks.forEach(i => { const el = document.getElementById('dir-' + sec + '-' + i); if (el) el.value = sumD[i]; }); }
+                for (let m = 1; m <= 12; m++) { const md = data.perBulan[m]; const mf = SECTIONS_UH[sec].fields[0]; const el = document.getElementById('monthly-' + sec + '-' + m); if (el) el.value = (md && md[sec + 'Cards'] && md[sec + 'Cards'][mf]) || ''; }
+            });
+            return;
+        }
+        // Legacy
         Object.keys(SECTIONS_UH).forEach(sec => {
-            if (data[`${sec}Cards`]) {
-                Object.keys(data[`${sec}Cards`]).forEach(id => {
-                    const input = document.getElementById(id);
-                    if (input) input.value = data[`${sec}Cards`][id];
-                });
-            }
-            if (data[`${sec}Monthly`]) {
-                Object.keys(data[`${sec}Monthly`]).forEach(idx => {
-                    const input = document.getElementById(`monthly-${sec}-${idx}`);
-                    if (input) input.value = data[`${sec}Monthly`][idx];
-                });
-            }
-            if (data[`${sec}Dir`]) {
-                const dirList = getDirektoratMapUH(sec);
-                const keys = Object.keys(data[`${sec}Dir`]);
-                const isLabelBased = sec !== 'kasasi' && keys.length > 0 && isNaN(parseInt(keys[0]));
-                if (isLabelBased) {
-                    dirList.forEach((dir, idx) => {
-                        const input = document.getElementById(`dir-${sec}-${idx}`);
-                        if (input && data[`${sec}Dir`][dir]) input.value = data[`${sec}Dir`][dir];
-                    });
-                } else {
-                    keys.forEach(idx => {
-                        const input = document.getElementById(`dir-${sec}-${idx}`);
-                        if (input) input.value = data[`${sec}Dir`][idx];
-                    });
-                }
+            if (data[sec + 'Cards']) { Object.keys(data[sec + 'Cards']).forEach(id => { const el = document.getElementById(id); if (el) el.value = data[sec + 'Cards'][id]; }); }
+            if (data[sec + 'Monthly']) { Object.keys(data[sec + 'Monthly']).forEach(idx => { const el = document.getElementById('monthly-' + sec + '-' + idx); if (el) el.value = data[sec + 'Monthly'][idx]; }); }
+            if (data[sec + 'Dir']) {
+                const dl = getDirektoratMapUH(sec), ks = Object.keys(data[sec + 'Dir']), isL = sec !== 'kasasi' && ks.length > 0 && isNaN(parseInt(ks[0]));
+                if (isL) { dl.forEach((d, i) => { const el = document.getElementById('dir-' + sec + '-' + i); if (el && data[sec + 'Dir'][d]) el.value = data[sec + 'Dir'][d]; }); }
+                else { ks.forEach(i => { const el = document.getElementById('dir-' + sec + '-' + i); if (el) el.value = data[sec + 'Dir'][i]; }); }
             }
         });
-    } catch (e) {
-        console.error('Load error:', e);
-    }
+    } catch (e) { console.error('Load error:', e); }
 }
+function _sumUH(t, s) { if (!s) return; Object.keys(s).forEach(k => { t[k] = ((parseInt(t[k]) || 0) + (parseInt(s[k]) || 0)).toString(); }); }
 
 function resetAllData() {
     if (!confirm('Apakah Anda yakin ingin mengosongkan semua data di halaman ini?')) return;

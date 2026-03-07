@@ -388,104 +388,87 @@ function updateDirChart(key) {
 // ============================================
 
 function saveAllData(silent) {
-    const allData = { savedAt: new Date().toISOString() };
-
-    // Card values
-    allData.cards = {};
-    CARD_FIELDS.forEach(id => {
-        const input = document.getElementById(id);
-        if (input) allData.cards[id] = input.value;
-    });
-
-    // Monthly values for all 4 trend charts
-    Object.keys(TREND_CHARTS).forEach(key => {
-        allData[`${key}Monthly`] = {};
-        getSelectedMonths().forEach(m => {
-            const input = document.getElementById(`monthly-${key}-${m.index}`);
-            if (input) allData[`${key}Monthly`][m.index] = input.value;
-        });
-    });
-
-    // Dir values for P-48 and BA-17 (keyed by label for persistence)
+    const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
+    if (bulanAwal !== bulanAkhir) { if (!silent) showToast('Untuk menyimpan data, Bulan Awal dan Bulan Akhir harus sama.', 'error'); return; }
+    const bulan = bulanAwal;
+    const monthData = { cards: {} };
+    CARD_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) monthData.cards[id] = el.value; });
     Object.keys(DIR_CHARTS).forEach(key => {
-        allData[`${key}Dir`] = {};
-        const tpListSave = getTindakPidanaListEks(key);
-        tpListSave.forEach((dir, idx) => {
-            const input = document.getElementById(`dir-${key}-${idx}`);
-            if (input) allData[`${key}Dir`][dir] = input.value;
-        });
+        monthData[key + 'Dir'] = {};
+        getTindakPidanaListEks(key).forEach((dir, idx) => { const el = document.getElementById('dir-' + key + '-' + idx); if (el) monthData[key + 'Dir'][dir] = el.value; });
     });
-
+    const storageKey = getEksekusiStorageKey();
+    let existing = {}; try { const s = localStorage.getItem(storageKey); if (s) existing = JSON.parse(s); } catch (e) { }
+    if (!existing.perBulan) existing.perBulan = {};
+    existing.perBulan[bulan] = monthData;
+    existing.savedAt = new Date().toISOString();
     try {
-        localStorage.setItem(getEksekusiStorageKey(), JSON.stringify(allData));
-        if (!silent) showToast('Semua data berhasil disimpan!', 'success');
+        localStorage.setItem(storageKey, JSON.stringify(existing));
+        const nb = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'][bulan - 1];
+        if (!silent) showToast('Data bulan ' + nb + ' berhasil disimpan!', 'success');
         hasUnsaved = false;
-
         const btn = document.getElementById('btnSave');
-        if (btn) {
-            btn.innerHTML = '<i class="fas fa-check"></i> Tersimpan';
-            setTimeout(() => { btn.innerHTML = '<i class="fas fa-save"></i> Simpan Semua Data'; }, 2000);
-        }
-    } catch (e) {
-        showToast('Gagal menyimpan data!', 'error');
-    }
+        if (btn) { btn.innerHTML = '<i class="fas fa-check"></i> Tersimpan'; setTimeout(() => { btn.innerHTML = '<i class="fas fa-save"></i> Simpan Semua Data'; }, 2000); }
+    } catch (e) { showToast('Gagal menyimpan data!', 'error'); }
 }
 
 function loadAllData() {
     const saved = localStorage.getItem(getEksekusiStorageKey());
     if (!saved) return;
-
     try {
         const data = JSON.parse(saved);
-
-        // Cards
-        if (data.cards) {
-            Object.keys(data.cards).forEach(id => {
-                const input = document.getElementById(id);
-                if (input) input.value = data.cards[id];
+        const bA = parseInt(document.getElementById('filterBulan1')?.value || '1');
+        const bB = parseInt(document.getElementById('filterBulan2')?.value || bA);
+        const start = Math.min(bA, bB), end = Math.max(bA, bB);
+        if (data.perBulan) {
+            const sumC = {};
+            const sumD = {};
+            Object.keys(DIR_CHARTS).forEach(k => { sumD[k] = {}; });
+            for (let m = start; m <= end; m++) {
+                const md = data.perBulan[m]; if (!md) continue;
+                _sumE(sumC, md.cards);
+                Object.keys(DIR_CHARTS).forEach(k => { _sumE(sumD[k], md[k + 'Dir']); });
+            }
+            CARD_FIELDS.forEach(id => { const el = document.getElementById(id); if (el && sumC[id] !== undefined) el.value = sumC[id]; });
+            Object.keys(DIR_CHARTS).forEach(key => {
+                const dl = getTindakPidanaListEks(key), ks = Object.keys(sumD[key]), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
+                if (isL) { dl.forEach((d, i) => { const el = document.getElementById('dir-' + key + '-' + i); if (el && sumD[key][d]) el.value = sumD[key][d]; }); }
+                else { ks.forEach(i => { const el = document.getElementById('dir-' + key + '-' + i); if (el) el.value = sumD[key][i]; }); }
             });
-        }
-
-        // Monthly
-        Object.keys(TREND_CHARTS).forEach(key => {
-            if (data[`${key}Monthly`]) {
-                Object.keys(data[`${key}Monthly`]).forEach(idx => {
-                    const input = document.getElementById(`monthly-${key}-${idx}`);
-                    if (input) {
-                        input.value = data[`${key}Monthly`][idx];
-                        // Re-format currency inputs after loading
-                        if (TREND_CHARTS[key]?.isCurrency && input.value) {
-                            const raw = input.value.replace(/\D/g, '');
-                            if (raw.length > 0) input.value = parseInt(raw, 10).toLocaleString('id-ID');
-                        }
+            Object.keys(TREND_CHARTS).forEach(key => {
+                for (let m = 1; m <= 12; m++) {
+                    const md = data.perBulan[m];
+                    const el = document.getElementById('monthly-' + key + '-' + m);
+                    if (el) {
+                        let val = (md && md.cards && md.cards[key]) || '';
+                        if (TREND_CHARTS[key]?.isCurrency && val) { const raw = String(val).replace(/\D/g, ''); if (raw.length > 0) val = parseInt(raw, 10).toLocaleString('id-ID'); }
+                        el.value = val;
                     }
+                }
+            });
+            return;
+        }
+        // Legacy
+        if (data.cards) { Object.keys(data.cards).forEach(id => { const el = document.getElementById(id); if (el) el.value = data.cards[id]; }); }
+        Object.keys(TREND_CHARTS).forEach(key => {
+            if (data[key + 'Monthly']) {
+                Object.keys(data[key + 'Monthly']).forEach(idx => {
+                    const el = document.getElementById('monthly-' + key + '-' + idx);
+                    if (el) { el.value = data[key + 'Monthly'][idx]; if (TREND_CHARTS[key]?.isCurrency && el.value) { const raw = el.value.replace(/\D/g, ''); if (raw.length > 0) el.value = parseInt(raw, 10).toLocaleString('id-ID'); } }
                 });
             }
         });
-
-        // Dir (support both label-based and index-based keys)
         Object.keys(DIR_CHARTS).forEach(key => {
-            if (data[`${key}Dir`]) {
-                const tpListLoad = getTindakPidanaListEks(key);
-                const keys = Object.keys(data[`${key}Dir`]);
-                const isLabelBased = keys.length > 0 && isNaN(parseInt(keys[0]));
-                if (isLabelBased) {
-                    tpListLoad.forEach((dir, idx) => {
-                        const input = document.getElementById(`dir-${key}-${idx}`);
-                        if (input && data[`${key}Dir`][dir]) input.value = data[`${key}Dir`][dir];
-                    });
-                } else {
-                    keys.forEach(idx => {
-                        const input = document.getElementById(`dir-${key}-${idx}`);
-                        if (input) input.value = data[`${key}Dir`][idx];
-                    });
-                }
+            if (data[key + 'Dir']) {
+                const dl = getTindakPidanaListEks(key), ks = Object.keys(data[key + 'Dir']), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
+                if (isL) { dl.forEach((d, i) => { const el = document.getElementById('dir-' + key + '-' + i); if (el && data[key + 'Dir'][d]) el.value = data[key + 'Dir'][d]; }); }
+                else { ks.forEach(i => { const el = document.getElementById('dir-' + key + '-' + i); if (el) el.value = data[key + 'Dir'][i]; }); }
             }
         });
-    } catch (e) {
-        console.error('Load error:', e);
-    }
+    } catch (e) { console.error('Load error:', e); }
 }
+function _sumE(t, s) { if (!s) return; Object.keys(s).forEach(k => { t[k] = ((parseInt(t[k]) || 0) + (parseInt(s[k]) || 0)).toString(); }); }
 
 function resetAllData() {
     if (!confirm('Apakah Anda yakin ingin mengosongkan semua data di halaman ini?')) return;

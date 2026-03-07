@@ -257,90 +257,56 @@ function updateTpChartHm() {
 // SAVE & LOAD
 // ============================================
 function saveAllData(silent) {
-    const allData = { savedAt: new Date().toISOString() };
-
-    // Cards
-    allData.cards = {};
-    ['hm-pn', 'hm-pt', 'hm-ma'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) allData.cards[id] = el.value;
-    });
-
-    // Monthly trend
-    allData.trenMonthly = {};
-    getSelectedMonths().forEach(m => {
-        const el = document.getElementById(`monthly-tren-${m.index}`);
-        if (el) allData.trenMonthly[m.index] = el.value;
-    });
-
-    // Tindak pidana values (keyed by label)
-    allData.tpValues = {};
-    const tpListSave = getTindakPidanaListHm();
-    tpListSave.forEach((tp, idx) => {
-        const el = document.getElementById(`tp-hm-${idx}`);
-        if (el) allData.tpValues[tp] = el.value;
-    });
-
+    const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
+    if (bulanAwal !== bulanAkhir) { if (!silent) showToast('Untuk menyimpan data, Bulan Awal dan Bulan Akhir harus sama.', 'error'); return; }
+    const bulan = bulanAwal;
+    const monthData = { cards: {}, tpValues: {} };
+    ['hm-pn', 'hm-pt', 'hm-ma'].forEach(id => { const el = document.getElementById(id); if (el) monthData.cards[id] = el.value; });
+    getTindakPidanaListHm().forEach((tp, idx) => { const el = document.getElementById('tp-hm-' + idx); if (el) monthData.tpValues[tp] = el.value; });
+    const storageKey = getHmStorageKey();
+    let existing = {}; try { const s = localStorage.getItem(storageKey); if (s) existing = JSON.parse(s); } catch (e) { }
+    if (!existing.perBulan) existing.perBulan = {};
+    existing.perBulan[bulan] = monthData;
+    existing.savedAt = new Date().toISOString();
     try {
-        localStorage.setItem(getHmStorageKey(), JSON.stringify(allData));
+        localStorage.setItem(storageKey, JSON.stringify(existing));
+        const nb = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'][bulan - 1];
         if (!silent) {
-            showToast('Semua data berhasil disimpan!', 'success');
-            hasUnsaved = false;
-            const btn = document.getElementById('btnSave');
-            if (btn) {
-                btn.innerHTML = '<i class="fas fa-check"></i> Tersimpan';
-                setTimeout(() => { btn.innerHTML = '<i class="fas fa-save"></i> Simpan Semua Data'; }, 2000);
-            }
+            showToast('Data bulan ' + nb + ' berhasil disimpan!', 'success'); hasUnsaved = false;
+            const btn = document.getElementById('btnSave'); if (btn) { btn.innerHTML = '<i class="fas fa-check"></i> Tersimpan'; setTimeout(() => { btn.innerHTML = '<i class="fas fa-save"></i> Simpan Semua Data'; }, 2000); }
         }
-    } catch (e) {
-        showToast('Gagal menyimpan data!', 'error');
-    }
+    } catch (e) { showToast('Gagal menyimpan data!', 'error'); }
 }
 
 function loadAllDataHm() {
     const saved = localStorage.getItem(getHmStorageKey());
     if (!saved) return;
-
     try {
         const data = JSON.parse(saved);
-
-        // Cards
-        if (data.cards) {
-            Object.keys(data.cards).forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.value = data.cards[id];
-            });
+        const bA = parseInt(document.getElementById('filterBulan1')?.value || '1');
+        const bB = parseInt(document.getElementById('filterBulan2')?.value || bA);
+        const start = Math.min(bA, bB), end = Math.max(bA, bB);
+        if (data.perBulan) {
+            const sumC = {}, sumTp = {};
+            for (let m = start; m <= end; m++) { const md = data.perBulan[m]; if (!md) continue; _sumHM(sumC, md.cards); _sumHM(sumTp, md.tpValues); }
+            ['hm-pn', 'hm-pt', 'hm-ma'].forEach(id => { const el = document.getElementById(id); if (el && sumC[id] !== undefined) el.value = sumC[id]; });
+            const tpList = getTindakPidanaListHm(), ks = Object.keys(sumTp), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
+            if (isL) { tpList.forEach((tp, i) => { const el = document.getElementById('tp-hm-' + i); if (el && sumTp[tp]) el.value = sumTp[tp]; }); }
+            else { ks.forEach(i => { const el = document.getElementById('tp-hm-' + i); if (el) el.value = sumTp[i]; }); }
+            for (let m = 1; m <= 12; m++) { const md = data.perBulan[m]; const el = document.getElementById('monthly-tren-' + m); if (el) el.value = (md && md.cards && md.cards['hm-pn']) || ''; }
+            return;
         }
-
-        // Monthly trend
-        if (data.trenMonthly) {
-            Object.keys(data.trenMonthly).forEach(idx => {
-                const el = document.getElementById(`monthly-tren-${idx}`);
-                if (el) el.value = data.trenMonthly[idx];
-            });
-        }
-
-        // Tindak pidana (support label-based and index-based)
+        if (data.cards) { Object.keys(data.cards).forEach(id => { const el = document.getElementById(id); if (el) el.value = data.cards[id]; }); }
+        if (data.trenMonthly) { Object.keys(data.trenMonthly).forEach(idx => { const el = document.getElementById('monthly-tren-' + idx); if (el) el.value = data.trenMonthly[idx]; }); }
         if (data.tpValues) {
-            const tpList = getTindakPidanaListHm();
-            const keys = Object.keys(data.tpValues);
-            const isLabelBased = keys.length > 0 && isNaN(parseInt(keys[0]));
-            if (isLabelBased) {
-                tpList.forEach((tp, idx) => {
-                    const el = document.getElementById(`tp-hm-${idx}`);
-                    if (el && data.tpValues[tp]) el.value = data.tpValues[tp];
-                });
-            } else {
-                keys.forEach(idx => {
-                    const el = document.getElementById(`tp-hm-${idx}`);
-                    if (el) el.value = data.tpValues[idx];
-                });
-            }
+            const tpList = getTindakPidanaListHm(), ks = Object.keys(data.tpValues), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
+            if (isL) { tpList.forEach((tp, i) => { const el = document.getElementById('tp-hm-' + i); if (el && data.tpValues[tp]) el.value = data.tpValues[tp]; }); }
+            else { ks.forEach(i => { const el = document.getElementById('tp-hm-' + i); if (el) el.value = data.tpValues[i]; }); }
         }
-    } catch (e) {
-        console.error('Load error:', e);
-    }
+    } catch (e) { console.error('Load error:', e); }
 }
+function _sumHM(t, s) { if (!s) return; Object.keys(s).forEach(k => { t[k] = ((parseInt(t[k]) || 0) + (parseInt(s[k]) || 0)).toString(); }); }
 
 function resetAllData() {
     if (!confirm('Apakah Anda yakin ingin mengosongkan semua data di halaman ini?')) return;
