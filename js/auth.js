@@ -75,6 +75,40 @@ function populateTahunDropdown() {
     }
 }
 
+// ---- Satuan Kerja Hierarchy ----
+// Satker 2 options depend on which Satker 1 is selected
+const SATKER_HIERARCHY = {
+    'kejati-kepri': [
+        { value: 'kejati-kepri', label: 'Kejaksaan Tinggi Kepulauan Riau' }
+    ],
+    'kejari-tanjungpinang': [
+        { value: 'kejari-tanjungpinang', label: 'Kejaksaan Negeri Tanjungpinang' }
+    ],
+    'kejari-batam': [
+        { value: 'kejari-batam', label: 'Kejaksaan Negeri Batam' },
+        { value: 'cabjari-belakang-padang', label: 'Cabang Kejaksaan Negeri Batam di Belakang Padang' }
+    ],
+    'kejari-karimun': [
+        { value: 'kejari-karimun', label: 'Kejaksaan Negeri Karimun' },
+        { value: 'cabjari-tj-balai-karimun', label: 'Cabang Kejaksaan Negeri Tj. Balai Karimun di Tanjung Batu' },
+        { value: 'cabjari-karimun-moro', label: 'Cabang Kejaksaan Negeri Karimun di Moro' }
+    ],
+    'kejari-bintan': [
+        { value: 'kejari-bintan', label: 'Kejaksaan Negeri Bintan' }
+    ],
+    'kejari-lingga': [
+        { value: 'kejari-lingga', label: 'Kejaksaan Negeri Lingga' },
+        { value: 'cabjari-lingga-senayang', label: 'Cabang Kejaksaan Negeri Lingga di Senayang' }
+    ],
+    'kejari-natuna': [
+        { value: 'kejari-natuna', label: 'Kejaksaan Negeri Natuna' },
+        { value: 'cabjari-natuna-midai', label: 'Cabang Kejaksaan Negeri Natuna di Midai' }
+    ],
+    'kejari-anambas': [
+        { value: 'kejari-anambas', label: 'Kejaksaan Negeri Kepulauan Anambas' }
+    ]
+};
+
 // ---- Satuan Kerja Management ----
 function getSatker1List() {
     try {
@@ -84,9 +118,16 @@ function getSatker1List() {
             if (Array.isArray(list) && list.length > 0) return list;
         }
     } catch (e) { }
-    // Default: Kejati Kepri only
+    // Default: All Kejari under Kejati Kepulauan Riau
     const defaultList = [
-        { value: 'kejati-kepri', label: 'Kejaksaan Tinggi Kepulauan Riau' }
+        { value: 'kejati-kepri', label: 'Kejaksaan Tinggi Kepulauan Riau' },
+        { value: 'kejari-tanjungpinang', label: 'Kejaksaan Negeri Tanjungpinang' },
+        { value: 'kejari-batam', label: 'Kejaksaan Negeri Batam' },
+        { value: 'kejari-karimun', label: 'Kejaksaan Negeri Karimun' },
+        { value: 'kejari-bintan', label: 'Kejaksaan Negeri Bintan' },
+        { value: 'kejari-lingga', label: 'Kejaksaan Negeri Lingga' },
+        { value: 'kejari-natuna', label: 'Kejaksaan Negeri Natuna' },
+        { value: 'kejari-anambas', label: 'Kejaksaan Negeri Kepulauan Anambas' }
     ];
     localStorage.setItem(SATKER1_KEY, JSON.stringify(defaultList));
     return defaultList;
@@ -504,21 +545,54 @@ function populateSatkerDropdowns() {
             select1.appendChild(opt);
         });
         if (currentVal1) select1.value = currentVal1;
+
+        // Add change listener for cascading Satker 2
+        if (!select1._hasCascade) {
+            select1._hasCascade = true;
+            select1.addEventListener('change', function () {
+                populateSatker2BasedOnSatker1();
+            });
+        }
     }
 
-    // Populate Satker 2
-    const satkers2 = getSatker2List();
+    // Populate Satker 2 based on current Satker 1 selection
+    populateSatker2BasedOnSatker1();
+}
+
+function populateSatker2BasedOnSatker1() {
+    const select1 = document.getElementById('filterSatker1');
     const select2 = document.getElementById('filterSatker2');
-    if (select2) {
-        const currentVal2 = select2.value;
-        select2.innerHTML = '<option value="">SATUAN KERJA (SATKER) 2</option>';
+    if (!select2) return;
+
+    const currentVal2 = select2.value;
+    const satker1Val = select1 ? select1.value : '';
+
+    select2.innerHTML = '<option value="">SATUAN KERJA (SATKER) 2</option>';
+
+    if (satker1Val && SATKER_HIERARCHY[satker1Val]) {
+        // Show sub-units for selected Satker 1
+        const subUnits = SATKER_HIERARCHY[satker1Val];
+        subUnits.forEach(s => {
+            const opt = document.createElement('option');
+            opt.value = s.value;
+            opt.textContent = s.label;
+            select2.appendChild(opt);
+        });
+    } else {
+        // No Satker 1 selected — show all Satker 2 from saved list
+        const satkers2 = getSatker2List();
         satkers2.forEach(s => {
             const opt = document.createElement('option');
             opt.value = s.value;
             opt.textContent = s.label;
             select2.appendChild(opt);
         });
-        if (currentVal2) select2.value = currentVal2;
+    }
+
+    // Restore previous selection if still available
+    if (currentVal2) {
+        const exists = Array.from(select2.options).some(o => o.value === currentVal2);
+        if (exists) select2.value = currentVal2;
     }
 }
 
