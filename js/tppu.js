@@ -37,21 +37,24 @@ function markUnsaved() {
 // SAVE & LOAD (Cards only)
 // ============================================
 function saveAllData() {
-    const allData = { savedAt: new Date().toISOString() };
-    allData.cards = {};
-    ['tppu-count', 'tpa-count'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) allData.cards[id] = el.value;
-    });
+    const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
+    if (bulanAwal !== bulanAkhir) { showToast('Untuk menyimpan data, Bulan Awal dan Bulan Akhir harus sama.', 'error'); return; }
+    const bulan = bulanAwal;
+    const monthData = { cards: {} };
+    ['tppu-count', 'tpa-count'].forEach(id => { const el = document.getElementById(id); if (el) monthData.cards[id] = el.value; });
+    const storageKey = getStorageKey();
+    let existing = {}; try { const s = localStorage.getItem(storageKey); if (s) existing = JSON.parse(s); } catch (e) { }
+    if (!existing.perBulan) existing.perBulan = {};
+    existing.perBulan[bulan] = monthData;
+    existing.savedAt = new Date().toISOString();
     try {
-        localStorage.setItem(getStorageKey(), JSON.stringify(allData));
-        showToast('Semua data berhasil disimpan!', 'success');
+        localStorage.setItem(storageKey, JSON.stringify(existing));
+        const nb = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'][bulan - 1];
+        showToast('Data bulan ' + nb + ' berhasil disimpan!', 'success');
         hasUnsaved = false;
         const btn = document.getElementById('btnSave');
-        if (btn) {
-            btn.innerHTML = '<i class="fas fa-check"></i> Tersimpan';
-            setTimeout(() => { btn.innerHTML = '<i class="fas fa-save"></i> Simpan Semua Data'; }, 2000);
-        }
+        if (btn) { btn.innerHTML = '<i class="fas fa-check"></i> Tersimpan'; setTimeout(() => { btn.innerHTML = '<i class="fas fa-save"></i> Simpan Semua Data'; }, 2000); }
     } catch (e) { showToast('Gagal menyimpan data!', 'error'); }
 }
 
@@ -60,14 +63,19 @@ function loadAllData() {
     if (!saved) return;
     try {
         const data = JSON.parse(saved);
-        if (data.cards) {
-            Object.keys(data.cards).forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.value = data.cards[id];
-            });
+        const bA = parseInt(document.getElementById('filterBulan1')?.value || '1');
+        const bB = parseInt(document.getElementById('filterBulan2')?.value || bA);
+        const start = Math.min(bA, bB), end = Math.max(bA, bB);
+        if (data.perBulan) {
+            const sumC = {};
+            for (let m = start; m <= end; m++) { const md = data.perBulan[m]; if (!md) continue; _sumTppu(sumC, md.cards); }
+            ['tppu-count', 'tpa-count'].forEach(id => { const el = document.getElementById(id); if (el && sumC[id] !== undefined) el.value = sumC[id]; });
+            return;
         }
+        if (data.cards) { Object.keys(data.cards).forEach(id => { const el = document.getElementById(id); if (el) el.value = data.cards[id]; }); }
     } catch (e) { console.error('Load error:', e); }
 }
+function _sumTppu(t, s) { if (!s) return; Object.keys(s).forEach(k => { t[k] = ((parseInt(t[k]) || 0) + (parseInt(s[k]) || 0)).toString(); }); }
 
 function resetAllData() {
     if (!confirm('Apakah Anda yakin ingin mengosongkan semua data di halaman ini?')) return;

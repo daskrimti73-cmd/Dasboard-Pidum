@@ -727,107 +727,69 @@ function updateDirChart() {
 // SAVE & LOAD
 // ============================================
 function saveAllData(silent) {
-    const allData = { savedAt: new Date().toISOString() };
-
-    // Cards
-    allData.cards = {};
-    ['wna-tersangka', 'wna-negara', 'wna-laki', 'wna-perempuan'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) allData.cards[id] = el.value;
-    });
-
-    // Negara data
-    allData.negaraData = negaraData;
-
-    // Klasifikasi data
-    allData.klasifikasiData = klasifikasiData;
-
-    // Monthly trend
-    allData.trenMonthly = {};
-    getSelectedMonths().forEach(m => {
-        const el = document.getElementById(`monthly-tren-${m.index}`);
-        if (el) allData.trenMonthly[m.index] = el.value;
-    });
-
-    // Dir values (keyed by label)
-    allData.dirValues = {};
-    const tpListSave = getTindakPidanaListWna();
-    tpListSave.forEach((dir, idx) => {
-        const el = document.getElementById(`dir-wna-${idx}`);
-        if (el) allData.dirValues[dir] = el.value;
-    });
-
+    const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
+    if (bulanAwal !== bulanAkhir) { if (!silent) showToast('Untuk menyimpan data, Bulan Awal dan Bulan Akhir harus sama.', 'error'); return; }
+    const bulan = bulanAwal;
+    const monthData = { cards: {}, dirValues: {} };
+    ['wna-tersangka', 'wna-negara', 'wna-laki', 'wna-perempuan'].forEach(id => { const el = document.getElementById(id); if (el) monthData.cards[id] = el.value; });
+    monthData.negaraData = negaraData;
+    monthData.klasifikasiData = klasifikasiData;
+    getTindakPidanaListWna().forEach((dir, idx) => { const el = document.getElementById('dir-wna-' + idx); if (el) monthData.dirValues[dir] = el.value; });
+    const storageKey = getWnaStorageKey();
+    let existing = {}; try { const s = localStorage.getItem(storageKey); if (s) existing = JSON.parse(s); } catch (e) { }
+    if (!existing.perBulan) existing.perBulan = {};
+    existing.perBulan[bulan] = monthData;
+    existing.savedAt = new Date().toISOString();
     try {
-        localStorage.setItem(getWnaStorageKey(), JSON.stringify(allData));
-        if (!silent) showToast('Semua data berhasil disimpan!', 'success');
+        localStorage.setItem(storageKey, JSON.stringify(existing));
+        const nb = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'][bulan - 1];
+        if (!silent) showToast('Data bulan ' + nb + ' berhasil disimpan!', 'success');
         hasUnsaved = false;
         const btn = document.getElementById('btnSave');
-        if (btn) {
-            btn.innerHTML = '<i class="fas fa-check"></i> Tersimpan';
-            setTimeout(() => { btn.innerHTML = '<i class="fas fa-save"></i> Simpan Semua Data'; }, 2000);
-        }
-    } catch (e) {
-        showToast('Gagal menyimpan data!', 'error');
-    }
+        if (btn) { btn.innerHTML = '<i class="fas fa-check"></i> Tersimpan'; setTimeout(() => { btn.innerHTML = '<i class="fas fa-save"></i> Simpan Semua Data'; }, 2000); }
+    } catch (e) { showToast('Gagal menyimpan data!', 'error'); }
 }
 
 function loadAllData() {
     const saved = localStorage.getItem(getWnaStorageKey());
     if (!saved) return;
-
     try {
         const data = JSON.parse(saved);
-
-        // Cards
-        if (data.cards) {
-            Object.keys(data.cards).forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.value = data.cards[id];
-            });
-        }
-
-        // Negara
-        if (data.negaraData) {
-            negaraData = data.negaraData;
-            renderNegaraList();
-            updateNegaraCount();
-        }
-
-        // Klasifikasi
-        if (data.klasifikasiData) {
-            klasifikasiData = data.klasifikasiData;
-            renderKlasifikasiList();
-        }
-
-        // Monthly trend
-        if (data.trenMonthly) {
-            Object.keys(data.trenMonthly).forEach(idx => {
-                const el = document.getElementById(`monthly-tren-${idx}`);
-                if (el) el.value = data.trenMonthly[idx];
-            });
-        }
-
-        // Dir (support label-based and index-based)
-        if (data.dirValues) {
-            const tpList = getTindakPidanaListWna();
-            const keys = Object.keys(data.dirValues);
-            const isLabelBased = keys.length > 0 && isNaN(parseInt(keys[0]));
-            if (isLabelBased) {
-                tpList.forEach((dir, idx) => {
-                    const el = document.getElementById(`dir-wna-${idx}`);
-                    if (el && data.dirValues[dir]) el.value = data.dirValues[dir];
-                });
-            } else {
-                keys.forEach(idx => {
-                    const el = document.getElementById(`dir-wna-${idx}`);
-                    if (el) el.value = data.dirValues[idx];
-                });
+        const bA = parseInt(document.getElementById('filterBulan1')?.value || '1');
+        const bB = parseInt(document.getElementById('filterBulan2')?.value || bA);
+        const start = Math.min(bA, bB), end = Math.max(bA, bB);
+        if (data.perBulan) {
+            const sumC = {}, sumD = {};
+            let mergedNeg = [], mergedKlas = [];
+            for (let m = start; m <= end; m++) {
+                const md = data.perBulan[m]; if (!md) continue;
+                _sumW(sumC, md.cards); _sumW(sumD, md.dirValues);
+                if (md.negaraData) mergedNeg = mergedNeg.concat(md.negaraData);
+                if (md.klasifikasiData) mergedKlas = mergedKlas.concat(md.klasifikasiData);
             }
+            ['wna-tersangka', 'wna-negara', 'wna-laki', 'wna-perempuan'].forEach(id => { const el = document.getElementById(id); if (el && sumC[id] !== undefined) el.value = sumC[id]; });
+            negaraData = mergedNeg; renderNegaraList(); updateNegaraCount();
+            klasifikasiData = mergedKlas; renderKlasifikasiList();
+            const tpList = getTindakPidanaListWna(), ks = Object.keys(sumD), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
+            if (isL) { tpList.forEach((d, i) => { const el = document.getElementById('dir-wna-' + i); if (el && sumD[d]) el.value = sumD[d]; }); }
+            else { ks.forEach(i => { const el = document.getElementById('dir-wna-' + i); if (el) el.value = sumD[i]; }); }
+            for (let m = 1; m <= 12; m++) { const md = data.perBulan[m]; const el = document.getElementById('monthly-tren-' + m); if (el) el.value = (md && md.cards && md.cards['wna-tersangka']) || ''; }
+            return;
         }
-    } catch (e) {
-        console.error('Load error:', e);
-    }
+        // Legacy
+        if (data.cards) { Object.keys(data.cards).forEach(id => { const el = document.getElementById(id); if (el) el.value = data.cards[id]; }); }
+        if (data.negaraData) { negaraData = data.negaraData; renderNegaraList(); updateNegaraCount(); }
+        if (data.klasifikasiData) { klasifikasiData = data.klasifikasiData; renderKlasifikasiList(); }
+        if (data.trenMonthly) { Object.keys(data.trenMonthly).forEach(idx => { const el = document.getElementById('monthly-tren-' + idx); if (el) el.value = data.trenMonthly[idx]; }); }
+        if (data.dirValues) {
+            const tpList = getTindakPidanaListWna(), ks = Object.keys(data.dirValues), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
+            if (isL) { tpList.forEach((d, i) => { const el = document.getElementById('dir-wna-' + i); if (el && data.dirValues[d]) el.value = data.dirValues[d]; }); }
+            else { ks.forEach(i => { const el = document.getElementById('dir-wna-' + i); if (el) el.value = data.dirValues[i]; }); }
+        }
+    } catch (e) { console.error('Load error:', e); }
 }
+function _sumW(t, s) { if (!s) return; Object.keys(s).forEach(k => { t[k] = ((parseInt(t[k]) || 0) + (parseInt(s[k]) || 0)).toString(); }); }
 
 function resetAllData() {
     if (!confirm('Apakah Anda yakin ingin mengosongkan semua data di halaman ini?')) return;

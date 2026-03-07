@@ -983,95 +983,66 @@ function exportCSV() {
 // SAVE & LOAD (Charts + Cards)
 // ============================================
 function saveAllData(silent) {
-    const allData = { savedAt: new Date().toISOString() };
-
-    // Cards
-    allData.cards = {};
-    ['korban-perempuan', 'korban-anak'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) allData.cards[id] = el.value;
-    });
-
-    // Perkara data
-    allData.perkaraPerempuanData = perkaraPerempuanData;
-    allData.perkaraAnakData = perkaraAnakData;
-
-    // Monthly trend - Perempuan
-    allData.trenPerempuan = {};
-    getSelectedMonths().forEach(m => {
-        const el = document.getElementById(`monthly-perempuan-${m.index}`);
-        if (el) allData.trenPerempuan[m.index] = el.value;
-    });
-
-    // Monthly trend - Anak
-    allData.trenAnak = {};
-    getSelectedMonths().forEach(m => {
-        const el = document.getElementById(`monthly-anak-${m.index}`);
-        if (el) allData.trenAnak[m.index] = el.value;
-    });
-
+    const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
+    if (bulanAwal !== bulanAkhir) { if (!silent) showToast('Untuk menyimpan data, Bulan Awal dan Bulan Akhir harus sama.', 'error'); return; }
+    const bulan = bulanAwal;
+    const monthData = { cards: {} };
+    ['korban-perempuan', 'korban-anak'].forEach(id => { const el = document.getElementById(id); if (el) monthData.cards[id] = el.value; });
+    monthData.perkaraPerempuanData = perkaraPerempuanData;
+    monthData.perkaraAnakData = perkaraAnakData;
+    const storageKey = getKorbanStorageKey();
+    let existing = {}; try { const s = localStorage.getItem(storageKey); if (s) existing = JSON.parse(s); } catch (e) { }
+    if (!existing.perBulan) existing.perBulan = {};
+    existing.perBulan[bulan] = monthData;
+    existing.savedAt = new Date().toISOString();
     try {
-        localStorage.setItem(getKorbanStorageKey(), JSON.stringify(allData));
-        // Also save table data
+        localStorage.setItem(storageKey, JSON.stringify(existing));
         saveTableData();
-        if (!silent) showToast('Semua data berhasil disimpan!', 'success');
+        const nb = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'][bulan - 1];
+        if (!silent) showToast('Data bulan ' + nb + ' berhasil disimpan!', 'success');
         hasUnsaved = false;
         const btn = document.getElementById('btnSave');
-        if (btn) {
-            btn.innerHTML = '<i class="fas fa-check"></i> Tersimpan';
-            setTimeout(() => { btn.innerHTML = '<i class="fas fa-save"></i> Simpan Semua Data'; }, 2000);
-        }
-    } catch (e) {
-        showToast('Gagal menyimpan data!', 'error');
-    }
+        if (btn) { btn.innerHTML = '<i class="fas fa-check"></i> Tersimpan'; setTimeout(() => { btn.innerHTML = '<i class="fas fa-save"></i> Simpan Semua Data'; }, 2000); }
+    } catch (e) { showToast('Gagal menyimpan data!', 'error'); }
 }
 
 function loadAllData() {
     const saved = localStorage.getItem(getKorbanStorageKey());
     if (!saved) return;
-
     try {
         const data = JSON.parse(saved);
-
-        // Cards
-        if (data.cards) {
-            Object.keys(data.cards).forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.value = data.cards[id];
-            });
+        const bA = parseInt(document.getElementById('filterBulan1')?.value || '1');
+        const bB = parseInt(document.getElementById('filterBulan2')?.value || bA);
+        const start = Math.min(bA, bB), end = Math.max(bA, bB);
+        if (data.perBulan) {
+            const sumC = {};
+            let mergedPP = [], mergedPA = [];
+            for (let m = start; m <= end; m++) {
+                const md = data.perBulan[m]; if (!md) continue;
+                _sumK(sumC, md.cards);
+                if (md.perkaraPerempuanData) mergedPP = mergedPP.concat(md.perkaraPerempuanData);
+                if (md.perkaraAnakData) mergedPA = mergedPA.concat(md.perkaraAnakData);
+            }
+            ['korban-perempuan', 'korban-anak'].forEach(id => { const el = document.getElementById(id); if (el && sumC[id] !== undefined) el.value = sumC[id]; });
+            perkaraPerempuanData = mergedPP; renderPerkaraPerempuanList();
+            perkaraAnakData = mergedPA; renderPerkaraAnakList();
+            for (let m = 1; m <= 12; m++) {
+                const md = data.perBulan[m];
+                const ep = document.getElementById('monthly-perempuan-' + m); if (ep) ep.value = (md && md.cards && md.cards['korban-perempuan']) || '';
+                const ea = document.getElementById('monthly-anak-' + m); if (ea) ea.value = (md && md.cards && md.cards['korban-anak']) || '';
+            }
+            return;
         }
-
-        // Perkara Perempuan
-        if (data.perkaraPerempuanData) {
-            perkaraPerempuanData = data.perkaraPerempuanData;
-            renderPerkaraPerempuanList();
-        }
-
-        // Perkara Anak
-        if (data.perkaraAnakData) {
-            perkaraAnakData = data.perkaraAnakData;
-            renderPerkaraAnakList();
-        }
-
-        // Monthly trend - Perempuan
-        if (data.trenPerempuan) {
-            Object.keys(data.trenPerempuan).forEach(idx => {
-                const el = document.getElementById(`monthly-perempuan-${idx}`);
-                if (el) el.value = data.trenPerempuan[idx];
-            });
-        }
-
-        // Monthly trend - Anak
-        if (data.trenAnak) {
-            Object.keys(data.trenAnak).forEach(idx => {
-                const el = document.getElementById(`monthly-anak-${idx}`);
-                if (el) el.value = data.trenAnak[idx];
-            });
-        }
-    } catch (e) {
-        console.error('Load error:', e);
-    }
+        // Legacy
+        if (data.cards) { Object.keys(data.cards).forEach(id => { const el = document.getElementById(id); if (el) el.value = data.cards[id]; }); }
+        if (data.perkaraPerempuanData) { perkaraPerempuanData = data.perkaraPerempuanData; renderPerkaraPerempuanList(); }
+        if (data.perkaraAnakData) { perkaraAnakData = data.perkaraAnakData; renderPerkaraAnakList(); }
+        if (data.trenPerempuan) { Object.keys(data.trenPerempuan).forEach(idx => { const el = document.getElementById('monthly-perempuan-' + idx); if (el) el.value = data.trenPerempuan[idx]; }); }
+        if (data.trenAnak) { Object.keys(data.trenAnak).forEach(idx => { const el = document.getElementById('monthly-anak-' + idx); if (el) el.value = data.trenAnak[idx]; }); }
+    } catch (e) { console.error('Load error:', e); }
 }
+function _sumK(t, s) { if (!s) return; Object.keys(s).forEach(k => { t[k] = ((parseInt(t[k]) || 0) + (parseInt(s[k]) || 0)).toString(); }); }
 
 function resetAllData() {
     if (!confirm('Apakah Anda yakin ingin mengosongkan semua data di halaman ini?')) return;
