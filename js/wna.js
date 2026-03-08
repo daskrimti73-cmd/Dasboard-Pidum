@@ -316,11 +316,6 @@ function generateMonthlyInputs() {
         div.innerHTML = `
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
                 <label style="margin:0;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#2c3e50;">${m.name}</label>
-                <div style="display:flex;gap:4px;">
-                    <button type="button" class="btn-hapus-bulan" title="Hapus ${m.name}" onclick="event.preventDefault();event.stopPropagation();handleDeleteBulan(${m.index})">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
-                </div>
             </div>
             <input type="number" id="monthly-tren-${m.index}" placeholder="0" min="0"
                    oninput="onMonthlyInput()">

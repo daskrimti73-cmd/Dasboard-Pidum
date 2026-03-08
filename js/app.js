@@ -257,9 +257,12 @@ function saveData() {
     try {
         localStorage.setItem(key, JSON.stringify(existing));
         localStorage.setItem('pidum_last_key', key);
-        localStorage.setItem('pidum_last_filters', JSON.stringify(existing._filters));
+
+        // Save filter state to sessionStorage (persists during session, resets on browser close)
+        saveActiveFilters();
 
         saveToSupabase(key, existing);
+        // Also sync filter state to Supabase for display.html (public view)
         saveToSupabase('pidum_last_filters', existing._filters);
 
         const BULAN_NAMES = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
@@ -281,14 +284,10 @@ async function loadSavedData(restoreFilters) {
     // Only restore filters on initial load, not when user manually changes them
     if (restoreFilters !== false) {
         let filters = null;
-        const sbFilters = await loadFromSupabase('pidum_last_filters');
-        if (sbFilters) {
-            filters = sbFilters;
-        } else {
-            const lastFilters = localStorage.getItem('pidum_last_filters');
-            if (lastFilters) {
-                try { filters = JSON.parse(lastFilters); } catch (e) { }
-            }
+        // Read from sessionStorage (persists during session, resets on browser close)
+        const lastFilters = sessionStorage.getItem('cms_active_filters');
+        if (lastFilters) {
+            try { filters = JSON.parse(lastFilters); } catch (e) { }
         }
         if (filters) {
             setSelectValue('filterWilayah', filters.wilayah);

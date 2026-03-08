@@ -586,10 +586,10 @@ function handleToggleVisibility(monthNum, section) {
     }
 }
 
-// Returns current month as zero-padded string ('01'..'12')
+// Returns default Bulan Akhir: always Februari ('02')
+// When browser is reopened, filter defaults to Januari-Februari
 function getDefaultBulanAkhir() {
-    const m = new Date().getMonth() + 1;
-    return m < 10 ? '0' + m : '' + m;
+    return '02';
 }
 
 function initDefaultBulanFilter() {
@@ -854,7 +854,8 @@ function getViewFilterParams() {
     };
 }
 
-// ---- Save active filter values to localStorage (persists across pages) ----
+// ---- Save active filter values to sessionStorage (persists across pages within same session) ----
+// When browser is closed, filters reset to defaults (Januari-Februari)
 function saveActiveFilters() {
     const filters = {
         wilayah: document.getElementById('filterWilayah')?.value || '',
@@ -865,7 +866,7 @@ function saveActiveFilters() {
         bulan2: document.getElementById('filterBulan2')?.value || ''
     };
     try {
-        localStorage.setItem('cms_active_filters', JSON.stringify(filters));
+        sessionStorage.setItem('cms_active_filters', JSON.stringify(filters));
     } catch (e) { }
 }
 
@@ -889,9 +890,10 @@ function restoreViewFilters() {
         return;
     }
 
-    // For ALL modes (admin & public): restore saved filters from localStorage
+    // For ALL modes (admin & public): restore saved filters from sessionStorage
+    // When browser is closed, sessionStorage is cleared → defaults used (Jan-Feb)
     try {
-        const saved = localStorage.getItem('cms_active_filters');
+        const saved = sessionStorage.getItem('cms_active_filters');
         if (saved) {
             const filters = JSON.parse(saved);
             if (filters.wilayah) setSelectValueSafe('filterWilayah', filters.wilayah);
