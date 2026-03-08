@@ -72,11 +72,14 @@ localStorage.removeItem = function (key) {
 
 // Hydrate localStorage from Supabase SYNCHRONOUSLY
 // This ensures data is available before page scripts run
+// IMPORTANT: We compare timestamps to avoid overwriting newer local data
+// (this happens when admin saves → async POST not yet complete → refresh → old Supabase data loads)
 var _sbRecordCount = 0;
+var _localNewerKeys = []; // track keys where local is newer, need re-push
 (function _hydrateSync() {
     try {
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', _SB_URL + '/rest/v1/' + _SB_TABLE + '?select=storage_key,data_json&limit=1000', false);
+        xhr.open('GET', _SB_URL + '/rest/v1/' + _SB_TABLE + '?select=storage_key,data_json,updated_at&limit=1000', false);
         xhr.setRequestHeader('apikey', _SB_KEY);
         xhr.setRequestHeader('Authorization', 'Bearer ' + _SB_KEY);
         xhr.send(null);
@@ -85,15 +88,64 @@ var _sbRecordCount = 0;
             _sbRecordCount = rows.length;
             for (var i = 0; i < rows.length; i++) {
                 if (rows[i].storage_key && rows[i].data_json !== null && rows[i].data_json !== undefined) {
-                    _originalSetItem(rows[i].storage_key, rows[i].data_json);
+                    var existingLocal = localStorage.getItem(rows[i].storage_key);
+                    var useSupabase = true;
+
+                    if (existingLocal) {
+                        try {
+                            var localObj = JSON.parse(existingLocal);
+                            // If local data has savedAt that is newer than Supabase updated_at,
+                            // keep local data (the async POST hasn't reached Supabase yet)
+                            if (localObj.savedAt && rows[i].updated_at) {
+                                var localTime = new Date(localObj.savedAt).getTime();
+                                var sbTime = new Date(rows[i].updated_at).getTime();
+                                if (localTime >= sbTime) {
+                                    useSupabase = false;
+                                    _localNewerKeys.push(rows[i].storage_key);
+                                }
+                            }
+                        } catch (e) { /* can't parse, use Supabase */ }
+                    }
+
+                    if (useSupabase) {
+                        _originalSetItem(rows[i].storage_key, rows[i].data_json);
+                    }
                 }
             }
-            console.log('Supabase sync: loaded ' + rows.length + ' records');
+            console.log('Supabase sync: loaded ' + rows.length + ' records' +
+                (_localNewerKeys.length > 0 ? ' (' + _localNewerKeys.length + ' kept local - newer)' : ''));
         }
     } catch (e) {
         console.warn('Supabase hydrate failed (will use localStorage):', e.message);
     }
 })();
+
+// Re-push any local-newer keys to Supabase (ensure eventual consistency)
+if (_localNewerKeys.length > 0) {
+    setTimeout(function () {
+        _localNewerKeys.forEach(function (key) {
+            var val = localStorage.getItem(key);
+            if (val) {
+                fetch(_SB_URL + '/rest/v1/' + _SB_TABLE, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': _SB_KEY,
+                        'Authorization': 'Bearer ' + _SB_KEY,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'resolution=merge-duplicates'
+                    },
+                    body: JSON.stringify({
+                        storage_key: key,
+                        data_json: val,
+                        updated_at: new Date().toISOString()
+                    })
+                }).catch(function () { });
+            }
+        });
+        console.log('Re-pushed ' + _localNewerKeys.length + ' local-newer keys to Supabase');
+    }, 2000);
+}
+
 
 // Push ALL localStorage data to Supabase (for first-time sync)
 function syncAllToCloud() {
