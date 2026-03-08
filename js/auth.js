@@ -78,15 +78,12 @@ function populateTahunDropdown() {
 // ---- Satuan Kerja Hierarchy ----
 // Satker 2 options depend on which Satker 1 is selected
 const SATKER_HIERARCHY = {
-    'kejati-kepri': [
-        { value: 'kejati-kepri', label: 'Kejaksaan Tinggi Kepulauan Riau' }
-    ],
+    'kejati-kepri': [],
     'kejari-tanjungpinang': [
         { value: 'kejari-tanjungpinang', label: 'Kejaksaan Negeri Tanjungpinang' }
     ],
     'kejari-batam': [
-        { value: 'kejari-batam', label: 'Kejaksaan Negeri Batam' },
-        { value: 'cabjari-belakang-padang', label: 'Cabang Kejaksaan Negeri Batam di Belakang Padang' }
+        { value: 'kejari-batam', label: 'Kejaksaan Negeri Batam' }
     ],
     'kejari-karimun': [
         { value: 'kejari-karimun', label: 'Kejaksaan Negeri Karimun' },
@@ -97,15 +94,14 @@ const SATKER_HIERARCHY = {
         { value: 'kejari-bintan', label: 'Kejaksaan Negeri Bintan' }
     ],
     'kejari-lingga': [
-        { value: 'kejari-lingga', label: 'Kejaksaan Negeri Lingga' },
-        { value: 'cabjari-lingga-senayang', label: 'Cabang Kejaksaan Negeri Lingga di Senayang' }
+        { value: 'kejari-lingga', label: 'Kejaksaan Negeri Lingga' }
     ],
     'kejari-natuna': [
         { value: 'kejari-natuna', label: 'Kejaksaan Negeri Natuna' },
-        { value: 'cabjari-natuna-midai', label: 'Cabang Kejaksaan Negeri Natuna di Midai' }
+        { value: 'cabjari-natuna-tarempa', label: 'Cabang Kejaksaan Negeri Natuna di Tarempa' }
     ],
     'kejari-anambas': [
-        { value: 'kejari-anambas', label: 'Kejaksaan Negeri Kepulauan Anambas' }
+        { value: 'kejari-anambas', label: 'Kejaksaan Negeri Anambas' }
     ]
 };
 
