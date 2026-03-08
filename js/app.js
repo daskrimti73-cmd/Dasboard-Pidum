@@ -217,20 +217,38 @@ const dataFields = [
     'val-tppu'
 ];
 
-// ---- Save Data to localStorage + Supabase ----
+// ---- Save Data to localStorage + Supabase (per-bulan) ----
 function saveData() {
-    const key = getStorageKey();
-    const data = {};
+    const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
 
+    if (bulanAwal !== bulanAkhir) {
+        showToast('Untuk menyimpan data, Bulan Awal dan Bulan Akhir harus sama.', 'error');
+        return;
+    }
+
+    const bulan = bulanAwal;
+    const key = getStorageKey();
+
+    // Collect current field values
+    const monthData = {};
     dataFields.forEach(field => {
         const input = document.getElementById(field);
-        if (input) {
-            data[field] = input.value;
-        }
+        if (input) monthData[field] = input.value;
     });
 
-    // Save filter state too
-    data._filters = {
+    // Load existing data to preserve other months
+    let existing = {};
+    try {
+        const saved = localStorage.getItem(key);
+        if (saved) existing = JSON.parse(saved);
+    } catch (e) { }
+
+    if (!existing.perBulan) existing.perBulan = {};
+    existing.perBulan[bulan] = monthData;
+
+    // Save filter state
+    existing._filters = {
         wilayah: document.getElementById('filterWilayah')?.value || '',
         satker1: document.getElementById('filterSatker1')?.value || '',
         satker2: document.getElementById('filterSatker2')?.value || '',
@@ -238,21 +256,19 @@ function saveData() {
         bulan1: document.getElementById('filterBulan1')?.value || '',
         bulan2: document.getElementById('filterBulan2')?.value || ''
     };
-
-    data._savedAt = new Date().toISOString();
+    existing.savedAt = new Date().toISOString();
+    existing._savedAt = existing.savedAt;
 
     try {
-        // Save to localStorage (backup)
-        localStorage.setItem(key, JSON.stringify(data));
+        localStorage.setItem(key, JSON.stringify(existing));
         localStorage.setItem('pidum_last_key', key);
-        localStorage.setItem('pidum_last_filters', JSON.stringify(data._filters));
+        localStorage.setItem('pidum_last_filters', JSON.stringify(existing._filters));
 
-        // Save to Supabase (primary - for WordPress iframe)
-        saveToSupabase(key, data);
-        // Also save last filters to Supabase
-        saveToSupabase('pidum_last_filters', data._filters);
+        saveToSupabase(key, existing);
+        saveToSupabase('pidum_last_filters', existing._filters);
 
-        showToast('Data berhasil disimpan!', 'success');
+        const BULAN_NAMES = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        showToast('Data bulan ' + (BULAN_NAMES[bulan - 1] || bulan) + ' berhasil disimpan!', 'success');
         document.getElementById('btnSave').innerHTML = '<i class="fas fa-check"></i> Tersimpan';
         setTimeout(() => {
             const btn = document.getElementById('btnSave');
@@ -269,7 +285,6 @@ function saveData() {
 async function loadSavedData(restoreFilters) {
     // Only restore filters on initial load, not when user manually changes them
     if (restoreFilters !== false) {
-        // Try Supabase first, then localStorage
         let filters = null;
         const sbFilters = await loadFromSupabase('pidum_last_filters');
         if (sbFilters) {
@@ -290,7 +305,10 @@ async function loadSavedData(restoreFilters) {
         }
     }
 
-    // Then load data for current filter combination
+    // Clear all fields first
+    clearDataFields();
+
+    // Load data for current filter combination
     const key = getStorageKey();
     let data = null;
 
@@ -299,25 +317,37 @@ async function loadSavedData(restoreFilters) {
     if (sbData) {
         data = sbData;
     } else {
-        // Fallback to localStorage
         const saved = localStorage.getItem(key);
         if (saved) {
             try { data = JSON.parse(saved); } catch (e) { }
         }
     }
 
-    if (data) {
+    if (data && data.perBulan) {
+        // Per-bulan format: aggregate from month range
+        const bA = parseInt(document.getElementById('filterBulan1')?.value || '1');
+        const bB = parseInt(document.getElementById('filterBulan2')?.value || bA);
+        const start = Math.min(bA, bB), end = Math.max(bA, bB);
+        const sumFields = {};
+        for (let m = start; m <= end; m++) {
+            const md = data.perBulan[m];
+            if (!md) continue;
+            dataFields.forEach(field => {
+                sumFields[field] = ((parseInt(sumFields[field]) || 0) + (parseInt(md[field]) || 0)).toString();
+            });
+        }
         dataFields.forEach(field => {
             const input = document.getElementById(field);
-            if (input && data[field] !== undefined) {
-                input.value = data[field];
-            }
+            if (input && sumFields[field] !== undefined) input.value = sumFields[field];
         });
-    } else {
-        clearDataFields();
+    } else if (data) {
+        // Legacy flat format
+        dataFields.forEach(field => {
+            const input = document.getElementById(field);
+            if (input && data[field] !== undefined) input.value = data[field];
+        });
     }
 
-    // Reset unsaved flag after loading
     hasUnsaved = false;
     const btn = document.getElementById('btnSave');
     if (btn) btn.innerHTML = '<i class="fas fa-save"></i> Simpan Data';
