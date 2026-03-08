@@ -59,6 +59,9 @@ function saveAllData() {
 }
 
 function loadAllData() {
+    // Clear all fields first
+    ['tppu-count', 'tpa-count'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+
     const saved = localStorage.getItem(getStorageKey());
     if (!saved) return;
     try {

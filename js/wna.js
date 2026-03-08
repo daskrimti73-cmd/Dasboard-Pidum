@@ -752,6 +752,12 @@ function saveAllData(silent) {
 }
 
 function loadAllData() {
+    // Clear all fields first
+    ['wna-tersangka', 'wna-negara', 'wna-laki', 'wna-perempuan'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    negaraData = []; renderNegaraList(); updateNegaraCount();
+    klasifikasiData = []; renderKlasifikasiList();
+    const tpL = getTindakPidanaListWna(); tpL.forEach((d, i) => { const el = document.getElementById('dir-wna-' + i); if (el) el.value = ''; });
+
     const saved = localStorage.getItem(getWnaStorageKey());
     if (!saved) return;
     try {

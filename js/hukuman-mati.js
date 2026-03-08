@@ -280,6 +280,10 @@ function saveAllData(silent) {
 }
 
 function loadAllDataHm() {
+    // Clear all fields first
+    ['hm-pn', 'hm-pt', 'hm-ma'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    const tpL = getTindakPidanaListHm(); tpL.forEach((tp, i) => { const el = document.getElementById('tp-hm-' + i); if (el) el.value = ''; });
+
     const saved = localStorage.getItem(getHmStorageKey());
     if (!saved) return;
     try {

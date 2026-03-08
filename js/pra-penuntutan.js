@@ -560,6 +560,12 @@ function saveAllData(silent) {
 }
 
 function loadAllData() {
+    // Clear all fields first so stale data from previous month doesn't remain
+    SPDP_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    TAHAP1_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    const _dl1 = getDirListForSection('spdp'); _dl1.forEach((d, i) => { const el = document.getElementById('dir-spdp-' + i); if (el) el.value = ''; });
+    const _dl2 = getDirListForSection('tahap1'); _dl2.forEach((d, i) => { const el = document.getElementById('dir-tahap1-' + i); if (el) el.value = ''; });
+
     const saved = localStorage.getItem(getPrapenStorageKey('all'));
     if (!saved) return;
 

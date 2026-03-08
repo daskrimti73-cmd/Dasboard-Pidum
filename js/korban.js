@@ -1008,6 +1008,11 @@ function saveAllData(silent) {
 }
 
 function loadAllData() {
+    // Clear all fields first
+    ['korban-perempuan', 'korban-anak'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    perkaraPerempuanData = []; renderPerkaraPerempuanList();
+    perkaraAnakData = []; renderPerkaraAnakList();
+
     const saved = localStorage.getItem(getKorbanStorageKey());
     if (!saved) return;
     try {

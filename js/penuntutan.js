@@ -439,6 +439,12 @@ function saveAllData(silent) {
 }
 
 function loadAllData() {
+    // Clear all fields first
+    Object.keys(SECTIONS).forEach(sec => {
+        SECTIONS[sec].fields.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+        const dl = getDirListForSectionP(sec); dl.forEach((d, i) => { const el = document.getElementById('dir-' + sec + '-' + i); if (el) el.value = ''; });
+    });
+
     const saved = localStorage.getItem(getPenuntutanStorageKey());
     if (!saved) return;
     try {

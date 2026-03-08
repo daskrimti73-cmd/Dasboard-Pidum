@@ -377,6 +377,12 @@ function saveAllData(silent) {
 }
 
 function loadAllData() {
+    // Clear all fields first
+    Object.keys(SECTIONS_UH).forEach(sec => {
+        SECTIONS_UH[sec].fields.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+        const dl = getDirektoratMapUH(sec); dl.forEach((d, i) => { const el = document.getElementById('dir-' + sec + '-' + i); if (el) el.value = ''; });
+    });
+
     const saved = localStorage.getItem(getUpayaHukumStorageKey());
     if (!saved) return;
     try {

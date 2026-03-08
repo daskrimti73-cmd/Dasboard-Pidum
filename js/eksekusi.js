@@ -414,6 +414,10 @@ function saveAllData(silent) {
 }
 
 function loadAllData() {
+    // Clear all fields first
+    CARD_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    Object.keys(DIR_CHARTS).forEach(key => { const dl = getTindakPidanaListEks(key); dl.forEach((d, i) => { const el = document.getElementById('dir-' + key + '-' + i); if (el) el.value = ''; }); });
+
     const saved = localStorage.getItem(getEksekusiStorageKey());
     if (!saved) return;
     try {
