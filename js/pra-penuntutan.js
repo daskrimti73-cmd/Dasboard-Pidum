@@ -542,6 +542,19 @@ function saveAllData(silent) {
         spdpDir: spdpDir,
         tahap1Dir: tahap1Dir
     };
+
+    // Also save monthly trend inputs for ALL months
+    for (let m = 1; m <= 12; m++) {
+        const elSpdp = document.getElementById('monthly-spdp-' + m);
+        const elTahap1 = document.getElementById('monthly-tahap1-' + m);
+        if (!elSpdp && !elTahap1) continue;
+        if (!existing.perBulan[m]) existing.perBulan[m] = { spdpCards: {}, tahap1Cards: {}, spdpDir: {}, tahap1Dir: {} };
+        if (!existing.perBulan[m].spdpCards) existing.perBulan[m].spdpCards = {};
+        if (!existing.perBulan[m].tahap1Cards) existing.perBulan[m].tahap1Cards = {};
+        if (elSpdp) existing.perBulan[m].spdpCards['spdp-spdp'] = elSpdp.value;
+        if (elTahap1) existing.perBulan[m].tahap1Cards['tahap1-tahap1'] = elTahap1.value;
+    }
+
     existing.savedAt = new Date().toISOString();
 
     try {

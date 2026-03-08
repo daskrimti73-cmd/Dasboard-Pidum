@@ -404,6 +404,18 @@ function saveAllData(silent) {
     let existing = {}; try { const s = localStorage.getItem(storageKey); if (s) existing = JSON.parse(s); } catch (e) { }
     if (!existing.perBulan) existing.perBulan = {};
     existing.perBulan[bulan] = monthData;
+
+    // Also save monthly trend inputs for ALL months
+    Object.keys(TREND_CHARTS).forEach(key => {
+        for (let m = 1; m <= 12; m++) {
+            const el = document.getElementById('monthly-' + key + '-' + m);
+            if (!el) continue;
+            if (!existing.perBulan[m]) existing.perBulan[m] = { cards: {} };
+            if (!existing.perBulan[m].cards) existing.perBulan[m].cards = {};
+            existing.perBulan[m].cards[key] = el.value;
+        }
+    });
+
     existing.savedAt = new Date().toISOString();
     try {
         localStorage.setItem(storageKey, JSON.stringify(existing));
