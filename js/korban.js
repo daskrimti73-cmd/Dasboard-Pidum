@@ -977,6 +977,11 @@ function saveAllData(silent) {
     const bulan = bulanAwal;
     const monthData = { cards: {} };
     ['korban-perempuan', 'korban-anak'].forEach(id => { const el = document.getElementById(id); if (el) monthData.cards[id] = el.value; });
+    // Save monthly trend input values
+    const epInput = document.getElementById('monthly-perempuan-' + bulan);
+    const eaInput = document.getElementById('monthly-anak-' + bulan);
+    monthData.trendPerempuan = epInput ? epInput.value : '';
+    monthData.trendAnak = eaInput ? eaInput.value : '';
     monthData.perkaraPerempuanData = perkaraPerempuanData;
     monthData.perkaraAnakData = perkaraAnakData;
     const storageKey = getKorbanStorageKey();
@@ -1018,12 +1023,16 @@ function loadAllData() {
                 if (md.perkaraAnakData) mergedPA = mergedPA.concat(md.perkaraAnakData);
             }
             ['korban-perempuan', 'korban-anak'].forEach(id => { const el = document.getElementById(id); if (el && sumC[id] !== undefined) el.value = sumC[id]; });
-            perkaraPerempuanData = mergedPP; renderPerkaraPerempuanList();
-            perkaraAnakData = mergedPA; renderPerkaraAnakList();
+            // Merge duplicates by summing jumlah for same nama
+            perkaraPerempuanData = _mergePerkara(mergedPP); renderPerkaraPerempuanList();
+            perkaraAnakData = _mergePerkara(mergedPA); renderPerkaraAnakList();
+            // Load monthly trend inputs - prefer saved trend value, fallback to card value
             for (let m = 1; m <= 12; m++) {
                 const md = data.perBulan[m];
-                const ep = document.getElementById('monthly-perempuan-' + m); if (ep) ep.value = (md && md.cards && md.cards['korban-perempuan']) || '';
-                const ea = document.getElementById('monthly-anak-' + m); if (ea) ea.value = (md && md.cards && md.cards['korban-anak']) || '';
+                const ep = document.getElementById('monthly-perempuan-' + m);
+                if (ep) ep.value = (md && md.trendPerempuan) || (md && md.cards && md.cards['korban-perempuan']) || '';
+                const ea = document.getElementById('monthly-anak-' + m);
+                if (ea) ea.value = (md && md.trendAnak) || (md && md.cards && md.cards['korban-anak']) || '';
             }
             return;
         }
@@ -1036,6 +1045,21 @@ function loadAllData() {
     } catch (e) { console.error('Load error:', e); }
 }
 function _sumK(t, s) { if (!s) return; Object.keys(s).forEach(k => { t[k] = ((parseInt(t[k]) || 0) + (parseInt(s[k]) || 0)).toString(); }); }
+
+// Merge perkara entries with the same nama by summing their jumlah
+function _mergePerkara(arr) {
+    if (!arr || arr.length === 0) return [];
+    const map = {};
+    arr.forEach(item => {
+        const key = item.nama.toLowerCase().trim();
+        if (map[key]) {
+            map[key].jumlah += (parseInt(item.jumlah) || 0);
+        } else {
+            map[key] = { nama: item.nama, jumlah: parseInt(item.jumlah) || 0 };
+        }
+    });
+    return Object.values(map);
+}
 
 function resetAllData() {
     if (!confirm('Apakah Anda yakin ingin mengosongkan semua data di halaman ini?')) return;
