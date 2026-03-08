@@ -543,8 +543,9 @@ function saveAllData(silent) {
         tahap1Dir: tahap1Dir
     };
 
-    // Also save monthly trend inputs for ALL months
+    // Also save monthly trend inputs for ALL months EXCEPT current
     for (let m = 1; m <= 12; m++) {
+        if (m === bulan) continue; // current month already saved from card inputs above
         const elSpdp = document.getElementById('monthly-spdp-' + m);
         const elTahap1 = document.getElementById('monthly-tahap1-' + m);
         if (!elSpdp && !elTahap1) continue;

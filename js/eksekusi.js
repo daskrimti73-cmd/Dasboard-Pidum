@@ -405,9 +405,10 @@ function saveAllData(silent) {
     if (!existing.perBulan) existing.perBulan = {};
     existing.perBulan[bulan] = monthData;
 
-    // Also save monthly trend inputs for ALL months
+    // Also save monthly trend inputs for ALL months EXCEPT current
     Object.keys(TREND_CHARTS).forEach(key => {
         for (let m = 1; m <= 12; m++) {
+            if (m === bulan) continue; // current month already saved from card inputs
             const el = document.getElementById('monthly-' + key + '-' + m);
             if (!el) continue;
             if (!existing.perBulan[m]) existing.perBulan[m] = { cards: {} };

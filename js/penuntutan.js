@@ -429,10 +429,11 @@ function saveAllData(silent) {
     if (!existing.perBulan) existing.perBulan = {};
     existing.perBulan[bulan] = monthData;
 
-    // Also save monthly trend inputs for ALL months (user may edit other months' trends)
+    // Also save monthly trend inputs for ALL months EXCEPT current
     Object.keys(SECTIONS).forEach(sec => {
         const mf = SECTIONS[sec].fields[0]; // first field is used for trend
         for (let m = 1; m <= 12; m++) {
+            if (m === bulan) continue; // current month already saved from card inputs
             const el = document.getElementById('monthly-' + sec + '-' + m);
             if (!el) continue;
             if (!existing.perBulan[m]) existing.perBulan[m] = {};
