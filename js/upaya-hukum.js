@@ -367,6 +367,10 @@ function saveAllData(silent) {
 }
 
 function loadAllData() {
+    // Ensure direktorat list includes ALL categories from ALL months' saved data
+    ensureDirListFromSavedData(getUpayaHukumStorageKey(), 'uh_banding', ['bandingDir']);
+    ensureDirListFromSavedData(getUpayaHukumStorageKey(), 'uh_kasasi', ['kasasiDir']);
+
     // Clear all fields first
     Object.keys(SECTIONS_UH).forEach(sec => {
         SECTIONS_UH[sec].fields.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });

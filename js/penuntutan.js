@@ -429,6 +429,11 @@ function saveAllData(silent) {
 }
 
 function loadAllData() {
+    // Ensure direktorat list includes ALL categories from ALL months' saved data
+    Object.keys(SECTIONS).forEach(sec => {
+        ensureDirListFromSavedData(getPenuntutanStorageKey(), 'penuntutan_' + sec, [sec + 'Dir']);
+    });
+
     // Clear all fields first
     Object.keys(SECTIONS).forEach(sec => {
         SECTIONS[sec].fields.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });

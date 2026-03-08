@@ -742,6 +742,11 @@ function saveAllData(silent) {
 }
 
 function loadAllData() {
+    // Ensure direktorat list includes ALL categories from ALL months' saved data
+    ensureDirListFromSavedData(getWnaStorageKey(), 'wna', ['dirValues']);
+    // Rebuild dir inputs with the complete category list
+    generateDirInputs();
+
     // Clear all fields first
     ['wna-tersangka', 'wna-negara', 'wna-laki', 'wna-perempuan'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
     negaraData = []; renderNegaraList(); updateNegaraCount();

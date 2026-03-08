@@ -404,6 +404,11 @@ function saveAllData(silent) {
 }
 
 function loadAllData() {
+    // Ensure direktorat list includes ALL categories from ALL months' saved data
+    Object.keys(DIR_CHARTS).forEach(key => {
+        ensureDirListFromSavedData(getEksekusiStorageKey(), 'eks_' + key, [key + 'Dir']);
+    });
+
     // Clear all fields first
     CARD_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
     Object.keys(DIR_CHARTS).forEach(key => { const dl = getTindakPidanaListEks(key); dl.forEach((d, i) => { const el = document.getElementById('dir-' + key + '-' + i); if (el) el.value = ''; }); });

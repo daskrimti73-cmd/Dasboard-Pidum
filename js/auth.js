@@ -286,6 +286,53 @@ function buildStorageKey(prefix) {
     return `${prefix}_${w}_${s1}_${s2}_${t}`;
 }
 
+// ---- Ensure direktorat list includes ALL categories ever used in saved data ----
+// This prevents data loss when admin deletes a category in one month
+// but another month still has data for that category.
+// storageKey: the localStorage key for the page data (e.g. getWnaStorageKey())
+// sectionKey: the direktorat section key (e.g. 'wna')
+// dirDataKey: the key name inside each month's data that contains direktorat values
+//             (e.g. 'dirValues', 'tpValues', 'spdpDir', 'tahap1Dir')
+function ensureDirListFromSavedData(storageKey, sectionKey, dirDataKeys) {
+    try {
+        const saved = localStorage.getItem(storageKey);
+        if (!saved) return;
+        const data = JSON.parse(saved);
+        if (!data.perBulan) return;
+
+        const currentList = getDirektoratList(sectionKey);
+        const currentSet = new Set(currentList.map(d => d.toLowerCase()));
+        let changed = false;
+
+        // Scan all 12 months for directorat keys used in saved data
+        for (let m = 1; m <= 12; m++) {
+            const md = data.perBulan[m];
+            if (!md) continue;
+
+            // Check each dirDataKey (could be 'dirValues', 'tpValues', etc.)
+            const keys = Array.isArray(dirDataKeys) ? dirDataKeys : [dirDataKeys];
+            keys.forEach(dk => {
+                const dirObj = md[dk];
+                if (!dirObj) return;
+                Object.keys(dirObj).forEach(k => {
+                    // Only add string keys (not numeric indices)
+                    if (isNaN(parseInt(k)) && !currentSet.has(k.toLowerCase())) {
+                        currentList.push(k);
+                        currentSet.add(k.toLowerCase());
+                        changed = true;
+                    }
+                });
+            });
+        }
+
+        if (changed) {
+            saveDirektoratList(currentList, sectionKey);
+        }
+    } catch (e) {
+        console.error('ensureDirListFromSavedData error:', e);
+    }
+}
+
 // ---- Bulan (Month) Management ----
 const BULAN_NAMES_ALL = [
     { index: 1, name: 'Januari' },

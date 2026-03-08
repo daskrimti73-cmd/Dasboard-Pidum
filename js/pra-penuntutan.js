@@ -550,6 +550,10 @@ function saveAllData(silent) {
 }
 
 function loadAllData() {
+    // Ensure direktorat list includes ALL categories from ALL months' saved data
+    ensureDirListFromSavedData(getPrapenStorageKey('all'), 'spdp', ['spdpDir']);
+    ensureDirListFromSavedData(getPrapenStorageKey('all'), 'tahap1', ['tahap1Dir']);
+
     // Clear all fields first so stale data from previous month doesn't remain
     SPDP_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
     TAHAP1_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
