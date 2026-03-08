@@ -141,29 +141,45 @@ function setupPageInfo() {
 }
 
 // ---- Storage key ----
-function getStorageKeyWna() {
+function getWnaBaseKey() {
     const w = document.getElementById('filterWilayah').value || '';
     const s1 = document.getElementById('filterSatker1').value || '';
     const s2 = document.getElementById('filterSatker2').value || '';
     const t = document.getElementById('filterTahun').value || '';
+    return `wna_detail_${currentSection}_${w}_${s1}_${s2}_${t}`;
+}
+function getStorageKeyWna() {
+    const base = getWnaBaseKey();
     const b1 = document.getElementById('filterBulan1').value || '';
     const b2 = document.getElementById('filterBulan2').value || '';
-    return `wna_detail_${currentSection}_${w}_${s1}_${s2}_${t}_${b1}_${b2}`;
+    return `${base}_${b1}_${b2}`;
 }
 
-// ---- Load/Save data ----
+// ---- Load/Save data (per-bulan with aggregation) ----
 function loadTableData() {
-    const key = getStorageKeyWna();
-    const saved = localStorage.getItem(key);
-    if (saved) {
-        try { tableData = JSON.parse(saved); } catch (e) { tableData = []; }
-    } else {
-        tableData = [];
+    const base = getWnaBaseKey();
+    const bA = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bB = parseInt(document.getElementById('filterBulan2')?.value || bA);
+    const start = Math.min(bA, bB), end = Math.max(bA, bB);
+    let merged = [];
+    for (let m = start; m <= end; m++) {
+        const key = `${base}_perbulan_${m}`;
+        const saved = localStorage.getItem(key);
+        if (saved) { try { const arr = JSON.parse(saved); if (Array.isArray(arr)) merged = merged.concat(arr); } catch (e) { } }
     }
+    if (merged.length > 0) { tableData = merged; return; }
+    const legacyKey = getStorageKeyWna();
+    const saved = localStorage.getItem(legacyKey);
+    if (saved) { try { tableData = JSON.parse(saved); } catch (e) { tableData = []; } }
+    else { tableData = []; }
 }
 
 function saveTableData() {
-    const key = getStorageKeyWna();
+    const bA = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bB = parseInt(document.getElementById('filterBulan2')?.value || bA);
+    if (bA !== bB) { showToast('Untuk menyimpan data, Bulan Awal dan Bulan Akhir harus sama.', 'error'); return; }
+    const base = getWnaBaseKey();
+    const key = `${base}_perbulan_${bA}`;
     try { localStorage.setItem(key, JSON.stringify(tableData)); } catch (e) { console.error('Save error:', e); }
 }
 

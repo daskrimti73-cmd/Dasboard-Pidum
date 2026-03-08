@@ -579,35 +579,65 @@ function setupPageInfo() {
     document.getElementById('tableTitle').textContent = 'WILAYAH HUKUM';
 }
 
-// ---- Storage key for table data ----
-function getTableStorageKey() {
+// ---- Storage key for table data (per-bulan base key, without month) ----
+function getTableBaseKey() {
     const wilayah = document.getElementById('filterWilayah')?.value || '';
     const satker1 = document.getElementById('filterSatker1')?.value || '';
     const satker2 = document.getElementById('filterSatker2')?.value || '';
     const tahun = document.getElementById('filterTahun')?.value || '';
+    return `detail_${currentSection}_${wilayah}_${satker1}_${satker2}_${tahun}`;
+}
+function getTableStorageKey() {
+    const base = getTableBaseKey();
     const bulan1 = document.getElementById('filterBulan1')?.value || '';
     const bulan2 = document.getElementById('filterBulan2')?.value || '';
-    return `detail_${currentSection}_${wilayah}_${satker1}_${satker2}_${tahun}_${bulan1}_${bulan2}`;
+    return `${base}_${bulan1}_${bulan2}`;
 }
 
-// ---- Load table data from localStorage ----
+// ---- Load table data from localStorage (per-bulan with aggregation) ----
 function loadTableData() {
-    const key = getTableStorageKey();
-    const saved = localStorage.getItem(key);
-    if (saved) {
-        try {
-            tableData = JSON.parse(saved);
-        } catch (e) {
-            tableData = [];
+    const base = getTableBaseKey();
+    const bA = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bB = parseInt(document.getElementById('filterBulan2')?.value || bA);
+    const start = Math.min(bA, bB), end = Math.max(bA, bB);
+
+    let merged = [];
+    for (let m = start; m <= end; m++) {
+        const key = `${base}_perbulan_${m}`;
+        const saved = localStorage.getItem(key);
+        if (saved) {
+            try {
+                const arr = JSON.parse(saved);
+                if (Array.isArray(arr)) merged = merged.concat(arr);
+            } catch (e) { }
         }
+    }
+
+    if (merged.length > 0) {
+        tableData = merged;
+        return;
+    }
+
+    // Legacy fallback
+    const legacyKey = getTableStorageKey();
+    const saved = localStorage.getItem(legacyKey);
+    if (saved) {
+        try { tableData = JSON.parse(saved); } catch (e) { tableData = []; }
     } else {
         tableData = [];
     }
 }
 
-// ---- Save table data to localStorage ----
+// ---- Save table data to localStorage (per-bulan) ----
 function saveTableData() {
-    const key = getTableStorageKey();
+    const bA = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bB = parseInt(document.getElementById('filterBulan2')?.value || bA);
+    if (bA !== bB) {
+        showToast('Untuk menyimpan data, Bulan Awal dan Bulan Akhir harus sama.', 'error');
+        return;
+    }
+    const base = getTableBaseKey();
+    const key = `${base}_perbulan_${bA}`;
     try {
         localStorage.setItem(key, JSON.stringify(tableData));
     } catch (e) {

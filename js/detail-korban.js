@@ -73,24 +73,36 @@ function setSelectVal(id, val) {
 // ============================================
 // DATA
 // ============================================
-function getTableStorageKey() {
-    const w  = document.getElementById('filterWilayah')?.value || '';
+function getKorbanBaseKey() {
+    const w = document.getElementById('filterWilayah')?.value || '';
     const s1 = document.getElementById('filterSatker1')?.value || '';
     const s2 = document.getElementById('filterSatker2')?.value || '';
-    const t  = document.getElementById('filterTahun')?.value || '';
+    const t = document.getElementById('filterTahun')?.value || '';
+    return `korban_table_${w}_${s1}_${s2}_${t}`;
+}
+function getTableStorageKey() {
+    const base = getKorbanBaseKey();
     const b1 = document.getElementById('filterBulan1')?.value || '';
     const b2 = document.getElementById('filterBulan2')?.value || '';
-    return `korban_table_${w}_${s1}_${s2}_${t}_${b1}_${b2}`;
+    return `${base}_${b1}_${b2}`;
 }
 
 function loadData() {
-    const key = getTableStorageKey();
-    const saved = localStorage.getItem(key);
-    if (saved) {
-        try { allTableData = JSON.parse(saved); } catch (e) { allTableData = []; }
-    } else {
-        allTableData = [];
+    const base = getKorbanBaseKey();
+    const bA = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bB = parseInt(document.getElementById('filterBulan2')?.value || bA);
+    const start = Math.min(bA, bB), end = Math.max(bA, bB);
+    let merged = [];
+    for (let m = start; m <= end; m++) {
+        const key = `${base}_perbulan_${m}`;
+        const saved = localStorage.getItem(key);
+        if (saved) { try { const arr = JSON.parse(saved); if (Array.isArray(arr)) merged = merged.concat(arr); } catch (e) { } }
     }
+    if (merged.length > 0) { allTableData = merged; return; }
+    const legacyKey = getTableStorageKey();
+    const saved = localStorage.getItem(legacyKey);
+    if (saved) { try { allTableData = JSON.parse(saved); } catch (e) { allTableData = []; } }
+    else { allTableData = []; }
 }
 
 // ============================================
@@ -290,10 +302,10 @@ function closeDetailModal() {
 // ============================================
 function applyCariFilter() {
     // Re-build URL with current filter values and navigate
-    const w  = document.getElementById('filterWilayah')?.value || '';
+    const w = document.getElementById('filterWilayah')?.value || '';
     const s1 = document.getElementById('filterSatker1')?.value || '';
     const s2 = document.getElementById('filterSatker2')?.value || '';
-    const t  = document.getElementById('filterTahun')?.value || '';
+    const t = document.getElementById('filterTahun')?.value || '';
     const b1 = document.getElementById('filterBulan1')?.value || '';
     const b2 = document.getElementById('filterBulan2')?.value || '';
     const params = new URLSearchParams({ jenis: jenisFilter, w, s1, s2, t, b1, b2 });

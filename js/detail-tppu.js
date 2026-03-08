@@ -67,27 +67,45 @@ function setSelectVal(id, val) {
 // ============================================
 // DATA (localStorage)
 // ============================================
-function getTableStorageKey() {
-    const w  = document.getElementById('filterWilayah')?.value || '';
+function getTppuBaseKey() {
+    const w = document.getElementById('filterWilayah')?.value || '';
     const s1 = document.getElementById('filterSatker1')?.value || '';
     const s2 = document.getElementById('filterSatker2')?.value || '';
-    const t  = document.getElementById('filterTahun')?.value || '';
+    const t = document.getElementById('filterTahun')?.value || '';
+    return `tppu_${w}_${s1}_${s2}_${t}_table`;
+}
+function getTableStorageKey() {
+    const base = getTppuBaseKey();
     const b1 = document.getElementById('filterBulan1')?.value || '';
     const b2 = document.getElementById('filterBulan2')?.value || '';
-    return `tppu_${w}_${s1}_${s2}_${t}_${b1}_${b2}_table`;
+    return `${base}_${b1}_${b2}`;
 }
 
 function loadData() {
-    const saved = localStorage.getItem(getTableStorageKey());
-    if (saved) {
-        try { allTableData = JSON.parse(saved); } catch (e) { allTableData = []; }
-    } else {
-        allTableData = [];
+    const base = getTppuBaseKey();
+    const bA = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bB = parseInt(document.getElementById('filterBulan2')?.value || bA);
+    const start = Math.min(bA, bB), end = Math.max(bA, bB);
+    let merged = [];
+    for (let m = start; m <= end; m++) {
+        const key = `${base}_perbulan_${m}`;
+        const saved = localStorage.getItem(key);
+        if (saved) { try { const arr = JSON.parse(saved); if (Array.isArray(arr)) merged = merged.concat(arr); } catch (e) { } }
     }
+    if (merged.length > 0) { allTableData = merged; return; }
+    const legacyKey = getTableStorageKey();
+    const saved = localStorage.getItem(legacyKey);
+    if (saved) { try { allTableData = JSON.parse(saved); } catch (e) { allTableData = []; } }
+    else { allTableData = []; }
 }
 
 function saveData() {
-    try { localStorage.setItem(getTableStorageKey(), JSON.stringify(allTableData)); } catch (e) { console.error('Save error:', e); }
+    const bA = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bB = parseInt(document.getElementById('filterBulan2')?.value || bA);
+    if (bA !== bB) { showToast('Untuk menyimpan data, Bulan Awal dan Bulan Akhir harus sama.', 'error'); return; }
+    const base = getTppuBaseKey();
+    const key = `${base}_perbulan_${bA}`;
+    try { localStorage.setItem(key, JSON.stringify(allTableData)); } catch (e) { console.error('Save error:', e); }
 }
 
 // ============================================
@@ -297,9 +315,9 @@ function saveRecord() {
         if (el) { record[col.key] = el.value.trim(); if (record[col.key]) hasData = true; }
     });
     if (!hasData) { showToast('Mohon isi minimal satu field!', 'error'); return; }
-    
+
     const isNewRecord = editingIndex < 0;
-    
+
     if (editingIndex >= 0) {
         allTableData[editingIndex] = record;
         showToast('Data berhasil diperbarui!', 'success');
@@ -308,12 +326,12 @@ function saveRecord() {
         showToast('Data berhasil ditambahkan!', 'success');
     }
     saveData();
-    
+
     // Sinkronisasi dengan dashboard utama - tambah 1 jika data baru
     if (isNewRecord) {
         syncWithMainDashboard(1);
     }
-    
+
     closeModal();
     filterTable();
 }
@@ -328,10 +346,10 @@ function confirmDelete() {
     if (deleteIndex >= 0 && deleteIndex < allTableData.length) {
         allTableData.splice(deleteIndex, 1);
         saveData();
-        
+
         // Sinkronisasi dengan dashboard utama - kurangi nilai TPPU
         syncWithMainDashboard(-1);
-        
+
         filterTable();
         showToast('Data berhasil dihapus!', 'success');
     }
@@ -341,16 +359,16 @@ function confirmDelete() {
 // Fungsi untuk sinkronisasi dengan dashboard utama
 function syncWithMainDashboard(delta) {
     try {
-        const w  = document.getElementById('filterWilayah')?.value || '';
+        const w = document.getElementById('filterWilayah')?.value || '';
         const s1 = document.getElementById('filterSatker1')?.value || '';
         const s2 = document.getElementById('filterSatker2')?.value || '';
-        const t  = document.getElementById('filterTahun')?.value || '';
+        const t = document.getElementById('filterTahun')?.value || '';
         const b1 = document.getElementById('filterBulan1')?.value || '';
         const b2 = document.getElementById('filterBulan2')?.value || '';
-        
+
         const mainKey = `pidum_${w}_${s1}_${s2}_${t}_${b1}_${b2}`;
         const mainData = localStorage.getItem(mainKey);
-        
+
         if (mainData) {
             const data = JSON.parse(mainData);
             const currentVal = parseInt(data['val-tppu']) || 0;
@@ -402,10 +420,10 @@ function closeDetailModal() { document.getElementById('detailModal').classList.r
 
 // ---- Cari Button ----
 function applyCariFilter() {
-    const w  = document.getElementById('filterWilayah')?.value || '';
+    const w = document.getElementById('filterWilayah')?.value || '';
     const s1 = document.getElementById('filterSatker1')?.value || '';
     const s2 = document.getElementById('filterSatker2')?.value || '';
-    const t  = document.getElementById('filterTahun')?.value || '';
+    const t = document.getElementById('filterTahun')?.value || '';
     const b1 = document.getElementById('filterBulan1')?.value || '';
     const b2 = document.getElementById('filterBulan2')?.value || '';
     const params = new URLSearchParams({ jenis: jenisFilter, w, s1, s2, t, b1, b2 });
