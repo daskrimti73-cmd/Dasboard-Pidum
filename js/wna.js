@@ -764,6 +764,23 @@ function loadAllData() {
                 if (md.negaraData) mergedNeg = mergedNeg.concat(md.negaraData);
                 if (md.klasifikasiData) mergedKlas = mergedKlas.concat(md.klasifikasiData);
             }
+            // Merge negara: same code => sum jumlah
+            const negMap = {};
+            mergedNeg.forEach(n => {
+                if (negMap[n.code]) { negMap[n.code].jumlah += (parseInt(n.jumlah) || 0); }
+                else { negMap[n.code] = { code: n.code, name: n.name, jumlah: parseInt(n.jumlah) || 0 }; }
+            });
+            mergedNeg = Object.values(negMap);
+
+            // Merge klasifikasi: same nama (case-insensitive) => sum jumlah
+            const klasMap = {};
+            mergedKlas.forEach(k => {
+                const key = (k.nama || '').toLowerCase();
+                if (klasMap[key]) { klasMap[key].jumlah += (parseInt(k.jumlah) || 0); }
+                else { klasMap[key] = { nama: k.nama, jumlah: parseInt(k.jumlah) || 0 }; }
+            });
+            mergedKlas = Object.values(klasMap);
+
             ['wna-tersangka', 'wna-negara', 'wna-laki', 'wna-perempuan'].forEach(id => { const el = document.getElementById(id); if (el && sumC[id] !== undefined) el.value = sumC[id]; });
             negaraData = mergedNeg; renderNegaraList(); updateNegaraCount();
             klasifikasiData = mergedKlas; renderKlasifikasiList();
