@@ -197,15 +197,7 @@ function onDataInput(section) {
 function onMonthlyInputP(section) {
     markUnsaved();
     updateTrendChartP(section);
-    // Sync trend → card for current month (so save picks up the correct value)
-    const bulan = parseInt(document.getElementById('filterBulan1')?.value || '1');
-    const bulanEnd = parseInt(document.getElementById('filterBulan2')?.value || bulan);
-    if (bulan === bulanEnd) {
-        const mf = SECTIONS[section].fields[0];
-        const trendVal = document.getElementById('monthly-' + section + '-' + bulan)?.value || '';
-        const cardEl = document.getElementById(mf);
-        if (cardEl) cardEl.value = trendVal;
-    }
+    // No sync to card - they are completely independent
 }
 
 function onDirInputP(section) {
@@ -439,16 +431,15 @@ function saveAllData(silent) {
     if (!existing.perBulan) existing.perBulan = {};
     existing.perBulan[bulan] = monthData;
 
-    // Also save monthly trend inputs for ALL months EXCEPT current
+    // Save monthly trend inputs SEPARATELY for ALL months
     Object.keys(SECTIONS).forEach(sec => {
-        const mf = SECTIONS[sec].fields[0]; // first field is used for trend
         for (let m = 1; m <= 12; m++) {
-            if (m === bulan) continue; // current month already saved from card inputs
+            if (m === bulan) continue; // current month trend not needed separately
             const el = document.getElementById('monthly-' + sec + '-' + m);
             if (!el) continue;
             if (!existing.perBulan[m]) existing.perBulan[m] = {};
-            if (!existing.perBulan[m][sec + 'Cards']) existing.perBulan[m][sec + 'Cards'] = {};
-            existing.perBulan[m][sec + 'Cards'][mf] = el.value;
+            if (!existing.perBulan[m]['trend_' + sec]) existing.perBulan[m]['trend_' + sec] = '';
+            existing.perBulan[m]['trend_' + sec] = el.value;
         }
     });
 
@@ -488,7 +479,7 @@ function loadAllData() {
                 const dl = getDirListForSectionP(sec), ks = Object.keys(sumD), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
                 if (isL) { dl.forEach((d, i) => { const el = document.getElementById('dir-' + sec + '-' + i); if (el && sumD[d] !== undefined) el.value = sumD[d]; }); }
                 else { ks.forEach(i => { const el = document.getElementById('dir-' + sec + '-' + i); if (el) el.value = sumD[i]; }); }
-                for (let m = 1; m <= 12; m++) { const md = data.perBulan[m]; const mf = SECTIONS[sec].fields[0]; const el = document.getElementById('monthly-' + sec + '-' + m); if (el) el.value = (md && md[sec + 'Cards'] && md[sec + 'Cards'][mf]) || ''; }
+                for (let m = 1; m <= 12; m++) { const md = data.perBulan[m]; const mf = SECTIONS[sec].fields[0]; const el = document.getElementById('monthly-' + sec + '-' + m); if (el) el.value = (md && md['trend_' + sec] !== undefined ? md['trend_' + sec] : (md && md[sec + 'Cards'] && md[sec + 'Cards'][mf])) || ''; }
             });
             return;
         }

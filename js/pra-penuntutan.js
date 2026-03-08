@@ -168,15 +168,7 @@ function onDataInput(section) {
 function onMonthlyInput(section) {
     markUnsaved();
     updateTrendChart(section);
-    // Sync trend → card for current month (so save picks up the correct value)
-    const bulan = parseInt(document.getElementById('filterBulan1')?.value || '1');
-    const bulanEnd = parseInt(document.getElementById('filterBulan2')?.value || bulan);
-    if (bulan === bulanEnd) {
-        const firstField = section === 'spdp' ? 'spdp-spdp' : 'tahap1-tahap1';
-        const trendVal = document.getElementById('monthly-' + section + '-' + bulan)?.value || '';
-        const cardEl = document.getElementById(firstField);
-        if (cardEl) cardEl.value = trendVal;
-    }
+    // No sync to card - they are completely independent
 }
 
 // ---- On direktorat input: update bar chart ----
@@ -553,17 +545,13 @@ function saveAllData(silent) {
         tahap1Dir: tahap1Dir
     };
 
-    // Also save monthly trend inputs for ALL months EXCEPT current
+    // Save monthly trend inputs SEPARATELY for ALL months
     for (let m = 1; m <= 12; m++) {
-        if (m === bulan) continue; // current month already saved from card inputs above
+        if (!existing.perBulan[m]) existing.perBulan[m] = { spdpCards: {}, tahap1Cards: {}, spdpDir: {}, tahap1Dir: {} };
         const elSpdp = document.getElementById('monthly-spdp-' + m);
         const elTahap1 = document.getElementById('monthly-tahap1-' + m);
-        if (!elSpdp && !elTahap1) continue;
-        if (!existing.perBulan[m]) existing.perBulan[m] = { spdpCards: {}, tahap1Cards: {}, spdpDir: {}, tahap1Dir: {} };
-        if (!existing.perBulan[m].spdpCards) existing.perBulan[m].spdpCards = {};
-        if (!existing.perBulan[m].tahap1Cards) existing.perBulan[m].tahap1Cards = {};
-        if (elSpdp) existing.perBulan[m].spdpCards['spdp-spdp'] = elSpdp.value;
-        if (elTahap1) existing.perBulan[m].tahap1Cards['tahap1-tahap1'] = elTahap1.value;
+        if (elSpdp) existing.perBulan[m].trendSpdp = elSpdp.value;
+        if (elTahap1) existing.perBulan[m].trendTahap1 = elTahap1.value;
     }
 
     existing.savedAt = new Date().toISOString();
@@ -626,12 +614,13 @@ function loadAllData() {
             _setDir(sumTahap1Dir, 'tahap1');
 
             // Auto-fill monthly trend inputs from per-bulan card data
+            // Load trend values independently
             for (let m = 1; m <= 12; m++) {
                 const md = data.perBulan[m];
                 const s = document.getElementById('monthly-spdp-' + m);
                 const t = document.getElementById('monthly-tahap1-' + m);
-                if (s) s.value = (md && md.spdpCards && md.spdpCards['spdp-spdp']) || '';
-                if (t) t.value = (md && md.tahap1Cards && md.tahap1Cards['tahap1-tahap1']) || '';
+                if (s) s.value = (md && md.trendSpdp !== undefined ? md.trendSpdp : (md && md.spdpCards && md.spdpCards['spdp-spdp'])) || '';
+                if (t) t.value = (md && md.trendTahap1 !== undefined ? md.trendTahap1 : (md && md.tahap1Cards && md.tahap1Cards['tahap1-tahap1'])) || '';
             }
             return;
         }

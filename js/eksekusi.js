@@ -182,15 +182,7 @@ function onDataInput() {
 function onMonthlyInput(key) {
     markUnsaved();
     updateTrendChart(key);
-    // Sync trend → card for current month (so save picks up the correct value)
-    const bulan = parseInt(document.getElementById('filterBulan1')?.value || '1');
-    const bulanEnd = parseInt(document.getElementById('filterBulan2')?.value || bulan);
-    if (bulan === bulanEnd) {
-        const cardId = 'eks-' + key;
-        const trendVal = document.getElementById('monthly-' + key + '-' + bulan)?.value || '';
-        const cardEl = document.getElementById(cardId);
-        if (cardEl) cardEl.value = trendVal;
-    }
+    // No sync to card - they are completely independent
 }
 
 function onDirInput(key) {
@@ -415,15 +407,14 @@ function saveAllData(silent) {
     if (!existing.perBulan) existing.perBulan = {};
     existing.perBulan[bulan] = monthData;
 
-    // Also save monthly trend inputs for ALL months EXCEPT current
+    // Save monthly trend inputs SEPARATELY for ALL months
     Object.keys(TREND_CHARTS).forEach(key => {
         for (let m = 1; m <= 12; m++) {
-            if (m === bulan) continue; // current month already saved from card inputs
+            if (m === bulan) continue;
             const el = document.getElementById('monthly-' + key + '-' + m);
             if (!el) continue;
             if (!existing.perBulan[m]) existing.perBulan[m] = { cards: {} };
-            if (!existing.perBulan[m].cards) existing.perBulan[m].cards = {};
-            existing.perBulan[m].cards[key] = el.value;
+            existing.perBulan[m]['trend_' + key] = el.value;
         }
     });
 
@@ -473,7 +464,7 @@ function loadAllData() {
                     const md = data.perBulan[m];
                     const el = document.getElementById('monthly-' + key + '-' + m);
                     if (el) {
-                        let val = (md && md.cards && md.cards[key]) || '';
+                        let val = (md && md['trend_' + key] !== undefined ? md['trend_' + key] : (md && md.cards && md.cards[key])) || '';
                         if (TREND_CHARTS[key]?.isCurrency && val) { const raw = String(val).replace(/\D/g, ''); if (raw.length > 0) val = parseInt(raw, 10).toLocaleString('id-ID'); }
                         el.value = val;
                     }

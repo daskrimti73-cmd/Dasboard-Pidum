@@ -196,15 +196,7 @@ function onDataInput(section) {
 function onMonthlyInputUH(section) {
     markUnsaved();
     updateTrendChartUH(section);
-    // Sync trend → card for current month (so save picks up the correct value)
-    const bulan = parseInt(document.getElementById('filterBulan1')?.value || '1');
-    const bulanEnd = parseInt(document.getElementById('filterBulan2')?.value || bulan);
-    if (bulan === bulanEnd) {
-        const mf = SECTIONS_UH[section].fields[0];
-        const trendVal = document.getElementById('monthly-' + section + '-' + bulan)?.value || '';
-        const cardEl = document.getElementById(mf);
-        if (cardEl) cardEl.value = trendVal;
-    }
+    // No sync to card - they are completely independent
 }
 
 function onDirInputUH(section) {
@@ -375,16 +367,14 @@ function saveAllData(silent) {
     if (!existing.perBulan) existing.perBulan = {};
     existing.perBulan[bulan] = monthData;
 
-    // Also save monthly trend inputs for ALL months EXCEPT current
+    // Save monthly trend inputs SEPARATELY for ALL months
     Object.keys(SECTIONS_UH).forEach(sec => {
-        const mf = SECTIONS_UH[sec].fields[0];
         for (let m = 1; m <= 12; m++) {
-            if (m === bulan) continue; // current month already saved from card inputs
+            if (m === bulan) continue;
             const el = document.getElementById('monthly-' + sec + '-' + m);
             if (!el) continue;
             if (!existing.perBulan[m]) existing.perBulan[m] = {};
-            if (!existing.perBulan[m][sec + 'Cards']) existing.perBulan[m][sec + 'Cards'] = {};
-            existing.perBulan[m][sec + 'Cards'][mf] = el.value;
+            existing.perBulan[m]['trend_' + sec] = el.value;
         }
     });
 

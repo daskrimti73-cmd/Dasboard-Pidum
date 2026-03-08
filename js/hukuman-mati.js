@@ -133,14 +133,7 @@ function onDataInput() {
 function onMonthlyInputHm() {
     markUnsaved();
     updateTrendChartHm();
-    // Sync trend → card for current month (so save picks up the correct value)
-    const bulan = parseInt(document.getElementById('filterBulan1')?.value || '1');
-    const bulanEnd = parseInt(document.getElementById('filterBulan2')?.value || bulan);
-    if (bulan === bulanEnd) {
-        const trendVal = document.getElementById('monthly-tren-' + bulan)?.value || '';
-        const cardEl = document.getElementById('hm-pn');
-        if (cardEl) cardEl.value = trendVal;
-    }
+    // No sync to card - they are completely independent
 }
 function onTpInputHm() { markUnsaved(); updateTpChartHm(); }
 
@@ -285,15 +278,12 @@ function saveAllData(silent) {
     if (!existing.perBulan) existing.perBulan = {};
     existing.perBulan[bulan] = monthData;
 
-    // Also save monthly trend inputs for ALL months EXCEPT current (card data takes priority)
+    // Save monthly trend inputs SEPARATELY for ALL months (independent from card data)
     for (let m = 1; m <= 12; m++) {
-        if (m === bulan) continue; // current month already saved from card inputs above
         const el = document.getElementById('monthly-tren-' + m);
         if (!el) continue;
-        const val = el.value;
         if (!existing.perBulan[m]) existing.perBulan[m] = { cards: {}, tpValues: {} };
-        if (!existing.perBulan[m].cards) existing.perBulan[m].cards = {};
-        existing.perBulan[m].cards['hm-pn'] = val;
+        existing.perBulan[m].trendValue = el.value;
     }
 
     existing.savedAt = new Date().toISOString();
@@ -329,7 +319,8 @@ function loadAllDataHm() {
             const tpList = getTindakPidanaListHm(), ks = Object.keys(sumTp), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
             if (isL) { tpList.forEach((tp, i) => { const el = document.getElementById('tp-hm-' + i); if (el && sumTp[tp] !== undefined) el.value = sumTp[tp]; }); }
             else { ks.forEach(i => { const el = document.getElementById('tp-hm-' + i); if (el) el.value = sumTp[i]; }); }
-            for (let m = 1; m <= 12; m++) { const md = data.perBulan[m]; const el = document.getElementById('monthly-tren-' + m); if (el) el.value = (md && md.cards && md.cards['hm-pn']) || ''; }
+            // Load trend values independently (use trendValue if available, fallback to cards['hm-pn'])
+            for (let m = 1; m <= 12; m++) { const md = data.perBulan[m]; const el = document.getElementById('monthly-tren-' + m); if (el) el.value = (md && md.trendValue !== undefined ? md.trendValue : (md && md.cards && md.cards['hm-pn'])) || ''; }
             return;
         }
         if (data.cards) { Object.keys(data.cards).forEach(id => { const el = document.getElementById(id); if (el) el.value = data.cards[id]; }); }
