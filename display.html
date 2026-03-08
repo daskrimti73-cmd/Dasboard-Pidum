@@ -380,14 +380,35 @@
             'val-tppu': 'display-tppu'
         };
 
-        // ---- Apply data to display ----
+        // ---- Apply data to display (supports perBulan and legacy flat) ----
         function applyDataToDisplay(data) {
-            Object.entries(fieldMap).forEach(([dataKey, displayId]) => {
-                const value = data[dataKey];
-                if (value !== undefined && value !== '') {
-                    document.getElementById(displayId).textContent = value;
+            const bA = parseInt(document.getElementById('filterBulan1')?.value || '1');
+            const bB = parseInt(document.getElementById('filterBulan2')?.value || bA);
+            const start = Math.min(bA, bB), end = Math.max(bA, bB);
+
+            if (data && data.perBulan) {
+                // New per-bulan format: aggregate
+                const sumFields = {};
+                for (let m = start; m <= end; m++) {
+                    const md = data.perBulan[m];
+                    if (!md) continue;
+                    Object.keys(fieldMap).forEach(dataKey => {
+                        sumFields[dataKey] = ((parseInt(sumFields[dataKey]) || 0) + (parseInt(md[dataKey]) || 0)).toString();
+                    });
                 }
-            });
+                Object.entries(fieldMap).forEach(([dataKey, displayId]) => {
+                    const value = sumFields[dataKey];
+                    document.getElementById(displayId).textContent = (value && value !== '0') ? value : '0';
+                });
+            } else if (data) {
+                // Legacy flat format
+                Object.entries(fieldMap).forEach(([dataKey, displayId]) => {
+                    const value = data[dataKey];
+                    if (value !== undefined && value !== '') {
+                        document.getElementById(displayId).textContent = value;
+                    }
+                });
+            }
         }
 
         // ---- Load and display data (Supabase first, localStorage fallback) ----
