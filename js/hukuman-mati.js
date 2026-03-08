@@ -286,7 +286,7 @@ function loadAllDataHm() {
             for (let m = start; m <= end; m++) { const md = data.perBulan[m]; if (!md) continue; _sumHM(sumC, md.cards); _sumHM(sumTp, md.tpValues); }
             ['hm-pn', 'hm-pt', 'hm-ma'].forEach(id => { const el = document.getElementById(id); if (el && sumC[id] !== undefined) el.value = sumC[id]; });
             const tpList = getTindakPidanaListHm(), ks = Object.keys(sumTp), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
-            if (isL) { tpList.forEach((tp, i) => { const el = document.getElementById('tp-hm-' + i); if (el && sumTp[tp]) el.value = sumTp[tp]; }); }
+            if (isL) { tpList.forEach((tp, i) => { const el = document.getElementById('tp-hm-' + i); if (el && sumTp[tp] !== undefined) el.value = sumTp[tp]; }); }
             else { ks.forEach(i => { const el = document.getElementById('tp-hm-' + i); if (el) el.value = sumTp[i]; }); }
             for (let m = 1; m <= 12; m++) { const md = data.perBulan[m]; const el = document.getElementById('monthly-tren-' + m); if (el) el.value = (md && md.cards && md.cards['hm-pn']) || ''; }
             return;
@@ -295,7 +295,7 @@ function loadAllDataHm() {
         if (data.trenMonthly) { Object.keys(data.trenMonthly).forEach(idx => { const el = document.getElementById('monthly-tren-' + idx); if (el) el.value = data.trenMonthly[idx]; }); }
         if (data.tpValues) {
             const tpList = getTindakPidanaListHm(), ks = Object.keys(data.tpValues), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
-            if (isL) { tpList.forEach((tp, i) => { const el = document.getElementById('tp-hm-' + i); if (el && data.tpValues[tp]) el.value = data.tpValues[tp]; }); }
+            if (isL) { tpList.forEach((tp, i) => { const el = document.getElementById('tp-hm-' + i); if (el && data.tpValues[tp] !== undefined) el.value = data.tpValues[tp]; }); }
             else { ks.forEach(i => { const el = document.getElementById('tp-hm-' + i); if (el) el.value = data.tpValues[i]; }); }
         }
     } catch (e) { console.error('Load error:', e); }

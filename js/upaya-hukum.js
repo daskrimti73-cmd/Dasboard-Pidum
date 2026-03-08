@@ -386,7 +386,7 @@ function loadAllData() {
                 for (let m = start; m <= end; m++) { const md = data.perBulan[m]; if (!md) continue; _sumUH(sumC, md[sec + 'Cards']); _sumUH(sumD, md[sec + 'Dir']); }
                 SECTIONS_UH[sec].fields.forEach(id => { const el = document.getElementById(id); if (el && sumC[id] !== undefined) el.value = sumC[id]; });
                 const dl = getDirektoratMapUH(sec), ks = Object.keys(sumD), isL = sec !== 'kasasi' && ks.length > 0 && isNaN(parseInt(ks[0]));
-                if (isL) { dl.forEach((d, i) => { const el = document.getElementById('dir-' + sec + '-' + i); if (el && sumD[d]) el.value = sumD[d]; }); }
+                if (isL) { dl.forEach((d, i) => { const el = document.getElementById('dir-' + sec + '-' + i); if (el && sumD[d] !== undefined) el.value = sumD[d]; }); }
                 else { ks.forEach(i => { const el = document.getElementById('dir-' + sec + '-' + i); if (el) el.value = sumD[i]; }); }
                 for (let m = 1; m <= 12; m++) { const md = data.perBulan[m]; const mf = SECTIONS_UH[sec].fields[0]; const el = document.getElementById('monthly-' + sec + '-' + m); if (el) el.value = (md && md[sec + 'Cards'] && md[sec + 'Cards'][mf]) || ''; }
             });
@@ -398,7 +398,7 @@ function loadAllData() {
             if (data[sec + 'Monthly']) { Object.keys(data[sec + 'Monthly']).forEach(idx => { const el = document.getElementById('monthly-' + sec + '-' + idx); if (el) el.value = data[sec + 'Monthly'][idx]; }); }
             if (data[sec + 'Dir']) {
                 const dl = getDirektoratMapUH(sec), ks = Object.keys(data[sec + 'Dir']), isL = sec !== 'kasasi' && ks.length > 0 && isNaN(parseInt(ks[0]));
-                if (isL) { dl.forEach((d, i) => { const el = document.getElementById('dir-' + sec + '-' + i); if (el && data[sec + 'Dir'][d]) el.value = data[sec + 'Dir'][d]; }); }
+                if (isL) { dl.forEach((d, i) => { const el = document.getElementById('dir-' + sec + '-' + i); if (el && data[sec + 'Dir'][d] !== undefined) el.value = data[sec + 'Dir'][d]; }); }
                 else { ks.forEach(i => { const el = document.getElementById('dir-' + sec + '-' + i); if (el) el.value = data[sec + 'Dir'][i]; }); }
             }
         });

@@ -785,7 +785,7 @@ function loadAllData() {
             negaraData = mergedNeg; renderNegaraList(); updateNegaraCount();
             klasifikasiData = mergedKlas; renderKlasifikasiList();
             const tpList = getTindakPidanaListWna(), ks = Object.keys(sumD), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
-            if (isL) { tpList.forEach((d, i) => { const el = document.getElementById('dir-wna-' + i); if (el && sumD[d]) el.value = sumD[d]; }); }
+            if (isL) { tpList.forEach((d, i) => { const el = document.getElementById('dir-wna-' + i); if (el && sumD[d] !== undefined) el.value = sumD[d]; }); }
             else { ks.forEach(i => { const el = document.getElementById('dir-wna-' + i); if (el) el.value = sumD[i]; }); }
             for (let m = 1; m <= 12; m++) { const md = data.perBulan[m]; const el = document.getElementById('monthly-tren-' + m); if (el) el.value = (md && md.cards && md.cards['wna-tersangka']) || ''; }
             return;
@@ -797,7 +797,7 @@ function loadAllData() {
         if (data.trenMonthly) { Object.keys(data.trenMonthly).forEach(idx => { const el = document.getElementById('monthly-tren-' + idx); if (el) el.value = data.trenMonthly[idx]; }); }
         if (data.dirValues) {
             const tpList = getTindakPidanaListWna(), ks = Object.keys(data.dirValues), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
-            if (isL) { tpList.forEach((d, i) => { const el = document.getElementById('dir-wna-' + i); if (el && data.dirValues[d]) el.value = data.dirValues[d]; }); }
+            if (isL) { tpList.forEach((d, i) => { const el = document.getElementById('dir-wna-' + i); if (el && data.dirValues[d] !== undefined) el.value = data.dirValues[d]; }); }
             else { ks.forEach(i => { const el = document.getElementById('dir-wna-' + i); if (el) el.value = data.dirValues[i]; }); }
         }
     } catch (e) { console.error('Load error:', e); }

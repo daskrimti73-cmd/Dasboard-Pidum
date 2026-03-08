@@ -427,7 +427,7 @@ function loadAllData() {
             CARD_FIELDS.forEach(id => { const el = document.getElementById(id); if (el && sumC[id] !== undefined) el.value = sumC[id]; });
             Object.keys(DIR_CHARTS).forEach(key => {
                 const dl = getTindakPidanaListEks(key), ks = Object.keys(sumD[key]), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
-                if (isL) { dl.forEach((d, i) => { const el = document.getElementById('dir-' + key + '-' + i); if (el && sumD[key][d]) el.value = sumD[key][d]; }); }
+                if (isL) { dl.forEach((d, i) => { const el = document.getElementById('dir-' + key + '-' + i); if (el && sumD[key][d] !== undefined) el.value = sumD[key][d]; }); }
                 else { ks.forEach(i => { const el = document.getElementById('dir-' + key + '-' + i); if (el) el.value = sumD[key][i]; }); }
             });
             Object.keys(TREND_CHARTS).forEach(key => {
@@ -456,7 +456,7 @@ function loadAllData() {
         Object.keys(DIR_CHARTS).forEach(key => {
             if (data[key + 'Dir']) {
                 const dl = getTindakPidanaListEks(key), ks = Object.keys(data[key + 'Dir']), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
-                if (isL) { dl.forEach((d, i) => { const el = document.getElementById('dir-' + key + '-' + i); if (el && data[key + 'Dir'][d]) el.value = data[key + 'Dir'][d]; }); }
+                if (isL) { dl.forEach((d, i) => { const el = document.getElementById('dir-' + key + '-' + i); if (el && data[key + 'Dir'][d] !== undefined) el.value = data[key + 'Dir'][d]; }); }
                 else { ks.forEach(i => { const el = document.getElementById('dir-' + key + '-' + i); if (el) el.value = data[key + 'Dir'][i]; }); }
             }
         });

@@ -638,7 +638,7 @@ function _setDir(dirData, section) {
     if (isLabel) {
         dirList.forEach((dir, idx) => {
             const el = document.getElementById('dir-' + section + '-' + idx);
-            if (el && dirData[dir]) el.value = dirData[dir];
+            if (el && dirData[dir] !== undefined) el.value = dirData[dir];
         });
     } else {
         keys.forEach(idx => {
