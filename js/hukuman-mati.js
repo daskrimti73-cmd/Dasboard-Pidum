@@ -128,20 +128,12 @@ function toggleAccordion(section) {
 // ============================================
 function onDataInput() {
     markUnsaved();
-    // Sync card hm-pn value → monthly trend input for current month
-    const bulan = parseInt(document.getElementById('filterBulan1')?.value || '1');
-    const bulanEnd = parseInt(document.getElementById('filterBulan2')?.value || bulan);
-    if (bulan === bulanEnd) {
-        const cardVal = document.getElementById('hm-pn')?.value || '';
-        const trendEl = document.getElementById('monthly-tren-' + bulan);
-        if (trendEl) trendEl.value = cardVal;
-        updateTrendChartHm();
-    }
+    // Card inputs do NOT update the trend chart - only monthly inputs do
 }
 function onMonthlyInputHm() {
     markUnsaved();
     updateTrendChartHm();
-    // Sync monthly trend input → card hm-pn if editing current filter month
+    // Sync trend → card for current month (so save picks up the correct value)
     const bulan = parseInt(document.getElementById('filterBulan1')?.value || '1');
     const bulanEnd = parseInt(document.getElementById('filterBulan2')?.value || bulan);
     if (bulan === bulanEnd) {

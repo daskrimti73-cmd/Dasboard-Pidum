@@ -191,20 +191,13 @@ function capitalize(str) {
 // ---- Event handlers ----
 function onDataInput(section) {
     markUnsaved();
-    const bulan = parseInt(document.getElementById('filterBulan1')?.value || '1');
-    const bulanEnd = parseInt(document.getElementById('filterBulan2')?.value || bulan);
-    if (bulan === bulanEnd) {
-        const mf = SECTIONS[section].fields[0];
-        const cardVal = document.getElementById(mf)?.value || '';
-        const trendEl = document.getElementById('monthly-' + section + '-' + bulan);
-        if (trendEl) trendEl.value = cardVal;
-        updateTrendChartP(section);
-    }
+    // Card inputs do NOT update the trend chart - only monthly inputs do
 }
 
 function onMonthlyInputP(section) {
     markUnsaved();
     updateTrendChartP(section);
+    // Sync trend → card for current month (so save picks up the correct value)
     const bulan = parseInt(document.getElementById('filterBulan1')?.value || '1');
     const bulanEnd = parseInt(document.getElementById('filterBulan2')?.value || bulan);
     if (bulan === bulanEnd) {
