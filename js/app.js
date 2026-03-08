@@ -161,18 +161,36 @@ function setUpdateDate() {
     const el = document.getElementById('updateDate');
     if (!el) return;
 
-    const now = new Date();
+    // Try to get savedAt from any relevant localStorage data
+    let lastSavedAt = null;
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key || key.startsWith('cms_')) continue;
+        try {
+            const val = JSON.parse(localStorage.getItem(key));
+            if (val && val.savedAt) {
+                const d = new Date(val.savedAt);
+                if (!lastSavedAt || d > lastSavedAt) lastSavedAt = d;
+            }
+        } catch (e) { }
+    }
+
+    if (!lastSavedAt) {
+        el.textContent = 'Belum ada data';
+        return;
+    }
+
     const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
     const months = [
         'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
         'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
     ];
 
-    const dayName = days[now.getDay()];
-    const date = now.getDate();
-    const month = months[now.getMonth()];
-    const year = now.getFullYear();
-    const time = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const dayName = days[lastSavedAt.getDay()];
+    const date = lastSavedAt.getDate();
+    const month = months[lastSavedAt.getMonth()];
+    const year = lastSavedAt.getFullYear();
+    const time = lastSavedAt.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
     el.textContent = `${dayName}, ${date} ${month} ${year} ${time}`;
 }
