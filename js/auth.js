@@ -80,28 +80,28 @@ function populateTahunDropdown() {
 const SATKER_HIERARCHY = {
     'kejati-kepri': [],
     'kejari-tanjungpinang': [
-        { value: 'kejari-tanjungpinang', label: 'Kejaksaan Negeri Tanjungpinang' }
+        { value: 'kejari-tanjungpinang', label: 'KEJAKSAAN NEGERI TANJUNGPINANG' }
     ],
     'kejari-batam': [
-        { value: 'kejari-batam', label: 'Kejaksaan Negeri Batam' }
+        { value: 'kejari-batam', label: 'KEJAKSAAN NEGERI BATAM' }
     ],
     'kejari-karimun': [
-        { value: 'kejari-karimun', label: 'Kejaksaan Negeri Karimun' },
-        { value: 'cabjari-tj-balai-karimun', label: 'Cabang Kejaksaan Negeri Tj. Balai Karimun di Tanjung Batu' },
-        { value: 'cabjari-karimun-moro', label: 'Cabang Kejaksaan Negeri Karimun di Moro' }
+        { value: 'kejari-karimun', label: 'KEJAKSAAN NEGERI KARIMUN' },
+        { value: 'cabjari-tj-balai-karimun', label: 'CABANG KEJAKSAAN NEGERI TJ. BALAI KARIMUN DI TANJUNG BATU' },
+        { value: 'cabjari-karimun-moro', label: 'CABANG KEJAKSAAN NEGERI KARIMUN DI MORO' }
     ],
     'kejari-bintan': [
-        { value: 'kejari-bintan', label: 'Kejaksaan Negeri Bintan' }
+        { value: 'kejari-bintan', label: 'KEJAKSAAN NEGERI BINTAN' }
     ],
     'kejari-lingga': [
-        { value: 'kejari-lingga', label: 'Kejaksaan Negeri Lingga' }
+        { value: 'kejari-lingga', label: 'KEJAKSAAN NEGERI LINGGA' }
     ],
     'kejari-natuna': [
-        { value: 'kejari-natuna', label: 'Kejaksaan Negeri Natuna' },
-        { value: 'cabjari-natuna-tarempa', label: 'Cabang Kejaksaan Negeri Natuna di Tarempa' }
+        { value: 'kejari-natuna', label: 'KEJAKSAAN NEGERI NATUNA' },
+        { value: 'cabjari-natuna-tarempa', label: 'CABANG KEJAKSAAN NEGERI NATUNA DI TAREMPA' }
     ],
     'kejari-anambas': [
-        { value: 'kejari-anambas', label: 'Kejaksaan Negeri Anambas' }
+        { value: 'kejari-anambas', label: 'KEJAKSAAN NEGERI ANAMBAS' }
     ]
 };
 
@@ -116,14 +116,14 @@ function getSatker1List() {
     } catch (e) { }
     // Default: All Kejari under Kejati Kepulauan Riau
     const defaultList = [
-        { value: 'kejati-kepri', label: 'Kejaksaan Tinggi Kepulauan Riau' },
-        { value: 'kejari-tanjungpinang', label: 'Kejaksaan Negeri Tanjungpinang' },
-        { value: 'kejari-batam', label: 'Kejaksaan Negeri Batam' },
-        { value: 'kejari-karimun', label: 'Kejaksaan Negeri Karimun' },
-        { value: 'kejari-bintan', label: 'Kejaksaan Negeri Bintan' },
-        { value: 'kejari-lingga', label: 'Kejaksaan Negeri Lingga' },
-        { value: 'kejari-natuna', label: 'Kejaksaan Negeri Natuna' },
-        { value: 'kejari-anambas', label: 'Kejaksaan Negeri Kepulauan Anambas' }
+        { value: 'kejati-kepri', label: 'KEJAKSAAN TINGGI KEPULAUAN RIAU' },
+        { value: 'kejari-tanjungpinang', label: 'KEJAKSAAN NEGERI TANJUNGPINANG' },
+        { value: 'kejari-batam', label: 'KEJAKSAAN NEGERI BATAM' },
+        { value: 'kejari-karimun', label: 'KEJAKSAAN NEGERI KARIMUN' },
+        { value: 'kejari-bintan', label: 'KEJAKSAAN NEGERI BINTAN' },
+        { value: 'kejari-lingga', label: 'KEJAKSAAN NEGERI LINGGA' },
+        { value: 'kejari-natuna', label: 'KEJAKSAAN NEGERI NATUNA' },
+        { value: 'kejari-anambas', label: 'KEJAKSAAN NEGERI KEPULAUAN ANAMBAS' }
     ];
     localStorage.setItem(SATKER1_KEY, JSON.stringify(defaultList));
     return defaultList;
@@ -565,15 +565,24 @@ function populateSatker2BasedOnSatker1() {
 
     select2.innerHTML = '<option value="">SATUAN KERJA (SATKER) 2</option>';
 
-    if (satker1Val && SATKER_HIERARCHY[satker1Val]) {
-        // Show sub-units for selected Satker 1
+    if (satker1Val && SATKER_HIERARCHY[satker1Val] !== undefined) {
         const subUnits = SATKER_HIERARCHY[satker1Val];
-        subUnits.forEach(s => {
+        if (subUnits.length === 0) {
+            // No sub-units — show disabled "NO RESULT FOUND"
             const opt = document.createElement('option');
-            opt.value = s.value;
-            opt.textContent = s.label;
+            opt.value = '';
+            opt.textContent = 'NO RESULT FOUND';
+            opt.disabled = true;
+            opt.selected = true;
             select2.appendChild(opt);
-        });
+        } else {
+            subUnits.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s.value;
+                opt.textContent = s.label;
+                select2.appendChild(opt);
+            });
+        }
     } else {
         // No Satker 1 selected — show all Satker 2 from saved list
         const satkers2 = getSatker2List();
