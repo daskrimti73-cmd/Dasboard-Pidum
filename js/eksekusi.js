@@ -67,11 +67,7 @@ const chartColorsEks = {
 
 // ---- Storage key ----
 function getEksekusiStorageKey() {
-    const w = document.getElementById('filterWilayah')?.value || '';
-    const s1 = document.getElementById('filterSatker1')?.value || '';
-    const s2 = document.getElementById('filterSatker2')?.value || '';
-    const t = document.getElementById('filterTahun')?.value || '';
-    return `eksekusi_${w}_${s1}_${s2}_${t}`;
+    return buildStorageKey('eksekusi');
 }
 
 // ---- Month range from filter ----

@@ -68,11 +68,7 @@ function setSelectVal(id, val) {
 // DATA (localStorage)
 // ============================================
 function getTppuBaseKey() {
-    const w = document.getElementById('filterWilayah')?.value || '';
-    const s1 = document.getElementById('filterSatker1')?.value || '';
-    const s2 = document.getElementById('filterSatker2')?.value || '';
-    const t = document.getElementById('filterTahun')?.value || '';
-    return `tppu_${w}_${s1}_${s2}_${t}_table`;
+    return buildStorageKey('tppu') + '_table';
 }
 function getTableStorageKey() {
     const base = getTppuBaseKey();
@@ -359,14 +355,10 @@ function confirmDelete() {
 // Fungsi untuk sinkronisasi dengan dashboard utama
 function syncWithMainDashboard(delta) {
     try {
-        const w = document.getElementById('filterWilayah')?.value || '';
-        const s1 = document.getElementById('filterSatker1')?.value || '';
-        const s2 = document.getElementById('filterSatker2')?.value || '';
-        const t = document.getElementById('filterTahun')?.value || '';
         const b1 = document.getElementById('filterBulan1')?.value || '';
         const b2 = document.getElementById('filterBulan2')?.value || '';
 
-        const mainKey = `pidum_${w}_${s1}_${s2}_${t}_${b1}_${b2}`;
+        const mainKey = buildStorageKey('pidum') + `_${b1}_${b2}`;
         const mainData = localStorage.getItem(mainKey);
 
         if (mainData) {

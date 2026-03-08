@@ -273,6 +273,19 @@ function deleteDirektorat(label, sectionKey) {
     return true;
 }
 
+// ---- Centralized Storage Key Builder ----
+// ALL pages should use this to build consistent storage keys
+// This ensures admin and public (iframe) always produce the SAME key
+function buildStorageKey(prefix) {
+    const w = document.getElementById('filterWilayah')?.value || 'kejati-kepri';
+    // IMPORTANT: Always use empty string for satker if not explicitly selected
+    // This prevents key mismatch between admin (with satker) and public (without)
+    const s1 = document.getElementById('filterSatker1')?.value || '';
+    const s2 = document.getElementById('filterSatker2')?.value || '';
+    const t = document.getElementById('filterTahun')?.value || new Date().getFullYear().toString();
+    return `${prefix}_${w}_${s1}_${s2}_${t}`;
+}
+
 // ---- Bulan (Month) Management ----
 const BULAN_NAMES_ALL = [
     { index: 1, name: 'Januari' },

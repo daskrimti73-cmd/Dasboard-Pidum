@@ -360,10 +360,10 @@
 
         // ---- Build storage key from display filters ----
         function getDisplayStorageKey() {
-            const wilayah = document.getElementById('filterWilayah')?.value || '';
+            const wilayah = document.getElementById('filterWilayah')?.value || 'kejati-kepri';
             const satker1 = document.getElementById('filterSatker1')?.value || '';
             const satker2 = document.getElementById('filterSatker2')?.value || '';
-            const tahun = document.getElementById('filterTahun')?.value || '';
+            const tahun = document.getElementById('filterTahun')?.value || new Date().getFullYear().toString();
 
             return `pidum_${wilayah}_${satker1}_${satker2}_${tahun}`;
         }

@@ -74,11 +74,7 @@ function setSelectVal(id, val) {
 // DATA
 // ============================================
 function getKorbanBaseKey() {
-    const w = document.getElementById('filterWilayah')?.value || '';
-    const s1 = document.getElementById('filterSatker1')?.value || '';
-    const s2 = document.getElementById('filterSatker2')?.value || '';
-    const t = document.getElementById('filterTahun')?.value || '';
-    return `korban_table_${w}_${s1}_${s2}_${t}`;
+    return buildStorageKey('korban_table');
 }
 function getTableStorageKey() {
     const base = getKorbanBaseKey();

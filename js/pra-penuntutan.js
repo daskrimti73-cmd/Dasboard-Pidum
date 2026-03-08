@@ -29,11 +29,7 @@ const TAHAP1_FIELDS = ['tahap1-tahap1', 'tahap1-p18', 'tahap1-p19', 'tahap1-p20'
 
 // ---- Storage key builder (same logic as app.js but for pra-penuntutan) ----
 function getPrapenStorageKey(prefix) {
-    const wilayah = document.getElementById('filterWilayah')?.value || '';
-    const satker1 = document.getElementById('filterSatker1')?.value || '';
-    const satker2 = document.getElementById('filterSatker2')?.value || '';
-    const tahun = document.getElementById('filterTahun')?.value || '';
-    return `prapen_${prefix}_${wilayah}_${satker1}_${satker2}_${tahun}`;
+    return buildStorageKey('prapen_' + prefix);
 }
 
 // ---- Get month range from filter (for charts - only visible months) ----

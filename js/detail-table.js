@@ -581,11 +581,7 @@ function setupPageInfo() {
 
 // ---- Storage key for table data (per-bulan base key, without month) ----
 function getTableBaseKey() {
-    const wilayah = document.getElementById('filterWilayah')?.value || '';
-    const satker1 = document.getElementById('filterSatker1')?.value || '';
-    const satker2 = document.getElementById('filterSatker2')?.value || '';
-    const tahun = document.getElementById('filterTahun')?.value || '';
-    return `detail_${currentSection}_${wilayah}_${satker1}_${satker2}_${tahun}`;
+    return buildStorageKey('detail_' + currentSection);
 }
 function getTableStorageKey() {
     const base = getTableBaseKey();
@@ -924,14 +920,10 @@ function confirmDelete() {
 // Fungsi untuk sinkronisasi dengan dashboard utama
 function syncWithMainDashboard(delta) {
     try {
-        const w = document.getElementById('filterWilayah')?.value || '';
-        const s1 = document.getElementById('filterSatker1')?.value || '';
-        const s2 = document.getElementById('filterSatker2')?.value || '';
-        const t = document.getElementById('filterTahun')?.value || '';
         const b1 = document.getElementById('filterBulan1')?.value || '';
         const b2 = document.getElementById('filterBulan2')?.value || '';
 
-        const mainKey = `pidum_${w}_${s1}_${s2}_${t}_${b1}_${b2}`;
+        const mainKey = buildStorageKey('pidum') + `_${b1}_${b2}`;
         const mainData = localStorage.getItem(mainKey);
 
         if (mainData) {

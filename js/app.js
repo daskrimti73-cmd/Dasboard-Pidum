@@ -197,12 +197,7 @@ function setUpdateDate() {
 
 // ---- Storage Key Builder ----
 function getStorageKey() {
-    const wilayah = document.getElementById('filterWilayah')?.value || '';
-    const satker1 = document.getElementById('filterSatker1')?.value || '';
-    const satker2 = document.getElementById('filterSatker2')?.value || '';
-    const tahun = document.getElementById('filterTahun')?.value || '';
-
-    return `pidum_${wilayah}_${satker1}_${satker2}_${tahun}`;
+    return buildStorageKey('pidum');
 }
 
 // ---- Data Fields ----
