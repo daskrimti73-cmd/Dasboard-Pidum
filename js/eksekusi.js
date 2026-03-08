@@ -112,29 +112,23 @@ function generateMonthlyInputs(key, gridId) {
     months.forEach(m => {
         const div = document.createElement('div');
         div.className = 'month-input-group';
-        const visible = isMonthVisible(m.index, key);
         const headerHtml = `
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-                <label style="margin:0;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:${visible ? '#2c3e50' : '#adb5bd'};">${m.name}</label>
+                <label style="margin:0;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#2c3e50;">${m.name}</label>
                 <div style="display:flex;gap:4px;">
-                    <button type="button" class="btn-hapus-bulan" title="${visible ? 'Sembunyikan dari grafik' : 'Tampilkan di grafik'}" onclick="event.preventDefault();event.stopPropagation();handleToggleVisibility(${m.index},'${key}')"
-                        style="${visible ? '' : 'background:#e2e8f0;color:#64748b;border-color:#cbd5e1;'}">
-                        <i class="fas ${visible ? 'fa-eye' : 'fa-eye-slash'}"></i>
-                    </button>
                     <button type="button" class="btn-hapus-bulan" title="Hapus ${m.name}" onclick="event.preventDefault();event.stopPropagation();handleDeleteBulan(${m.index})">
                         <i class="fas fa-trash-alt"></i>
                     </button>
                 </div>
             </div>`;
-        const inputStyle = visible ? '' : 'opacity:0.5;background:#f1f5f9;';
         if (isCurrency) {
             div.innerHTML = headerHtml + `
-                <input type="text" id="monthly-${key}-${m.index}" placeholder="0" inputmode="numeric" style="${inputStyle}"
+                <input type="text" id="monthly-${key}-${m.index}" placeholder="0" inputmode="numeric"
                        oninput="formatCurrencyInput(this); onMonthlyInput('${key}')">
             `;
         } else {
             div.innerHTML = headerHtml + `
-                <input type="number" id="monthly-${key}-${m.index}" placeholder="0" min="0" style="${inputStyle}"
+                <input type="number" id="monthly-${key}-${m.index}" placeholder="0" min="0"
                        oninput="onMonthlyInput('${key}')">
             `;
         }

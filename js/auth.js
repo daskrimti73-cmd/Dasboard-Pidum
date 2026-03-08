@@ -394,9 +394,12 @@ let _tempFilterMonths = [];
 
 // Set temporary filter (called by applyFilters)
 function setTempFilter(bulanAwal, bulanAkhir) {
-    const months = [bulanAwal];
-    if (bulanAkhir !== bulanAwal) months.push(bulanAkhir);
-    months.sort((a, b) => a - b);
+    const start = Math.min(bulanAwal, bulanAkhir);
+    const end = Math.max(bulanAwal, bulanAkhir);
+    const months = [];
+    for (let m = start; m <= end; m++) {
+        months.push(m);
+    }
     _tempFilterMonths = months;
     _tempFilterActive = true;
 }
@@ -408,15 +411,22 @@ function clearTempFilter() {
 }
 
 // Get months for CHART display
-// Priority: 1) Temporary filter (user applied) → 2) Admin eye icon settings (default)
+// Always reads from filter dropdowns to generate complete month range
 function getChartMonthRange(section) {
-    // If user has applied a temporary filter → show those specific months
-    if (_tempFilterActive && _tempFilterMonths.length > 0) {
-        return _tempFilterMonths.map(idx => BULAN_NAMES_ALL[idx - 1]).filter(Boolean);
+    const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
+    const start = Math.min(bulanAwal, bulanAkhir);
+    const end = Math.max(bulanAwal, bulanAkhir);
+
+    // Build complete range from start to end month
+    const months = [];
+    for (let m = start; m <= end; m++) {
+        if (BULAN_NAMES_ALL[m - 1]) {
+            months.push(BULAN_NAMES_ALL[m - 1]);
+        }
     }
 
-    // Default: use admin's per-section eye icon visibility settings
-    return getVisibleMonths(section);
+    return months.length > 0 ? months : getVisibleMonths(section);
 }
 
 // When a month is added to selectedBulanList, also add to visible

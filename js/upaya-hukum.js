@@ -122,22 +122,16 @@ function generateMonthlyInputsUH(section, gridId) {
     months.forEach(m => {
         const div = document.createElement('div');
         div.className = 'month-input-group';
-        const visible = isMonthVisible(m.index, section);
         div.innerHTML = `
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-                <label style="margin:0;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:${visible ? '#2c3e50' : '#adb5bd'};">${m.name}</label>
+                <label style="margin:0;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#2c3e50;">${m.name}</label>
                 <div style="display:flex;gap:4px;">
-                    <button type="button" class="btn-hapus-bulan" title="${visible ? 'Sembunyikan dari grafik' : 'Tampilkan di grafik'}" onclick="event.preventDefault();event.stopPropagation();handleToggleVisibility(${m.index},'${section}')"
-                        style="${visible ? '' : 'background:#e2e8f0;color:#64748b;border-color:#cbd5e1;'}">
-                        <i class="fas ${visible ? 'fa-eye' : 'fa-eye-slash'}"></i>
-                    </button>
                     <button type="button" class="btn-hapus-bulan" title="Hapus ${m.name}" onclick="event.preventDefault();event.stopPropagation();handleDeleteBulan(${m.index})">
                         <i class="fas fa-trash-alt"></i>
                     </button>
                 </div>
             </div>
             <input type="number" id="monthly-${section}-${m.index}" placeholder="0" min="0"
-                   style="${visible ? '' : 'opacity:0.5;background:#f1f5f9;'}"
                    oninput="onMonthlyInputUH('${section}')">
         `;
         grid.appendChild(div);
