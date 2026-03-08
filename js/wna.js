@@ -235,6 +235,7 @@ let chartPie = null;
 let chartKlasifikasi = null;
 let chartTrend = null;
 let chartDir = null;
+let combinedDirData = null; // holds merged dirValues when viewing combined months
 
 // ---- Chart colors ----
 const lineColor = {
@@ -691,16 +692,29 @@ function updateTrendChart() {
 // ---- Update dir bar chart ----
 function updateDirChart() {
     if (!chartDir) return;
-    const tpList = getTindakPidanaListWna();
-    const values = tpList.map((_, idx) => {
-        const input = document.getElementById(`dir-wna-${idx}`);
-        return input ? (parseInt(input.value) || 0) : 0;
-    });
+    let labels, values;
 
-    const bgColors = tpList.map((_, i) => barBg[i % barBg.length]);
-    const hoverColors = tpList.map((_, i) => barHover[i % barHover.length]);
+    if (combinedDirData && Object.keys(combinedDirData).length > 0) {
+        // Combined mode: show ALL categories from merged data (all months)
+        const entries = Object.entries(combinedDirData)
+            .filter(([k]) => isNaN(parseInt(k))) // only string keys (category names)
+            .filter(([, v]) => parseInt(v) > 0); // only non-zero
+        labels = entries.map(([k]) => k);
+        values = entries.map(([, v]) => parseInt(v) || 0);
+    } else {
+        // Single month mode: use input elements
+        const tpList = getTindakPidanaListWna();
+        labels = tpList;
+        values = tpList.map((_, idx) => {
+            const input = document.getElementById(`dir-wna-${idx}`);
+            return input ? (parseInt(input.value) || 0) : 0;
+        });
+    }
 
-    chartDir.data.labels = tpList;
+    const bgColors = labels.map((_, i) => barBg[i % barBg.length]);
+    const hoverColors = labels.map((_, i) => barHover[i % barHover.length]);
+
+    chartDir.data.labels = labels;
     chartDir.data.datasets = [{
         label: 'Jumlah',
         data: values,
@@ -742,10 +756,7 @@ function saveAllData(silent) {
 }
 
 function loadAllData() {
-    // Ensure direktorat list includes ALL categories from ALL months' saved data
-    ensureDirListFromSavedData(getWnaStorageKey(), 'wna', ['dirValues']);
-    // Rebuild dir inputs with the complete category list
-    generateDirInputs();
+    combinedDirData = null; // reset combined data
 
     // Clear all fields first
     ['wna-tersangka', 'wna-negara', 'wna-laki', 'wna-perempuan'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
@@ -789,6 +800,9 @@ function loadAllData() {
             ['wna-tersangka', 'wna-negara', 'wna-laki', 'wna-perempuan'].forEach(id => { const el = document.getElementById(id); if (el && sumC[id] !== undefined) el.value = sumC[id]; });
             negaraData = mergedNeg; renderNegaraList(); updateNegaraCount();
             klasifikasiData = mergedKlas; renderKlasifikasiList();
+            // Store combined data for chart (bypasses input elements)
+            if (start !== end) combinedDirData = sumD;
+            // Fill input elements for categories that exist in current list
             const tpList = getTindakPidanaListWna(), ks = Object.keys(sumD), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
             if (isL) { tpList.forEach((d, i) => { const el = document.getElementById('dir-wna-' + i); if (el && sumD[d] !== undefined) el.value = sumD[d]; }); }
             else { ks.forEach(i => { const el = document.getElementById('dir-wna-' + i); if (el) el.value = sumD[i]; }); }

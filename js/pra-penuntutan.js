@@ -20,6 +20,7 @@ let chartSpdpTrend = null;
 let chartSpdpTindakPidana = null;
 let chartTahap1Trend = null;
 let chartTahap1TindakPidana = null;
+let combinedDirData = {}; // holds merged dirValues per section when viewing combined months
 
 // ---- SPDP field IDs ----
 const SPDP_FIELDS = ['spdp-spdp', 'spdp-p18', 'spdp-p17', 'spdp-pengembalian', 'spdp-sp3'];
@@ -377,20 +378,31 @@ function updateTrendChart(section) {
 
 // ---- Update Dir (bar) Chart ----
 function updateDirChart(section) {
-    const dirList = getDirListForSection(section);
-    const labels = dirList;
-    const values = dirList.map((_, idx) => {
-        const input = document.getElementById(`dir-${section}-${idx}`);
-        return input ? (parseInt(input.value) || 0) : 0;
-    });
-
     const chart = section === 'spdp' ? chartSpdpTindakPidana : chartTahap1TindakPidana;
     if (!chart) return;
+    let labels, values;
 
-    // Generate enough colors
+    const cd = combinedDirData[section];
+    if (cd && Object.keys(cd).length > 0) {
+        // Combined mode: show ALL categories from merged data (only non-zero)
+        const entries = Object.entries(cd)
+            .filter(([k]) => isNaN(parseInt(k)))
+            .filter(([, v]) => parseInt(v) > 0);
+        labels = entries.map(([k]) => k);
+        values = entries.map(([, v]) => parseInt(v) || 0);
+    } else {
+        // Single month mode: use input elements
+        const dirList = getDirListForSection(section);
+        labels = dirList;
+        values = dirList.map((_, idx) => {
+            const input = document.getElementById(`dir-${section}-${idx}`);
+            return input ? (parseInt(input.value) || 0) : 0;
+        });
+    }
+
     const bgColors = [];
     const hoverColors = [];
-    for (let i = 0; i < dirList.length; i++) {
+    for (let i = 0; i < labels.length; i++) {
         bgColors.push(chartColors.bar.backgroundColor[i % chartColors.bar.backgroundColor.length]);
         hoverColors.push(chartColors.bar.hoverBg[i % chartColors.bar.hoverBg.length]);
     }
@@ -550,9 +562,7 @@ function saveAllData(silent) {
 }
 
 function loadAllData() {
-    // Ensure direktorat list includes ALL categories from ALL months' saved data
-    ensureDirListFromSavedData(getPrapenStorageKey('all'), 'spdp', ['spdpDir']);
-    ensureDirListFromSavedData(getPrapenStorageKey('all'), 'tahap1', ['tahap1Dir']);
+    combinedDirData = {}; // reset
 
     // Clear all fields first so stale data from previous month doesn't remain
     SPDP_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
@@ -581,6 +591,10 @@ function loadAllData() {
                 _sumObj(sumTahap1, md.tahap1Cards);
                 _sumObj(sumSpdpDir, md.spdpDir);
                 _sumObj(sumTahap1Dir, md.tahap1Dir);
+            }
+            if (start !== end) {
+                combinedDirData['spdp'] = sumSpdpDir;
+                combinedDirData['tahap1'] = sumTahap1Dir;
             }
             _setFields(sumSpdp, SPDP_FIELDS);
             _setFields(sumTahap1, TAHAP1_FIELDS);

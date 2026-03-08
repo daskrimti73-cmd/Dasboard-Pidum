@@ -16,6 +16,7 @@ function getTindakPidanaListHm() {
 // ---- Chart instances ----
 let chartTrendHm = null;
 let chartTindakPidanaHm = null;
+let combinedTpData = null; // holds merged tpValues when viewing combined months
 
 // ---- Chart colors ----
 const lineColorHm = {
@@ -221,16 +222,27 @@ function updateTrendChartHm() {
 // ---- Update tindak pidana bar chart ----
 function updateTpChartHm() {
     if (!chartTindakPidanaHm) return;
-    const tpList = getTindakPidanaListHm();
-    const values = tpList.map((_, idx) => {
-        const input = document.getElementById(`tp-hm-${idx}`);
-        return input ? (parseInt(input.value) || 0) : 0;
-    });
+    let labels, values;
 
-    const bgColors = tpList.map((_, i) => barBgHm[i % barBgHm.length]);
-    const hoverColors = tpList.map((_, i) => barHoverHm[i % barHoverHm.length]);
+    if (combinedTpData && Object.keys(combinedTpData).length > 0) {
+        const entries = Object.entries(combinedTpData)
+            .filter(([k]) => isNaN(parseInt(k)))
+            .filter(([, v]) => parseInt(v) > 0);
+        labels = entries.map(([k]) => k);
+        values = entries.map(([, v]) => parseInt(v) || 0);
+    } else {
+        const tpList = getTindakPidanaListHm();
+        labels = tpList;
+        values = tpList.map((_, idx) => {
+            const input = document.getElementById(`tp-hm-${idx}`);
+            return input ? (parseInt(input.value) || 0) : 0;
+        });
+    }
 
-    chartTindakPidanaHm.data.labels = tpList;
+    const bgColors = labels.map((_, i) => barBgHm[i % barBgHm.length]);
+    const hoverColors = labels.map((_, i) => barHoverHm[i % barHoverHm.length]);
+
+    chartTindakPidanaHm.data.labels = labels;
     chartTindakPidanaHm.data.datasets = [{
         label: 'Jumlah',
         data: values,
@@ -270,8 +282,7 @@ function saveAllData(silent) {
 }
 
 function loadAllDataHm() {
-    // Ensure direktorat list includes ALL categories from ALL months' saved data
-    ensureDirListFromSavedData(getHmStorageKey(), 'hm', ['tpValues']);
+    combinedTpData = null; // reset
 
     // Clear all fields first
     ['hm-pn', 'hm-pt', 'hm-ma'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
@@ -288,6 +299,7 @@ function loadAllDataHm() {
             const sumC = {}, sumTp = {};
             for (let m = start; m <= end; m++) { const md = data.perBulan[m]; if (!md) continue; _sumHM(sumC, md.cards); _sumHM(sumTp, md.tpValues); }
             ['hm-pn', 'hm-pt', 'hm-ma'].forEach(id => { const el = document.getElementById(id); if (el && sumC[id] !== undefined) el.value = sumC[id]; });
+            if (start !== end) combinedTpData = sumTp;
             const tpList = getTindakPidanaListHm(), ks = Object.keys(sumTp), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
             if (isL) { tpList.forEach((tp, i) => { const el = document.getElementById('tp-hm-' + i); if (el && sumTp[tp] !== undefined) el.value = sumTp[tp]; }); }
             else { ks.forEach(i => { const el = document.getElementById('tp-hm-' + i); if (el) el.value = sumTp[i]; }); }

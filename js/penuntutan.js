@@ -83,6 +83,8 @@ const chartColorsP = {
     }
 };
 
+let combinedDirDataP = {}; // holds merged dirValues per section when viewing combined months
+
 // ---- Storage key ----
 function getPenuntutanStorageKey() {
     return buildStorageKey('penuntutan');
@@ -308,23 +310,32 @@ function updateTrendChartP(section) {
 function updateDirChartP(section) {
     const chart = SECTIONS[section]?.dirChart;
     if (!chart) return;
+    let labels, values;
 
-    const dirList = getDirListForSectionP(section);
+    const cd = combinedDirDataP[section];
+    if (cd && Object.keys(cd).length > 0) {
+        const entries = Object.entries(cd)
+            .filter(([k]) => isNaN(parseInt(k)))
+            .filter(([, v]) => parseInt(v) > 0);
+        labels = entries.map(([k]) => k);
+        values = entries.map(([, v]) => parseInt(v) || 0);
+    } else {
+        const dirList = getDirListForSectionP(section);
+        labels = dirList;
+        values = dirList.map((_, idx) => {
+            const input = document.getElementById(`dir-${section}-${idx}`);
+            return input ? (parseInt(input.value) || 0) : 0;
+        });
+    }
 
-    const values = dirList.map((_, idx) => {
-        const input = document.getElementById(`dir-${section}-${idx}`);
-        return input ? (parseInt(input.value) || 0) : 0;
-    });
-
-    // Generate enough colors
     const bgColors = [];
     const hoverColors = [];
-    for (let i = 0; i < dirList.length; i++) {
+    for (let i = 0; i < labels.length; i++) {
         bgColors.push(chartColorsP.bar.backgroundColor[i % chartColorsP.bar.backgroundColor.length]);
         hoverColors.push(chartColorsP.bar.hoverBg[i % chartColorsP.bar.hoverBg.length]);
     }
 
-    chart.data.labels = dirList;
+    chart.data.labels = labels;
     chart.data.datasets = [{
         label: 'Jumlah',
         data: values,
@@ -429,10 +440,7 @@ function saveAllData(silent) {
 }
 
 function loadAllData() {
-    // Ensure direktorat list includes ALL categories from ALL months' saved data
-    Object.keys(SECTIONS).forEach(sec => {
-        ensureDirListFromSavedData(getPenuntutanStorageKey(), 'penuntutan_' + sec, [sec + 'Dir']);
-    });
+    combinedDirDataP = {}; // reset
 
     // Clear all fields first
     Object.keys(SECTIONS).forEach(sec => {
@@ -451,6 +459,7 @@ function loadAllData() {
             Object.keys(SECTIONS).forEach(sec => {
                 const sumC = {}, sumD = {};
                 for (let m = start; m <= end; m++) { const md = data.perBulan[m]; if (!md) continue; _sumP(sumC, md[sec + 'Cards']); _sumP(sumD, md[sec + 'Dir']); }
+                if (start !== end) combinedDirDataP[sec] = sumD;
                 SECTIONS[sec].fields.forEach(id => { const el = document.getElementById(id); if (el && sumC[id] !== undefined) el.value = sumC[id]; });
                 const dl = getDirListForSectionP(sec), ks = Object.keys(sumD), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
                 if (isL) { dl.forEach((d, i) => { const el = document.getElementById('dir-' + sec + '-' + i); if (el && sumD[d] !== undefined) el.value = sumD[d]; }); }

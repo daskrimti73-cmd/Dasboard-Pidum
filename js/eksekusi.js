@@ -65,6 +65,8 @@ const chartColorsEks = {
     }
 };
 
+let combinedDirDataEks = {}; // holds merged dirValues per key when viewing combined months
+
 // ---- Storage key ----
 function getEksekusiStorageKey() {
     return buildStorageKey('eksekusi');
@@ -344,22 +346,32 @@ function updateTrendChart(key) {
 function updateDirChart(key) {
     const cfg = DIR_CHARTS[key];
     if (!cfg || !cfg.chart) return;
+    let labels, values;
 
-    const tpList = getTindakPidanaListEks(key);
-    const values = tpList.map((_, idx) => {
-        const input = document.getElementById(`dir-${key}-${idx}`);
-        return input ? (parseInt(input.value) || 0) : 0;
-    });
+    const cd = combinedDirDataEks[key];
+    if (cd && Object.keys(cd).length > 0) {
+        const entries = Object.entries(cd)
+            .filter(([k]) => isNaN(parseInt(k)))
+            .filter(([, v]) => parseInt(v) > 0);
+        labels = entries.map(([k]) => k);
+        values = entries.map(([, v]) => parseInt(v) || 0);
+    } else {
+        const tpList = getTindakPidanaListEks(key);
+        labels = tpList;
+        values = tpList.map((_, idx) => {
+            const input = document.getElementById(`dir-${key}-${idx}`);
+            return input ? (parseInt(input.value) || 0) : 0;
+        });
+    }
 
-    // Generate enough colors
     const bgColors = [];
     const hoverColors = [];
-    for (let i = 0; i < tpList.length; i++) {
+    for (let i = 0; i < labels.length; i++) {
         bgColors.push(chartColorsEks.bar.backgroundColor[i % chartColorsEks.bar.backgroundColor.length]);
         hoverColors.push(chartColorsEks.bar.hoverBg[i % chartColorsEks.bar.hoverBg.length]);
     }
 
-    cfg.chart.data.labels = tpList;
+    cfg.chart.data.labels = labels;
     cfg.chart.data.datasets = [{
         label: 'Jumlah',
         data: values,
@@ -404,10 +416,7 @@ function saveAllData(silent) {
 }
 
 function loadAllData() {
-    // Ensure direktorat list includes ALL categories from ALL months' saved data
-    Object.keys(DIR_CHARTS).forEach(key => {
-        ensureDirListFromSavedData(getEksekusiStorageKey(), 'eks_' + key, [key + 'Dir']);
-    });
+    combinedDirDataEks = {}; // reset
 
     // Clear all fields first
     CARD_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
@@ -432,6 +441,7 @@ function loadAllData() {
             CARD_FIELDS.forEach(id => { const el = document.getElementById(id); if (el && sumC[id] !== undefined) el.value = sumC[id]; });
             Object.keys(DIR_CHARTS).forEach(key => {
                 const dl = getTindakPidanaListEks(key), ks = Object.keys(sumD[key]), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
+                if (start !== end) combinedDirDataEks[key] = sumD[key];
                 if (isL) { dl.forEach((d, i) => { const el = document.getElementById('dir-' + key + '-' + i); if (el && sumD[key][d] !== undefined) el.value = sumD[key][d]; }); }
                 else { ks.forEach(i => { const el = document.getElementById('dir-' + key + '-' + i); if (el) el.value = sumD[key][i]; }); }
             });

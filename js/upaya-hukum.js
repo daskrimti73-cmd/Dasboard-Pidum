@@ -77,6 +77,8 @@ const chartColorsUH = {
     }
 };
 
+let combinedDirDataUH = {}; // holds merged dirValues per section when viewing combined months
+
 // ---- Storage key ----
 function getUpayaHukumStorageKey() {
     return buildStorageKey('upayahukum');
@@ -304,21 +306,28 @@ function updateTrendChartUH(section) {
 function updateDirChartUH(section) {
     const chart = SECTIONS_UH[section]?.dirChart;
     if (!chart) return;
+    let labels, values;
 
-    // Gunakan direktorat list yang sesuai dengan section
-    const dirList = getDirektoratMapUH(section);
+    const cd = combinedDirDataUH[section];
+    if (cd && Object.keys(cd).length > 0) {
+        const entries = Object.entries(cd)
+            .filter(([k]) => isNaN(parseInt(k)))
+            .filter(([, v]) => parseInt(v) > 0);
+        labels = entries.map(([k]) => k);
+        values = entries.map(([, v]) => parseInt(v) || 0);
+    } else {
+        const dirList = getDirektoratMapUH(section);
+        labels = dirList;
+        values = dirList.map((_, idx) => {
+            const input = document.getElementById(`dir-${section}-${idx}`);
+            return input ? (parseInt(input.value) || 0) : 0;
+        });
+    }
 
-    const values = dirList.map((_, idx) => {
-        const input = document.getElementById(`dir-${section}-${idx}`);
-        return input ? (parseInt(input.value) || 0) : 0;
-    });
+    const bgColors = labels.map((_, i) => chartColorsUH.bar.backgroundColor[i % chartColorsUH.bar.backgroundColor.length]);
+    const hoverColors = labels.map((_, i) => chartColorsUH.bar.hoverBg[i % chartColorsUH.bar.hoverBg.length]);
 
-    // Generate enough colors for dynamic list
-    const bgColors = dirList.map((_, i) => chartColorsUH.bar.backgroundColor[i % chartColorsUH.bar.backgroundColor.length]);
-    const hoverColors = dirList.map((_, i) => chartColorsUH.bar.hoverBg[i % chartColorsUH.bar.hoverBg.length]);
-
-    // Update chart (bar chart for both banding & kasasi)
-    chart.data.labels = dirList;
+    chart.data.labels = labels;
     chart.data.datasets = [{
         label: 'Jumlah',
         data: values,
@@ -367,9 +376,7 @@ function saveAllData(silent) {
 }
 
 function loadAllData() {
-    // Ensure direktorat list includes ALL categories from ALL months' saved data
-    ensureDirListFromSavedData(getUpayaHukumStorageKey(), 'uh_banding', ['bandingDir']);
-    ensureDirListFromSavedData(getUpayaHukumStorageKey(), 'uh_kasasi', ['kasasiDir']);
+    combinedDirDataUH = {}; // reset
 
     // Clear all fields first
     Object.keys(SECTIONS_UH).forEach(sec => {
@@ -388,6 +395,7 @@ function loadAllData() {
             Object.keys(SECTIONS_UH).forEach(sec => {
                 const sumC = {}, sumD = {};
                 for (let m = start; m <= end; m++) { const md = data.perBulan[m]; if (!md) continue; _sumUH(sumC, md[sec + 'Cards']); _sumUH(sumD, md[sec + 'Dir']); }
+                if (start !== end) combinedDirDataUH[sec] = sumD;
                 SECTIONS_UH[sec].fields.forEach(id => { const el = document.getElementById(id); if (el && sumC[id] !== undefined) el.value = sumC[id]; });
                 const dl = getDirektoratMapUH(sec), ks = Object.keys(sumD), isL = sec !== 'kasasi' && ks.length > 0 && isNaN(parseInt(ks[0]));
                 if (isL) { dl.forEach((d, i) => { const el = document.getElementById('dir-' + sec + '-' + i); if (el && sumD[d] !== undefined) el.value = sumD[d]; }); }
