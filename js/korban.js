@@ -977,7 +977,7 @@ function saveAllData(silent) {
     const bulan = bulanAwal;
     const monthData = { cards: {} };
     ['korban-perempuan', 'korban-anak'].forEach(id => { const el = document.getElementById(id); if (el) monthData.cards[id] = el.value; });
-    // Save monthly trend input values
+    // Save monthly trend input values for the current filter month
     const epInput = document.getElementById('monthly-perempuan-' + bulan);
     const eaInput = document.getElementById('monthly-anak-' + bulan);
     monthData.trendPerempuan = epInput ? epInput.value : '';
@@ -988,6 +988,22 @@ function saveAllData(silent) {
     let existing = {}; try { const s = localStorage.getItem(storageKey); if (s) existing = JSON.parse(s); } catch (e) { }
     if (!existing.perBulan) existing.perBulan = {};
     existing.perBulan[bulan] = monthData;
+
+    // Also save trend values for ALL other months that have input values on screen
+    for (let m = 1; m <= 12; m++) {
+        if (m === bulan) continue; // Already saved above
+        const epOther = document.getElementById('monthly-perempuan-' + m);
+        const eaOther = document.getElementById('monthly-anak-' + m);
+        const trendP = epOther ? epOther.value : '';
+        const trendA = eaOther ? eaOther.value : '';
+        // Only save if there's a value and it's not empty/zero
+        if (trendP || trendA) {
+            if (!existing.perBulan[m]) existing.perBulan[m] = { cards: {} };
+            if (trendP) existing.perBulan[m].trendPerempuan = trendP;
+            if (trendA) existing.perBulan[m].trendAnak = trendA;
+        }
+    }
+
     existing.savedAt = new Date().toISOString();
     try {
         localStorage.setItem(storageKey, JSON.stringify(existing));
