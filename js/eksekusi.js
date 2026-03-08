@@ -176,11 +176,33 @@ function toggleAccordion(section) {
 // ---- Event handlers ----
 function onDataInput() {
     markUnsaved();
+    // Sync card → trend for current month
+    const bulan = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanEnd = parseInt(document.getElementById('filterBulan2')?.value || bulan);
+    if (bulan === bulanEnd) {
+        // Map card field IDs to trend keys: eks-p48→p48, eks-ba17→ba17, etc.
+        CARD_FIELDS.forEach(id => {
+            const key = id.replace('eks-', '');
+            const cardVal = document.getElementById(id)?.value || '';
+            const trendEl = document.getElementById('monthly-' + key + '-' + bulan);
+            if (trendEl) trendEl.value = cardVal;
+        });
+        Object.keys(TREND_CHARTS).forEach(k => updateTrendChart(k));
+    }
 }
 
 function onMonthlyInput(key) {
     markUnsaved();
     updateTrendChart(key);
+    // Sync trend → card for current month
+    const bulan = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanEnd = parseInt(document.getElementById('filterBulan2')?.value || bulan);
+    if (bulan === bulanEnd) {
+        const cardId = 'eks-' + key;
+        const trendVal = document.getElementById('monthly-' + key + '-' + bulan)?.value || '';
+        const cardEl = document.getElementById(cardId);
+        if (cardEl) cardEl.value = trendVal;
+    }
 }
 
 function onDirInput(key) {

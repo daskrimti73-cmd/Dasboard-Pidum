@@ -190,11 +190,28 @@ function capitalizeUH(str) {
 // ---- Event handlers ----
 function onDataInput(section) {
     markUnsaved();
+    const bulan = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanEnd = parseInt(document.getElementById('filterBulan2')?.value || bulan);
+    if (bulan === bulanEnd) {
+        const mf = SECTIONS_UH[section].fields[0];
+        const cardVal = document.getElementById(mf)?.value || '';
+        const trendEl = document.getElementById('monthly-' + section + '-' + bulan);
+        if (trendEl) trendEl.value = cardVal;
+        updateTrendChartUH(section);
+    }
 }
 
 function onMonthlyInputUH(section) {
     markUnsaved();
     updateTrendChartUH(section);
+    const bulan = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanEnd = parseInt(document.getElementById('filterBulan2')?.value || bulan);
+    if (bulan === bulanEnd) {
+        const mf = SECTIONS_UH[section].fields[0];
+        const trendVal = document.getElementById('monthly-' + section + '-' + bulan)?.value || '';
+        const cardEl = document.getElementById(mf);
+        if (cardEl) cardEl.value = trendVal;
+    }
 }
 
 function onDirInputUH(section) {

@@ -161,12 +161,31 @@ function toggleMonthlyDetail(section) {
 // ---- On data input (card values) ----
 function onDataInput(section) {
     markUnsaved();
+    // Sync card → trend for current month
+    const bulan = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanEnd = parseInt(document.getElementById('filterBulan2')?.value || bulan);
+    if (bulan === bulanEnd) {
+        const firstField = section === 'spdp' ? 'spdp-spdp' : 'tahap1-tahap1';
+        const cardVal = document.getElementById(firstField)?.value || '';
+        const trendEl = document.getElementById('monthly-' + section + '-' + bulan);
+        if (trendEl) trendEl.value = cardVal;
+        updateTrendChart(section);
+    }
 }
 
 // ---- On monthly input: update trend chart ----
 function onMonthlyInput(section) {
     markUnsaved();
     updateTrendChart(section);
+    // Sync trend → card for current month
+    const bulan = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanEnd = parseInt(document.getElementById('filterBulan2')?.value || bulan);
+    if (bulan === bulanEnd) {
+        const firstField = section === 'spdp' ? 'spdp-spdp' : 'tahap1-tahap1';
+        const trendVal = document.getElementById('monthly-' + section + '-' + bulan)?.value || '';
+        const cardEl = document.getElementById(firstField);
+        if (cardEl) cardEl.value = trendVal;
+    }
 }
 
 // ---- On direktorat input: update bar chart ----
