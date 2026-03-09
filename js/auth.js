@@ -263,6 +263,37 @@ function deleteDirektorat(label, sectionKey) {
     return true;
 }
 
+// ---- Delete direktorat data from ALL months ----
+// Removes the category's data from every month in perBulan.
+function deleteDirektoratDataAllMonths(storageKey, dirDataKeys, label) {
+    try {
+        const saved = localStorage.getItem(storageKey);
+        if (!saved) return false;
+        const data = JSON.parse(saved);
+        if (!data.perBulan) return false;
+
+        const keys = Array.isArray(dirDataKeys) ? dirDataKeys : [dirDataKeys];
+        let changed = false;
+        for (let m = 1; m <= 12; m++) {
+            if (!data.perBulan[m]) continue;
+            keys.forEach(dk => {
+                if (data.perBulan[m][dk] && data.perBulan[m][dk][label] !== undefined) {
+                    delete data.perBulan[m][dk][label];
+                    changed = true;
+                }
+            });
+        }
+
+        if (changed) {
+            localStorage.setItem(storageKey, JSON.stringify(data));
+        }
+        return changed;
+    } catch (e) {
+        console.error('deleteDirektoratDataAllMonths error:', e);
+        return false;
+    }
+}
+
 // ---- Delete direktorat data for a SPECIFIC month only ----
 // This removes the category's data from the currently selected month in perBulan,
 // WITHOUT removing it from the global direktorat list.

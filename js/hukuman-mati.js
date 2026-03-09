@@ -455,27 +455,16 @@ function handleDeleteDirektorat(label) {
     // Auto-save current unsaved data before delete & reload
     saveAllData(true);
 
-    const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
-    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
+    if (!confirm('Hapus kategori "' + label + '" dari semua data?')) return;
 
-    if (bulanAwal !== bulanAkhir) {
-        showToast('Untuk menghapus kategori, Bulan Awal dan Bulan Akhir harus sama.', 'error');
-        return;
-    }
-
-    const bulan = bulanAwal;
-    const namaBulan = BULAN_NAMES_HM[bulan - 1] || bulan;
-
-    if (!confirm('Hapus kategori "' + label + '" dari bulan ' + namaBulan + '?')) return;
-
+    // 1. Remove data for this category from ALL months
     const storageKey = getHmStorageKey();
-    deleteDirektoratDataForMonth(storageKey, 'tpValues', label, bulan);
+    deleteDirektoratDataAllMonths(storageKey, 'tpValues', label);
 
-    if (!direktoratHasDataInAnyMonth(storageKey, 'tpValues', label)) {
-        deleteDirektorat(label, 'hm');
-    }
+    // 2. Remove from global direktorat list
+    deleteDirektorat(label, 'hm');
 
-    showToast('Kategori "' + label + '" berhasil dihapus dari bulan ' + namaBulan, 'success');
+    showToast('Kategori "' + label + '" berhasil dihapus', 'success');
     renderDirektoratTags();
     rebuildDirektoratUI();
 }

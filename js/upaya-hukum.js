@@ -560,27 +560,16 @@ function handleDeleteDirektorat(label) {
     // Auto-save current unsaved data before delete & reload
     saveAllData(true);
 
-    const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
-    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
+    if (!confirm('Hapus kategori "' + label + '" dari semua data (Banding)?')) return;
 
-    if (bulanAwal !== bulanAkhir) {
-        showToast('Untuk menghapus kategori, Bulan Awal dan Bulan Akhir harus sama.', 'error');
-        return;
-    }
-
-    const bulan = bulanAwal;
-    const namaBulan = BULAN_NAMES_UH[bulan - 1] || bulan;
-
-    if (!confirm('Hapus kategori "' + label + '" dari bulan ' + namaBulan + ' (Banding)?')) return;
-
+    // 1. Remove data for this category from ALL months
     const storageKey = getUpayaHukumStorageKey();
-    deleteDirektoratDataForMonth(storageKey, 'bandingDir', label, bulan);
+    deleteDirektoratDataAllMonths(storageKey, 'bandingDir', label);
 
-    if (!direktoratHasDataInAnyMonth(storageKey, 'bandingDir', label)) {
-        deleteDirektorat(label, 'uh_banding');
-    }
+    // 2. Remove from global direktorat list
+    deleteDirektorat(label, 'uh_banding');
 
-    showToast('Kategori "' + label + '" berhasil dihapus dari bulan ' + namaBulan + ' (Banding)', 'success');
+    showToast('Kategori "' + label + '" berhasil dihapus (Banding)', 'success');
     renderDirektoratTags();
     rebuildDirektoratUI('banding');
 }
@@ -624,27 +613,16 @@ function handleDeleteDirektoratKasasi(label) {
     // Auto-save current unsaved data before delete & reload
     saveAllData(true);
 
-    const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
-    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
+    if (!confirm('Hapus kategori "' + label + '" dari semua data (Kasasi)?')) return;
 
-    if (bulanAwal !== bulanAkhir) {
-        showToast('Untuk menghapus kategori, Bulan Awal dan Bulan Akhir harus sama.', 'error');
-        return;
-    }
-
-    const bulan = bulanAwal;
-    const namaBulan = BULAN_NAMES_UH[bulan - 1] || bulan;
-
-    if (!confirm('Hapus kategori "' + label + '" dari bulan ' + namaBulan + ' (Kasasi)?')) return;
-
+    // 1. Remove data for this category from ALL months
     const storageKey = getUpayaHukumStorageKey();
-    deleteDirektoratDataForMonth(storageKey, 'kasasiDir', label, bulan);
+    deleteDirektoratDataAllMonths(storageKey, 'kasasiDir', label);
 
-    if (!direktoratHasDataInAnyMonth(storageKey, 'kasasiDir', label)) {
-        deleteDirektorat(label, 'uh_kasasi');
-    }
+    // 2. Remove from global direktorat list
+    deleteDirektorat(label, 'uh_kasasi');
 
-    showToast('Kategori "' + label + '" berhasil dihapus dari bulan ' + namaBulan + ' (Kasasi)', 'success');
+    showToast('Kategori "' + label + '" berhasil dihapus (Kasasi)', 'success');
     renderDirektoratKasasiTags();
     rebuildDirektoratUI('kasasi');
 }

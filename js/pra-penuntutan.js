@@ -469,31 +469,18 @@ function handleDeleteDirektorat(section, label) {
     // Auto-save current unsaved data before delete & reload
     saveAllData(true);
 
-    const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
-    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
-
-    // Only allow delete when viewing single month
-    if (bulanAwal !== bulanAkhir) {
-        showToast('Untuk menghapus kategori, Bulan Awal dan Bulan Akhir harus sama.', 'error');
-        return;
-    }
-
-    const bulan = bulanAwal;
-    const namaBulan = BULAN_NAMES[bulan - 1] || bulan;
     const dirDataKey = section + 'Dir'; // 'spdpDir' or 'tahap1Dir'
 
-    if (!confirm('Hapus kategori "' + label + '" dari bulan ' + namaBulan + '?')) return;
+    if (!confirm('Hapus kategori "' + label + '" dari semua data?')) return;
 
-    // 1. Remove data for this category from the current month only
+    // 1. Remove data for this category from ALL months
     const storageKey = getPrapenStorageKey('all');
-    deleteDirektoratDataForMonth(storageKey, dirDataKey, label, bulan);
+    deleteDirektoratDataAllMonths(storageKey, dirDataKey, label);
 
-    // 2. Only remove from global list if NO other month has data for this category
-    if (!direktoratHasDataInAnyMonth(storageKey, dirDataKey, label)) {
-        deleteDirektorat(label, 'pra_' + section);
-    }
+    // 2. Remove from global direktorat list
+    deleteDirektorat(label, 'pra_' + section);
 
-    showToast('Kategori "' + label + '" berhasil dihapus dari bulan ' + namaBulan, 'success');
+    showToast('Kategori "' + label + '" berhasil dihapus', 'success');
     renderDirektoratTags(section);
     rebuildSectionUI(section);
 }
