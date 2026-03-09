@@ -105,22 +105,25 @@ function handleAddBulanAlt(btn) {
 }
 
 // ---- Generate direktorat input fields (dynamic) ----
+// Uses getDirListForSection (the global category list) as the single source of truth.
+// Input IDs are based on index within this list.
 function generateDirektoratInputs(section, gridId) {
     const grid = document.getElementById(gridId);
     if (!grid) return;
 
     grid.innerHTML = '';
 
-    const dirList = getMergedDirList(getPrapenStorageKey('all'), 'pra_' + section, section + 'Dir');
+    // Always use the same list that save/load uses
+    const dirList = getDirListForSection(section);
 
     dirList.forEach((dir, idx) => {
         const div = document.createElement('div');
         div.className = 'dir-input-group';
         div.innerHTML = `
             <label>${dir}</label>
-            <input type="number" 
-                   id="dir-${section}-${idx}" 
-                   placeholder="0" 
+            <input type="number"
+                   id="dir-${section}-${idx}"
+                   placeholder="0"
                    min="0"
                    oninput="onDirInput('${section}')">
         `;
@@ -389,7 +392,7 @@ function updateDirChart(section) {
         values = entries.map(([, v]) => parseInt(v) || 0);
     } else {
         // Single month mode: use input elements, only show non-zero
-        const dirList = getMergedDirList(getPrapenStorageKey('all'), 'pra_' + section, section + 'Dir');
+        const dirList = getDirListForSection(section);
         const paired = dirList.map((dir, idx) => {
             const input = document.getElementById(`dir-${section}-${idx}`);
             return { label: dir, value: input ? (parseInt(input.value) || 0) : 0 };
@@ -518,7 +521,11 @@ function saveAllData(silent) {
     }
 
     const bulan = bulanAwal;
-    const dirList = getMergedDirList(getPrapenStorageKey('all'), 'pra_spdp', 'spdpDir');
+
+    // IMPORTANT: Use getDirListForSection (same source as generateDirektoratInputs)
+    // to ensure index-based IDs match the rendered input fields
+    const spdpDirList = getDirListForSection('spdp');
+    const tahap1DirList = getDirListForSection('tahap1');
 
     // Collect current card values
     const spdpData = {};
@@ -532,13 +539,12 @@ function saveAllData(silent) {
         if (input) tahap1Data[id] = input.value;
     });
 
-    // Collect direktorat values
+    // Collect direktorat values using the SAME list that generated the inputs
     const spdpDir = {};
-    dirList.forEach((dir, idx) => {
+    spdpDirList.forEach((dir, idx) => {
         const input = document.getElementById(`dir-spdp-${idx}`);
         if (input) spdpDir[dir] = input.value;
     });
-    const tahap1DirList = getMergedDirList(getPrapenStorageKey('all'), 'pra_tahap1', 'tahap1Dir');
     const tahap1Dir = {};
     tahap1DirList.forEach((dir, idx) => {
         const input = document.getElementById(`dir-tahap1-${idx}`);
@@ -679,9 +685,10 @@ function _setFields(obj, fieldIds) {
     });
 }
 // Helper: set direktorat field values
+// Uses getDirListForSection (same source as generateDirektoratInputs)
 function _setDir(dirData, section) {
     if (!dirData) return;
-    const dirList = getMergedDirList(getPrapenStorageKey('all'), 'pra_' + section, section + 'Dir');
+    const dirList = getDirListForSection(section);
     const keys = Object.keys(dirData);
     const isLabel = keys.length > 0 && isNaN(parseInt(keys[0]));
     if (isLabel) {
@@ -757,6 +764,10 @@ function applyFilters() {
     generateMonthlyInputs('spdp', 'spdpMonthlyGrid');
     generateMonthlyInputs('tahap1', 'tahap1MonthlyGrid');
 
+    // Regenerate direktorat inputs to ensure consistency with current category list
+    generateDirektoratInputs('spdp', 'spdpDirGrid');
+    generateDirektoratInputs('tahap1', 'tahap1DirGrid');
+
     // Clear all inputs before loading new data (for new year/filter)
     SPDP_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
     TAHAP1_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
@@ -795,9 +806,14 @@ function resetFilters() {
     // Regenerate and clear
     generateMonthlyInputs('spdp', 'spdpMonthlyGrid');
     generateMonthlyInputs('tahap1', 'tahap1MonthlyGrid');
+    generateDirektoratInputs('spdp', 'spdpDirGrid');
+    generateDirektoratInputs('tahap1', 'tahap1DirGrid');
 
     SPDP_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
     TAHAP1_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+
+    // Load data for the reset filter context
+    loadAllData();
 
     updateTrendChart('spdp');
     updateTrendChart('tahap1');

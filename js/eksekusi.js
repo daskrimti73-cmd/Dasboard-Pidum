@@ -134,7 +134,7 @@ function generateDirInputs(key, gridId) {
     const grid = document.getElementById(gridId);
     if (!grid) return;
     grid.innerHTML = '';
-    const tpList = getMergedDirList(getEksekusiStorageKey(), 'eks_' + key, key + 'Dir');
+    const tpList = getTindakPidanaListEks(key);
     tpList.forEach((dir, idx) => {
         const div = document.createElement('div');
         div.className = 'dir-input-group';
