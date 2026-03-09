@@ -601,6 +601,9 @@ function saveAllData(silent) {
             setTimeout(() => { btn.innerHTML = '<i class="fas fa-save"></i> Simpan Semua Data'; }, 2000);
         }
         hasUnsaved = false;
+        // Refresh charts after save
+        updateDirChart('spdp');
+        updateDirChart('tahap1');
     } catch (e) {
         showToast('Gagal menyimpan data!', 'error');
         console.error('Save error:', e);

@@ -475,6 +475,8 @@ function saveAllData(silent) {
         const nb = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'][bulan - 1];
         if (!silent) showToast('Data bulan ' + nb + ' berhasil disimpan!', 'success');
         hasUnsaved = false;
+        // Refresh charts after save
+        Object.keys(SECTIONS).forEach(sec => updateDirChartP(sec));
         const btn = document.getElementById('btnSave');
         if (btn) { btn.innerHTML = '<i class="fas fa-check"></i> Tersimpan'; setTimeout(() => { btn.innerHTML = '<i class="fas fa-save"></i> Simpan Semua Data'; }, 2000); }
     } catch (e) { showToast('Gagal menyimpan data!', 'error'); }
