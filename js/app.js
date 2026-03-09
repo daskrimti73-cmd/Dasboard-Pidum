@@ -137,8 +137,15 @@ function navigateToPage(url, event) {
     if (event.target.tagName === 'INPUT') {
         return;
     }
+    // Save current filter state so the target page can restore it
+    saveActiveFilters();
     window.location.href = url;
 }
+
+// Auto-save filters when leaving any page (covers sidebar links, back button, etc.)
+window.addEventListener('beforeunload', function () {
+    try { saveActiveFilters(); } catch (e) { }
+});
 
 // ---- Greeting based on time ----
 function setGreeting() {
