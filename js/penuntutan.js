@@ -317,14 +317,24 @@ function updateTrendChartP(section) {
 function updateDirChartP(section) {
     const chart = SECTIONS[section]?.dirChart;
     if (!chart) return;
+    let labels, values;
 
-    const dirList = getActiveDirListForSectionP(section);
-    const paired = dirList.map((dir, idx) => {
-        const input = document.getElementById(`dir-${section}-${idx}`);
-        return { label: dir, value: input ? (parseInt(input.value) || 0) : 0 };
-    }).filter(p => p.value > 0);
-    const labels = paired.map(p => p.label);
-    const values = paired.map(p => p.value);
+    const cd = combinedDirDataP[section];
+    if (cd && Object.keys(cd).length > 0) {
+        const entries = Object.entries(cd)
+            .filter(([k]) => isNaN(parseInt(k)))
+            .filter(([, v]) => parseInt(v) > 0);
+        labels = entries.map(([k]) => k);
+        values = entries.map(([, v]) => parseInt(v) || 0);
+    } else {
+        const dirList = getActiveDirListForSectionP(section);
+        const paired = dirList.map((dir, idx) => {
+            const input = document.getElementById(`dir-${section}-${idx}`);
+            return { label: dir, value: input ? (parseInt(input.value) || 0) : 0 };
+        }).filter(p => p.value > 0);
+        labels = paired.map(p => p.label);
+        values = paired.map(p => p.value);
+    }
 
     const bgColors = [];
     const hoverColors = [];
