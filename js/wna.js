@@ -698,25 +698,15 @@ function updateTrendChart() {
 // ---- Update dir bar chart ----
 function updateDirChart() {
     if (!chartDir) return;
-    let labels, values;
 
-    if (combinedDirData && Object.keys(combinedDirData).length > 0) {
-        // Combined mode: show ALL categories from merged data (all months)
-        const entries = Object.entries(combinedDirData)
-            .filter(([k]) => isNaN(parseInt(k))) // only string keys (category names)
-            .filter(([, v]) => parseInt(v) > 0); // only non-zero
-        labels = entries.map(([k]) => k);
-        values = entries.map(([, v]) => parseInt(v) || 0);
-    } else {
-        // Single month mode: use input elements, only show non-zero
-        const tpList = getActiveDirListWna();
-        const paired = tpList.map((dir, idx) => {
-            const input = document.getElementById(`dir-wna-${idx}`);
-            return { label: dir, value: input ? (parseInt(input.value) || 0) : 0 };
-        }).filter(p => p.value > 0);
-        labels = paired.map(p => p.label);
-        values = paired.map(p => p.value);
-    }
+    // Always read from input elements so chart reflects user's current input
+    const tpList = getActiveDirListWna();
+    const paired = tpList.map((dir, idx) => {
+        const input = document.getElementById(`dir-wna-${idx}`);
+        return { label: dir, value: input ? (parseInt(input.value) || 0) : 0 };
+    }).filter(p => p.value > 0);
+    const labels = paired.map(p => p.label);
+    const values = paired.map(p => p.value);
 
     const bgColors = labels.map((_, i) => barBg[i % barBg.length]);
     const hoverColors = labels.map((_, i) => barHover[i % barHover.length]);

@@ -390,26 +390,15 @@ function updateTrendChart(section) {
 function updateDirChart(section) {
     const chart = section === 'spdp' ? chartSpdpTindakPidana : chartTahap1TindakPidana;
     if (!chart) return;
-    let labels, values;
 
-    const cd = combinedDirData[section];
-    if (cd && Object.keys(cd).length > 0) {
-        // Combined mode: show ALL categories from merged data (only non-zero)
-        const entries = Object.entries(cd)
-            .filter(([k]) => isNaN(parseInt(k)))
-            .filter(([, v]) => parseInt(v) > 0);
-        labels = entries.map(([k]) => k);
-        values = entries.map(([, v]) => parseInt(v) || 0);
-    } else {
-        // Single month mode: use input elements, only show non-zero
-        const dirList = getActiveDirListForSection(section);
-        const paired = dirList.map((dir, idx) => {
-            const input = document.getElementById(`dir-${section}-${idx}`);
-            return { label: dir, value: input ? (parseInt(input.value) || 0) : 0 };
-        }).filter(p => p.value > 0);
-        labels = paired.map(p => p.label);
-        values = paired.map(p => p.value);
-    }
+    // Always read from input elements so chart reflects user's current input
+    const dirList = getActiveDirListForSection(section);
+    const paired = dirList.map((dir, idx) => {
+        const input = document.getElementById(`dir-${section}-${idx}`);
+        return { label: dir, value: input ? (parseInt(input.value) || 0) : 0 };
+    }).filter(p => p.value > 0);
+    const labels = paired.map(p => p.label);
+    const values = paired.map(p => p.value);
 
     const bgColors = [];
     const hoverColors = [];

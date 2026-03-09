@@ -353,24 +353,15 @@ function updateTrendChart(key) {
 function updateDirChart(key) {
     const cfg = DIR_CHARTS[key];
     if (!cfg || !cfg.chart) return;
-    let labels, values;
 
-    const cd = combinedDirDataEks[key];
-    if (cd && Object.keys(cd).length > 0) {
-        const entries = Object.entries(cd)
-            .filter(([k]) => isNaN(parseInt(k)))
-            .filter(([, v]) => parseInt(v) > 0);
-        labels = entries.map(([k]) => k);
-        values = entries.map(([, v]) => parseInt(v) || 0);
-    } else {
-        const tpList = getActiveTindakPidanaListEks(key);
-        const paired = tpList.map((dir, idx) => {
-            const input = document.getElementById(`dir-${key}-${idx}`);
-            return { label: dir, value: input ? (parseInt(input.value) || 0) : 0 };
-        }).filter(p => p.value > 0);
-        labels = paired.map(p => p.label);
-        values = paired.map(p => p.value);
-    }
+    // Always read from input elements so chart reflects user's current input
+    const tpList = getActiveTindakPidanaListEks(key);
+    const paired = tpList.map((dir, idx) => {
+        const input = document.getElementById(`dir-${key}-${idx}`);
+        return { label: dir, value: input ? (parseInt(input.value) || 0) : 0 };
+    }).filter(p => p.value > 0);
+    const labels = paired.map(p => p.label);
+    const values = paired.map(p => p.value);
 
     const bgColors = [];
     const hoverColors = [];
