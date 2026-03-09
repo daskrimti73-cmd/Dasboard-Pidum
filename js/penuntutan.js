@@ -446,7 +446,9 @@ function saveAllData(silent) {
     const storageKey = getPenuntutanStorageKey();
     let existing = {}; try { const s = localStorage.getItem(storageKey); if (s) existing = JSON.parse(s); } catch (e) { }
     if (!existing.perBulan) existing.perBulan = {};
+    const prevExcluded = existing.perBulan[bulan]?.excludedDirs || {};
     existing.perBulan[bulan] = monthData;
+    existing.perBulan[bulan].excludedDirs = prevExcluded;
 
     // Save monthly trend inputs SEPARATELY for ALL months
     Object.keys(SECTIONS).forEach(sec => {

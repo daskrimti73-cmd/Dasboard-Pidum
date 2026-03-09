@@ -560,12 +560,16 @@ function saveAllData(silent) {
 
     if (!existing.perBulan) existing.perBulan = {};
 
+    // Preserve excludedDirs from previous save (so delete category works)
+    const prevExcluded = existing.perBulan[bulan]?.excludedDirs || {};
+
     // Save under this specific month
     existing.perBulan[bulan] = {
         spdpCards: spdpData,
         tahap1Cards: tahap1Data,
         spdpDir: spdpDir,
-        tahap1Dir: tahap1Dir
+        tahap1Dir: tahap1Dir,
+        excludedDirs: prevExcluded
     };
 
     // Save monthly trend inputs SEPARATELY for ALL months
