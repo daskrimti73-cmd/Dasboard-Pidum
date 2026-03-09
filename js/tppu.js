@@ -116,23 +116,6 @@ function resetFilters() {
     showToast('Filter telah direset', 'success');
 }
 
-// ---- Navigate to detail page ----
-function goToDetailTppu(jenis, event) {
-    // Cegah navigasi jika user mengklik input field
-    if (event && event.target.tagName === 'INPUT') {
-        return;
-    }
-
-    const w = document.getElementById('filterWilayah')?.value || '';
-    const s1 = document.getElementById('filterSatker1')?.value || '';
-    const s2 = document.getElementById('filterSatker2')?.value || '';
-    const t = document.getElementById('filterTahun')?.value || '';
-    const b1 = document.getElementById('filterBulan1')?.value || '';
-    const b2 = document.getElementById('filterBulan2')?.value || '';
-    const params = new URLSearchParams({ jenis, w, s1, s2, t, b1, b2 });
-    window.location.href = `detail-tppu.html?${params.toString()}`;
-}
-
 // ---- Utility ----
 function escapeHtml(str) {
     if (!str) return '';

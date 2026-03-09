@@ -961,16 +961,6 @@ function applyViewMode() {
         }
     });
 
-    // Make card detail links also pass view mode + current filter params
-    const filterParams = getCurrentFilterParams();
-    document.querySelectorAll('a.card-detail-link, a[href*="detail"]').forEach(link => {
-        const href = link.getAttribute('href');
-        if (href && !href.includes('mode=view') && !href.startsWith('#') && !href.startsWith('javascript')) {
-            const separator = href.includes('?') ? '&' : '?';
-            link.href = href + separator + 'mode=view&' + filterParams;
-        }
-    });
-
     // Replace header greeting
     const greeting = document.getElementById('greeting');
     if (greeting) greeting.textContent = '';
