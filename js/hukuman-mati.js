@@ -234,23 +234,14 @@ function updateTrendChartHm() {
 // ---- Update tindak pidana bar chart ----
 function updateTpChartHm() {
     if (!chartTindakPidanaHm) return;
-    let labels, values;
 
-    if (combinedTpData && Object.keys(combinedTpData).length > 0) {
-        const entries = Object.entries(combinedTpData)
-            .filter(([k]) => isNaN(parseInt(k)))
-            .filter(([, v]) => parseInt(v) > 0);
-        labels = entries.map(([k]) => k);
-        values = entries.map(([, v]) => parseInt(v) || 0);
-    } else {
-        const tpList = getActiveTindakPidanaListHm();
-        const paired = tpList.map((dir, idx) => {
-            const input = document.getElementById(`tp-hm-${idx}`);
-            return { label: dir, value: input ? (parseInt(input.value) || 0) : 0 };
-        }).filter(p => p.value > 0);
-        labels = paired.map(p => p.label);
-        values = paired.map(p => p.value);
-    }
+    const tpList = getActiveTindakPidanaListHm();
+    const paired = tpList.map((dir, idx) => {
+        const input = document.getElementById(`tp-hm-${idx}`);
+        return { label: dir, value: input ? (parseInt(input.value) || 0) : 0 };
+    }).filter(p => p.value > 0);
+    const labels = paired.map(p => p.label);
+    const values = paired.map(p => p.value);
 
     const bgColors = labels.map((_, i) => barBgHm[i % barBgHm.length]);
     const hoverColors = labels.map((_, i) => barHoverHm[i % barHoverHm.length]);
