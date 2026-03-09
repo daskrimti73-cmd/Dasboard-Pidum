@@ -273,6 +273,102 @@ function deleteDirektorat(label, sectionKey) {
     return true;
 }
 
+// ---- Delete direktorat data for a SPECIFIC month only ----
+// This removes the category's data from the currently selected month in perBulan,
+// WITHOUT removing it from the global direktorat list.
+// This prevents deleting a category in month X from affecting month Y's data/chart.
+// storageKey: the localStorage key for the page data
+// dirDataKeys: array of keys inside perBulan[month] that hold dir data (e.g. ['spdpDir', 'tahap1Dir'])
+// label: the category name to remove
+// month: the month number to remove data from
+function deleteDirektoratDataForMonth(storageKey, dirDataKeys, label, month) {
+    try {
+        const saved = localStorage.getItem(storageKey);
+        if (!saved) return false;
+        const data = JSON.parse(saved);
+        if (!data.perBulan || !data.perBulan[month]) return false;
+
+        const keys = Array.isArray(dirDataKeys) ? dirDataKeys : [dirDataKeys];
+        let changed = false;
+        keys.forEach(dk => {
+            if (data.perBulan[month][dk] && data.perBulan[month][dk][label] !== undefined) {
+                delete data.perBulan[month][dk][label];
+                changed = true;
+            }
+        });
+
+        if (changed) {
+            localStorage.setItem(storageKey, JSON.stringify(data));
+        }
+        return changed;
+    } catch (e) {
+        console.error('deleteDirektoratDataForMonth error:', e);
+        return false;
+    }
+}
+
+// ---- Check if a direktorat has data in ANY month ----
+// Returns true if the category has non-zero data in at least one month
+function direktoratHasDataInAnyMonth(storageKey, dirDataKeys, label) {
+    try {
+        const saved = localStorage.getItem(storageKey);
+        if (!saved) return false;
+        const data = JSON.parse(saved);
+        if (!data.perBulan) return false;
+
+        const keys = Array.isArray(dirDataKeys) ? dirDataKeys : [dirDataKeys];
+        for (let m = 1; m <= 12; m++) {
+            const md = data.perBulan[m];
+            if (!md) continue;
+            for (const dk of keys) {
+                if (md[dk] && md[dk][label] !== undefined) {
+                    const val = parseInt(md[dk][label]);
+                    if (!isNaN(val) && val > 0) return true;
+                }
+            }
+        }
+    } catch (e) { }
+    return false;
+}
+
+// ---- Get merged dir list: global list + categories from saved data (so no data is hidden) ----
+// This ensures that categories with saved data in any month are always shown,
+// even if they've been removed from the global list.
+// storageKey = the localStorage key for the page data (e.g., buildStorageKey('wna'))
+// sectionKey = the direktorat list section key (e.g., 'wna')
+// dirDataKey = the key inside perBulan[month] that holds dir data (e.g., 'dirValues', 'tpValues', 'tahap2Dir')
+// Returns: array of unique category names
+function getMergedDirList(storageKey, sectionKey, dirDataKeys) {
+    const globalList = getDirektoratList(sectionKey);
+    const merged = [...globalList];
+
+    try {
+        const saved = localStorage.getItem(storageKey);
+        if (!saved) return merged;
+        const data = JSON.parse(saved);
+        if (!data.perBulan) return merged;
+
+        // Collect all category names from ALL months' saved data
+        const keys = Array.isArray(dirDataKeys) ? dirDataKeys : [dirDataKeys];
+        Object.values(data.perBulan).forEach(monthData => {
+            if (!monthData) return;
+            keys.forEach(dk => {
+                const dirObj = monthData[dk];
+                if (!dirObj || typeof dirObj !== 'object') return;
+                Object.keys(dirObj).forEach(catName => {
+                    // Only add string keys (category names, not numeric indices)
+                    if (!isNaN(parseInt(catName))) return;
+                    if (!merged.some(m => m.toLowerCase() === catName.toLowerCase())) {
+                        merged.push(catName);
+                    }
+                });
+            });
+        });
+    } catch (e) { }
+
+    return merged;
+}
+
 // ---- Centralized Storage Key Builder ----
 // ALL pages should use this to build consistent storage keys
 // This ensures admin and public (iframe) always produce the SAME key

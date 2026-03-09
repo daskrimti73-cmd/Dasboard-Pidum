@@ -111,7 +111,7 @@ function generateDirektoratInputs(section, gridId) {
 
     grid.innerHTML = '';
 
-    const dirList = getDirListForSection(section);
+    const dirList = getMergedDirList(getPrapenStorageKey('all'), 'pra_' + section, section + 'Dir');
 
     dirList.forEach((dir, idx) => {
         const div = document.createElement('div');
@@ -389,7 +389,7 @@ function updateDirChart(section) {
         values = entries.map(([, v]) => parseInt(v) || 0);
     } else {
         // Single month mode: use input elements
-        const dirList = getDirListForSection(section);
+        const dirList = getMergedDirList(getPrapenStorageKey('all'), 'pra_' + section, section + 'Dir');
         labels = dirList;
         values = dirList.map((_, idx) => {
             const input = document.getElementById(`dir-${section}-${idx}`);
@@ -462,14 +462,36 @@ function handleAddDirektorat(section) {
 }
 
 function handleDeleteDirektorat(section, label) {
-    if (!confirm('Hapus kategori "' + label + '" dari daftar?')) return;
-    if (deleteDirektorat(label, 'pra_' + section)) {
-        showToast('Kategori "' + label + '" berhasil dihapus', 'success');
-        renderDirektoratTags(section);
-        rebuildSectionUI(section);
-    } else {
-        showToast('Tidak dapat menghapus kategori terakhir', 'error');
+    // Auto-save current unsaved data before delete & reload
+    saveAllData(true);
+
+    const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
+
+    // Only allow delete when viewing single month
+    if (bulanAwal !== bulanAkhir) {
+        showToast('Untuk menghapus kategori, Bulan Awal dan Bulan Akhir harus sama.', 'error');
+        return;
     }
+
+    const bulan = bulanAwal;
+    const namaBulan = BULAN_NAMES[bulan - 1] || bulan;
+    const dirDataKey = section + 'Dir'; // 'spdpDir' or 'tahap1Dir'
+
+    if (!confirm('Hapus kategori "' + label + '" dari bulan ' + namaBulan + '?')) return;
+
+    // 1. Remove data for this category from the current month only
+    const storageKey = getPrapenStorageKey('all');
+    deleteDirektoratDataForMonth(storageKey, dirDataKey, label, bulan);
+
+    // 2. Only remove from global list if NO other month has data for this category
+    if (!direktoratHasDataInAnyMonth(storageKey, dirDataKey, label)) {
+        deleteDirektorat(label, 'pra_' + section);
+    }
+
+    showToast('Kategori "' + label + '" berhasil dihapus dari bulan ' + namaBulan, 'success');
+    renderDirektoratTags(section);
+    rebuildSectionUI(section);
 }
 
 function rebuildSectionUI(section) {
@@ -495,7 +517,7 @@ function saveAllData(silent) {
     }
 
     const bulan = bulanAwal;
-    const dirList = getDirListForSection('spdp');
+    const dirList = getMergedDirList(getPrapenStorageKey('all'), 'pra_spdp', 'spdpDir');
 
     // Collect current card values
     const spdpData = {};
@@ -515,7 +537,7 @@ function saveAllData(silent) {
         const input = document.getElementById(`dir-spdp-${idx}`);
         if (input) spdpDir[dir] = input.value;
     });
-    const tahap1DirList = getDirListForSection('tahap1');
+    const tahap1DirList = getMergedDirList(getPrapenStorageKey('all'), 'pra_tahap1', 'tahap1Dir');
     const tahap1Dir = {};
     tahap1DirList.forEach((dir, idx) => {
         const input = document.getElementById(`dir-tahap1-${idx}`);
@@ -658,7 +680,7 @@ function _setFields(obj, fieldIds) {
 // Helper: set direktorat field values
 function _setDir(dirData, section) {
     if (!dirData) return;
-    const dirList = getDirListForSection(section);
+    const dirList = getMergedDirList(getPrapenStorageKey('all'), 'pra_' + section, section + 'Dir');
     const keys = Object.keys(dirData);
     const isLabel = keys.length > 0 && isNaN(parseInt(keys[0]));
     if (isLabel) {
@@ -720,7 +742,8 @@ function resetAllData() {
 
 // ---- Apply/Reset Filters (override for this page) ----
 function applyFilters() {
-    // NOTE: Admin harus klik "Simpan" sebelum ganti tahun agar data tersimpan
+    // Auto-save current unsaved data before changing filter
+    saveAllData(true);
 
     // Read Bulan Awal/Akhir from filter dropdowns
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');

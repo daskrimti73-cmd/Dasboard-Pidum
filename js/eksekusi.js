@@ -134,7 +134,7 @@ function generateDirInputs(key, gridId) {
     const grid = document.getElementById(gridId);
     if (!grid) return;
     grid.innerHTML = '';
-    const tpList = getTindakPidanaListEks(key);
+    const tpList = getMergedDirList(getEksekusiStorageKey(), 'eks_' + key, key + 'Dir');
     tpList.forEach((dir, idx) => {
         const div = document.createElement('div');
         div.className = 'dir-input-group';
@@ -395,7 +395,7 @@ function saveAllData(silent) {
     CARD_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) monthData.cards[id] = el.value; });
     Object.keys(DIR_CHARTS).forEach(key => {
         monthData[key + 'Dir'] = {};
-        getTindakPidanaListEks(key).forEach((dir, idx) => { const el = document.getElementById('dir-' + key + '-' + idx); if (el) monthData[key + 'Dir'][dir] = el.value; });
+        getMergedDirList(getEksekusiStorageKey(), 'eks_' + key, key + 'Dir').forEach((dir, idx) => { const el = document.getElementById('dir-' + key + '-' + idx); if (el) monthData[key + 'Dir'][dir] = el.value; });
     });
     const storageKey = getEksekusiStorageKey();
     let existing = {}; try { const s = localStorage.getItem(storageKey); if (s) existing = JSON.parse(s); } catch (e) { }
@@ -518,7 +518,8 @@ function resetAllData() {
 
 // ---- Filters ----
 function applyFilters() {
-    // NOTE: Admin harus klik "Simpan" sebelum ganti tahun agar data tersimpan
+    // Auto-save current unsaved data before changing filter
+    saveAllData(true);
 
     // Sync Bulan Awal/Akhir to localStorage
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
@@ -619,14 +620,33 @@ function handleAddDirektorat(key) {
 }
 
 function handleDeleteDirektorat(key, label) {
-    if (!confirm('Hapus kategori "' + label + '" dari daftar?')) return;
-    if (deleteDirektorat(label, 'eks_' + key)) {
-        showToast('Kategori "' + label + '" berhasil dihapus', 'success');
-        renderDirektoratTags(key);
-        rebuildSectionUI(key);
-    } else {
-        showToast('Tidak dapat menghapus kategori terakhir', 'error');
+    // Auto-save current unsaved data before delete & reload
+    saveAllData(true);
+
+    const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
+
+    if (bulanAwal !== bulanAkhir) {
+        showToast('Untuk menghapus kategori, Bulan Awal dan Bulan Akhir harus sama.', 'error');
+        return;
     }
+
+    const bulan = bulanAwal;
+    const namaBulan = BULAN_NAMES_EKS[bulan - 1] || bulan;
+    const dirDataKey = key + 'Dir';
+
+    if (!confirm('Hapus kategori "' + label + '" dari bulan ' + namaBulan + '?')) return;
+
+    const storageKey = getEksekusiStorageKey();
+    deleteDirektoratDataForMonth(storageKey, dirDataKey, label, bulan);
+
+    if (!direktoratHasDataInAnyMonth(storageKey, dirDataKey, label)) {
+        deleteDirektorat(label, 'eks_' + key);
+    }
+
+    showToast('Kategori "' + label + '" berhasil dihapus dari bulan ' + namaBulan, 'success');
+    renderDirektoratTags(key);
+    rebuildSectionUI(key);
 }
 
 function rebuildSectionUI(key) {

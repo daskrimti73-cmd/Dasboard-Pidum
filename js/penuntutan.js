@@ -389,14 +389,33 @@ function handleAddDirektorat(section) {
 }
 
 function handleDeleteDirektorat(section, label) {
-    if (!confirm('Hapus kategori "' + label + '" dari daftar?')) return;
-    if (deleteDirektorat(label, 'penuntutan_' + section)) {
-        showToast('Kategori "' + label + '" berhasil dihapus', 'success');
-        renderDirektoratTags(section);
-        rebuildSectionUI(section);
-    } else {
-        showToast('Tidak dapat menghapus kategori terakhir', 'error');
+    // Auto-save current unsaved data before delete & reload
+    saveAllData(true);
+
+    const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
+
+    if (bulanAwal !== bulanAkhir) {
+        showToast('Untuk menghapus kategori, Bulan Awal dan Bulan Akhir harus sama.', 'error');
+        return;
     }
+
+    const bulan = bulanAwal;
+    const namaBulan = BULAN_NAMES_P[bulan - 1] || bulan;
+    const dirDataKey = section + 'Dir';
+
+    if (!confirm('Hapus kategori "' + label + '" dari bulan ' + namaBulan + '?')) return;
+
+    const storageKey = getPenuntutanStorageKey();
+    deleteDirektoratDataForMonth(storageKey, dirDataKey, label, bulan);
+
+    if (!direktoratHasDataInAnyMonth(storageKey, dirDataKey, label)) {
+        deleteDirektorat(label, 'penuntutan_' + section);
+    }
+
+    showToast('Kategori "' + label + '" berhasil dihapus dari bulan ' + namaBulan, 'success');
+    renderDirektoratTags(section);
+    rebuildSectionUI(section);
 }
 
 function rebuildSectionUI(section) {
@@ -518,7 +537,8 @@ function resetAllData() {
 
 // ---- Filters (override) ----
 function applyFilters() {
-    // NOTE: Admin harus klik "Simpan" sebelum ganti tahun agar data tersimpan
+    // Auto-save current unsaved data before changing filter
+    saveAllData(true);
 
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
     const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
