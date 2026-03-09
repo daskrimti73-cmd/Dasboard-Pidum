@@ -13,6 +13,16 @@ function getTindakPidanaListHm() {
     return getDirektoratList('hm');
 }
 
+// ---- Get active tindak pidana list filtered by current month's excluded dirs ----
+function getActiveTindakPidanaListHm() {
+    const fullList = getMergedDirList(getHmStorageKey(), 'hm', 'tpValues');
+    const bulan = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulan);
+    if (bulan !== bulanAkhir) return fullList; // combined mode: show all
+    const excluded = getExcludedDirsForMonth(getHmStorageKey(), 'hm', bulan);
+    return fullList.filter(d => !excluded.includes(d));
+}
+
 // ---- Chart instances ----
 let chartTrendHm = null;
 let chartTindakPidanaHm = null;
@@ -90,7 +100,7 @@ function generateTindakPidanaInputs() {
     const grid = document.getElementById('tindakPidanaGrid');
     if (!grid) return;
     grid.innerHTML = '';
-    const tpList = getMergedDirList(getHmStorageKey(), 'hm', 'tpValues');
+    const tpList = getActiveTindakPidanaListHm();
     tpList.forEach((tp, idx) => {
         const div = document.createElement('div');
         div.className = 'dir-input-group';
@@ -233,7 +243,7 @@ function updateTpChartHm() {
         labels = entries.map(([k]) => k);
         values = entries.map(([, v]) => parseInt(v) || 0);
     } else {
-        const tpList = getTindakPidanaListHm();
+        const tpList = getActiveTindakPidanaListHm();
         const paired = tpList.map((dir, idx) => {
             const input = document.getElementById(`tp-hm-${idx}`);
             return { label: dir, value: input ? (parseInt(input.value) || 0) : 0 };
@@ -268,7 +278,7 @@ function saveAllData(silent) {
     const bulan = bulanAwal;
     const monthData = { cards: {}, tpValues: {} };
     ['hm-pn', 'hm-pt', 'hm-ma'].forEach(id => { const el = document.getElementById(id); if (el) monthData.cards[id] = el.value; });
-    getMergedDirList(getHmStorageKey(), 'hm', 'tpValues').forEach((tp, idx) => { const el = document.getElementById('tp-hm-' + idx); if (el) monthData.tpValues[tp] = el.value; });
+    getActiveTindakPidanaListHm().forEach((tp, idx) => { const el = document.getElementById('tp-hm-' + idx); if (el) monthData.tpValues[tp] = el.value; });
     const storageKey = getHmStorageKey();
     let existing = {}; try { const s = localStorage.getItem(storageKey); if (s) existing = JSON.parse(s); } catch (e) { }
     if (!existing.perBulan) existing.perBulan = {};
@@ -298,7 +308,7 @@ function loadAllDataHm() {
 
     // Clear all fields first
     ['hm-pn', 'hm-pt', 'hm-ma'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-    const tpL = getTindakPidanaListHm(); tpL.forEach((tp, i) => { const el = document.getElementById('tp-hm-' + i); if (el) el.value = ''; });
+    const tpL = getActiveTindakPidanaListHm(); tpL.forEach((tp, i) => { const el = document.getElementById('tp-hm-' + i); if (el) el.value = ''; });
 
     const saved = localStorage.getItem(getHmStorageKey());
     if (!saved) return;
@@ -312,7 +322,7 @@ function loadAllDataHm() {
             for (let m = start; m <= end; m++) { const md = data.perBulan[m]; if (!md) continue; _sumHM(sumC, md.cards); _sumHM(sumTp, md.tpValues); }
             ['hm-pn', 'hm-pt', 'hm-ma'].forEach(id => { const el = document.getElementById(id); if (el && sumC[id] !== undefined) el.value = sumC[id]; });
             if (start !== end) combinedTpData = sumTp;
-            const tpList = getTindakPidanaListHm(), ks = Object.keys(sumTp), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
+            const tpList = getActiveTindakPidanaListHm(), ks = Object.keys(sumTp), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
             if (isL) { tpList.forEach((tp, i) => { const el = document.getElementById('tp-hm-' + i); if (el && sumTp[tp] !== undefined) el.value = sumTp[tp]; }); }
             else { ks.forEach(i => { const el = document.getElementById('tp-hm-' + i); if (el) el.value = sumTp[i]; }); }
             // Load trend values independently (use trendValue if available, fallback to cards['hm-pn'])
@@ -322,7 +332,7 @@ function loadAllDataHm() {
         if (data.cards) { Object.keys(data.cards).forEach(id => { const el = document.getElementById(id); if (el) el.value = data.cards[id]; }); }
         if (data.trenMonthly) { Object.keys(data.trenMonthly).forEach(idx => { const el = document.getElementById('monthly-tren-' + idx); if (el) el.value = data.trenMonthly[idx]; }); }
         if (data.tpValues) {
-            const tpList = getTindakPidanaListHm(), ks = Object.keys(data.tpValues), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
+            const tpList = getActiveTindakPidanaListHm(), ks = Object.keys(data.tpValues), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
             if (isL) { tpList.forEach((tp, i) => { const el = document.getElementById('tp-hm-' + i); if (el && data.tpValues[tp] !== undefined) el.value = data.tpValues[tp]; }); }
             else { ks.forEach(i => { const el = document.getElementById('tp-hm-' + i); if (el) el.value = data.tpValues[i]; }); }
         }
@@ -344,7 +354,7 @@ function resetAllData() {
     });
     updateTrendChartHm();
 
-    const tpList = getTindakPidanaListHm();
+    const tpList = getActiveTindakPidanaListHm();
     tpList.forEach((_, idx) => {
         const el = document.getElementById(`tp-hm-${idx}`);
         if (el) el.value = '';
@@ -376,7 +386,7 @@ function applyFilters() {
         const el = document.getElementById(`monthly-tren-${m.index}`);
         if (el) el.value = '';
     });
-    const tpList = getTindakPidanaListHm();
+    const tpList = getActiveTindakPidanaListHm();
     tpList.forEach((_, idx) => {
         const el = document.getElementById(`tp-hm-${idx}`);
         if (el) el.value = '';
@@ -420,7 +430,7 @@ function resetFilters() {
 function renderDirektoratTags() {
     const container = document.getElementById('direktoratTagsContainer');
     if (!container) return;
-    const list = getTindakPidanaListHm();
+    const list = getActiveTindakPidanaListHm();
     container.innerHTML = '';
     list.forEach(dir => {
         const tag = document.createElement('span');
@@ -441,30 +451,43 @@ function handleAddDirektorat() {
     if (!input) return;
     const val = input.value.trim();
     if (!val) { showToast('Masukkan nama kategori tindak pidana', 'error'); return; }
-    if (addDirektorat(val, 'hm')) {
-        showToast('Kategori "' + val + '" berhasil ditambahkan', 'success');
-        input.value = '';
-        renderDirektoratTags();
-        rebuildDirektoratUI();
-    } else {
-        showToast('Kategori sudah ada atau tidak valid', 'error');
-    }
+
+    const bulan = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const storageKey = getHmStorageKey();
+
+    // Add to global list (if not already there)
+    addDirektorat(val, 'hm');
+
+    // Un-exclude for current month (in case it was previously excluded)
+    unexcludeDirForMonth(storageKey, 'hm', val, bulan);
+
+    showToast('Kategori "' + val + '" berhasil ditambahkan', 'success');
+    input.value = '';
+    renderDirektoratTags();
+    rebuildDirektoratUI();
 }
 
 function handleDeleteDirektorat(label) {
     // Auto-save current unsaved data before delete & reload
     saveAllData(true);
 
-    if (!confirm('Hapus kategori "' + label + '" dari semua data?')) return;
+    const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
 
-    // 1. Remove data for this category from ALL months
+    if (bulanAwal !== bulanAkhir) {
+        showToast('Untuk menghapus kategori, Bulan Awal dan Bulan Akhir harus sama.', 'error');
+        return;
+    }
+
+    const bulan = bulanAwal;
+    const namaBulan = BULAN_NAMES_HM[bulan - 1] || bulan;
+
+    if (!confirm('Hapus kategori "' + label + '" dari bulan ' + namaBulan + '?')) return;
+
     const storageKey = getHmStorageKey();
-    deleteDirektoratDataAllMonths(storageKey, 'tpValues', label);
+    excludeDirForMonth(storageKey, 'hm', label, bulan, 'tpValues');
 
-    // 2. Remove from global direktorat list
-    deleteDirektorat(label, 'hm');
-
-    showToast('Kategori "' + label + '" berhasil dihapus', 'success');
+    showToast('Kategori "' + label + '" berhasil dihapus dari bulan ' + namaBulan, 'success');
     renderDirektoratTags();
     rebuildDirektoratUI();
 }

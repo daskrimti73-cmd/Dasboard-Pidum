@@ -25,6 +25,16 @@ function getDirektoratMapUH(section) {
     return getDirektoratBanding();
 }
 
+// ---- Get active direktorat list filtered by current month's excluded dirs ----
+function getActiveDirMapUH(section) {
+    const fullList = getDirektoratMapUH(section);
+    const bulan = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulan);
+    if (bulan !== bulanAkhir) return fullList; // combined mode: show all
+    const excluded = getExcludedDirsForMonth(getUpayaHukumStorageKey(), section, bulan);
+    return fullList.filter(d => !excluded.includes(d));
+}
+
 // ---- All sections config ----
 const SECTIONS_UH = {
     banding: {
@@ -137,8 +147,8 @@ function generateDirInputsUH(section, gridId) {
     if (!grid) return;
     grid.innerHTML = '';
 
-    // Gunakan direktorat list yang sesuai dengan section
-    const dirList = getDirektoratMapUH(section);
+    // Gunakan direktorat list yang sesuai dengan section (filtered by excluded)
+    const dirList = getActiveDirMapUH(section);
 
     dirList.forEach((dir, idx) => {
         const div = document.createElement('div');
@@ -313,7 +323,7 @@ function updateDirChartUH(section) {
         labels = entries.map(([k]) => k);
         values = entries.map(([, v]) => parseInt(v) || 0);
     } else {
-        const dirList = getDirektoratMapUH(section);
+        const dirList = getActiveDirMapUH(section);
         const paired = dirList.map((dir, idx) => {
             const input = document.getElementById(`dir-${section}-${idx}`);
             return { label: dir, value: input ? (parseInt(input.value) || 0) : 0 };
@@ -353,7 +363,7 @@ function saveAllData(silent) {
         monthData[sec + 'Cards'] = {};
         SECTIONS_UH[sec].fields.forEach(id => { const el = document.getElementById(id); if (el) monthData[sec + 'Cards'][id] = el.value; });
         monthData[sec + 'Dir'] = {};
-        getDirektoratMapUH(sec).forEach((dir, idx) => {
+        getActiveDirMapUH(sec).forEach((dir, idx) => {
             const el = document.getElementById('dir-' + sec + '-' + idx);
             if (el) { const key = sec === 'kasasi' ? idx : dir; monthData[sec + 'Dir'][key] = el.value; }
         });
@@ -391,7 +401,7 @@ function loadAllData() {
     // Clear all fields first
     Object.keys(SECTIONS_UH).forEach(sec => {
         SECTIONS_UH[sec].fields.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-        const dl = getDirektoratMapUH(sec); dl.forEach((d, i) => { const el = document.getElementById('dir-' + sec + '-' + i); if (el) el.value = ''; });
+        const dl = getActiveDirMapUH(sec); dl.forEach((d, i) => { const el = document.getElementById('dir-' + sec + '-' + i); if (el) el.value = ''; });
     });
 
     const saved = localStorage.getItem(getUpayaHukumStorageKey());
@@ -407,7 +417,7 @@ function loadAllData() {
                 for (let m = start; m <= end; m++) { const md = data.perBulan[m]; if (!md) continue; _sumUH(sumC, md[sec + 'Cards']); _sumUH(sumD, md[sec + 'Dir']); }
                 if (start !== end) combinedDirDataUH[sec] = sumD;
                 SECTIONS_UH[sec].fields.forEach(id => { const el = document.getElementById(id); if (el && sumC[id] !== undefined) el.value = sumC[id]; });
-                const dl = getDirektoratMapUH(sec), ks = Object.keys(sumD), isL = sec !== 'kasasi' && ks.length > 0 && isNaN(parseInt(ks[0]));
+                const dl = getActiveDirMapUH(sec), ks = Object.keys(sumD), isL = sec !== 'kasasi' && ks.length > 0 && isNaN(parseInt(ks[0]));
                 if (isL) { dl.forEach((d, i) => { const el = document.getElementById('dir-' + sec + '-' + i); if (el && sumD[d] !== undefined) el.value = sumD[d]; }); }
                 else { ks.forEach(i => { const el = document.getElementById('dir-' + sec + '-' + i); if (el) el.value = sumD[i]; }); }
                 for (let m = 1; m <= 12; m++) { const md = data.perBulan[m]; const mf = SECTIONS_UH[sec].fields[0]; const el = document.getElementById('monthly-' + sec + '-' + m); if (el) el.value = (md && md[sec + 'Cards'] && md[sec + 'Cards'][mf]) || ''; }
@@ -419,7 +429,7 @@ function loadAllData() {
             if (data[sec + 'Cards']) { Object.keys(data[sec + 'Cards']).forEach(id => { const el = document.getElementById(id); if (el) el.value = data[sec + 'Cards'][id]; }); }
             if (data[sec + 'Monthly']) { Object.keys(data[sec + 'Monthly']).forEach(idx => { const el = document.getElementById('monthly-' + sec + '-' + idx); if (el) el.value = data[sec + 'Monthly'][idx]; }); }
             if (data[sec + 'Dir']) {
-                const dl = getDirektoratMapUH(sec), ks = Object.keys(data[sec + 'Dir']), isL = sec !== 'kasasi' && ks.length > 0 && isNaN(parseInt(ks[0]));
+                const dl = getActiveDirMapUH(sec), ks = Object.keys(data[sec + 'Dir']), isL = sec !== 'kasasi' && ks.length > 0 && isNaN(parseInt(ks[0]));
                 if (isL) { dl.forEach((d, i) => { const el = document.getElementById('dir-' + sec + '-' + i); if (el && data[sec + 'Dir'][d] !== undefined) el.value = data[sec + 'Dir'][d]; }); }
                 else { ks.forEach(i => { const el = document.getElementById('dir-' + sec + '-' + i); if (el) el.value = data[sec + 'Dir'][i]; }); }
             }
@@ -440,7 +450,7 @@ function resetAllData() {
             const el = document.getElementById(`monthly-${sec}-${m.index}`);
             if (el) el.value = '';
         });
-        const dirList = getDirektoratMapUH(sec);
+        const dirList = getActiveDirMapUH(sec);
         dirList.forEach((_, idx) => {
             const el = document.getElementById(`dir-${sec}-${idx}`);
             if (el) el.value = '';
@@ -477,7 +487,7 @@ function applyFilters() {
             const el = document.getElementById(`monthly-${sec}-${m.index}`);
             if (el) el.value = '';
         });
-        const dirList = getDirektoratMapUH(sec);
+        const dirList = getActiveDirMapUH(sec);
         dirList.forEach((_, idx) => {
             const el = document.getElementById(`dir-${sec}-${idx}`);
             if (el) el.value = '';
@@ -525,7 +535,7 @@ function resetFilters() {
 function renderDirektoratTags() {
     const container = document.getElementById('direktoratTagsContainer');
     if (!container) return;
-    const list = getDirektoratBanding();
+    const list = getActiveDirMapUH('banding');
     container.innerHTML = '';
     list.forEach(dir => {
         const tag = document.createElement('span');
@@ -546,30 +556,43 @@ function handleAddDirektorat() {
     if (!input) return;
     const val = input.value.trim();
     if (!val) { showToast('Masukkan nama kategori tindak pidana', 'error'); return; }
-    if (addDirektorat(val, 'uh_banding')) {
-        showToast('Kategori "' + val + '" berhasil ditambahkan (Banding)', 'success');
-        input.value = '';
-        renderDirektoratTags();
-        rebuildDirektoratUI('banding');
-    } else {
-        showToast('Kategori sudah ada atau tidak valid', 'error');
-    }
+
+    const bulan = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const storageKey = getUpayaHukumStorageKey();
+
+    // Add to global list (if not already there)
+    addDirektorat(val, 'uh_banding');
+
+    // Un-exclude for current month (in case it was previously excluded)
+    unexcludeDirForMonth(storageKey, 'banding', val, bulan);
+
+    showToast('Kategori "' + val + '" berhasil ditambahkan (Banding)', 'success');
+    input.value = '';
+    renderDirektoratTags();
+    rebuildDirektoratUI('banding');
 }
 
 function handleDeleteDirektorat(label) {
     // Auto-save current unsaved data before delete & reload
     saveAllData(true);
 
-    if (!confirm('Hapus kategori "' + label + '" dari semua data (Banding)?')) return;
+    const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
 
-    // 1. Remove data for this category from ALL months
+    if (bulanAwal !== bulanAkhir) {
+        showToast('Untuk menghapus kategori, Bulan Awal dan Bulan Akhir harus sama.', 'error');
+        return;
+    }
+
+    const bulan = bulanAwal;
+    const namaBulan = BULAN_NAMES_UH[bulan - 1] || bulan;
+
+    if (!confirm('Hapus kategori "' + label + '" dari bulan ' + namaBulan + ' (Banding)?')) return;
+
     const storageKey = getUpayaHukumStorageKey();
-    deleteDirektoratDataAllMonths(storageKey, 'bandingDir', label);
+    excludeDirForMonth(storageKey, 'banding', label, bulan);
 
-    // 2. Remove from global direktorat list
-    deleteDirektorat(label, 'uh_banding');
-
-    showToast('Kategori "' + label + '" berhasil dihapus (Banding)', 'success');
+    showToast('Kategori "' + label + '" berhasil dihapus dari bulan ' + namaBulan + ' (Banding)', 'success');
     renderDirektoratTags();
     rebuildDirektoratUI('banding');
 }
@@ -578,7 +601,7 @@ function handleDeleteDirektorat(label) {
 function renderDirektoratKasasiTags() {
     const container = document.getElementById('direktoratKasasiTagsContainer');
     if (!container) return;
-    const dirs = getDirektoratKasasi();
+    const dirs = getActiveDirMapUH('kasasi');
     container.innerHTML = '';
     dirs.forEach(dir => {
         const tag = document.createElement('span');
@@ -599,30 +622,43 @@ function handleAddDirektoratKasasi() {
     if (!input) return;
     const val = input.value.trim();
     if (!val) { showToast('Masukkan nama kategori tindak pidana', 'error'); return; }
-    if (addDirektorat(val, 'uh_kasasi')) {
-        showToast('Kategori "' + val + '" berhasil ditambahkan (Kasasi)', 'success');
-        input.value = '';
-        renderDirektoratKasasiTags();
-        rebuildDirektoratUI('kasasi');
-    } else {
-        showToast('Kategori sudah ada atau tidak valid', 'error');
-    }
+
+    const bulan = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const storageKey = getUpayaHukumStorageKey();
+
+    // Add to global list (if not already there)
+    addDirektorat(val, 'uh_kasasi');
+
+    // Un-exclude for current month (in case it was previously excluded)
+    unexcludeDirForMonth(storageKey, 'kasasi', val, bulan);
+
+    showToast('Kategori "' + val + '" berhasil ditambahkan (Kasasi)', 'success');
+    input.value = '';
+    renderDirektoratKasasiTags();
+    rebuildDirektoratUI('kasasi');
 }
 
 function handleDeleteDirektoratKasasi(label) {
     // Auto-save current unsaved data before delete & reload
     saveAllData(true);
 
-    if (!confirm('Hapus kategori "' + label + '" dari semua data (Kasasi)?')) return;
+    const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
 
-    // 1. Remove data for this category from ALL months
+    if (bulanAwal !== bulanAkhir) {
+        showToast('Untuk menghapus kategori, Bulan Awal dan Bulan Akhir harus sama.', 'error');
+        return;
+    }
+
+    const bulan = bulanAwal;
+    const namaBulan = BULAN_NAMES_UH[bulan - 1] || bulan;
+
+    if (!confirm('Hapus kategori "' + label + '" dari bulan ' + namaBulan + ' (Kasasi)?')) return;
+
     const storageKey = getUpayaHukumStorageKey();
-    deleteDirektoratDataAllMonths(storageKey, 'kasasiDir', label);
+    excludeDirForMonth(storageKey, 'kasasi', label, bulan);
 
-    // 2. Remove from global direktorat list
-    deleteDirektorat(label, 'uh_kasasi');
-
-    showToast('Kategori "' + label + '" berhasil dihapus (Kasasi)', 'success');
+    showToast('Kategori "' + label + '" berhasil dihapus dari bulan ' + namaBulan + ' (Kasasi)', 'success');
     renderDirektoratKasasiTags();
     rebuildDirektoratUI('kasasi');
 }

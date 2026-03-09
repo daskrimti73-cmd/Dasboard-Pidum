@@ -15,6 +15,16 @@ function getDirListForSection(section) {
     return getDirektoratList('pra_' + section);
 }
 
+// ---- Get direktorat list filtered by current month's excluded dirs ----
+function getActiveDirListForSection(section) {
+    const fullList = getDirListForSection(section);
+    const bulan = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulan);
+    if (bulan !== bulanAkhir) return fullList; // combined mode: show all
+    const excluded = getExcludedDirsForMonth(getPrapenStorageKey('all'), section, bulan);
+    return fullList.filter(d => !excluded.includes(d));
+}
+
 // ---- Chart instances ----
 let chartSpdpTrend = null;
 let chartSpdpTindakPidana = null;
@@ -105,7 +115,7 @@ function handleAddBulanAlt(btn) {
 }
 
 // ---- Generate direktorat input fields (dynamic) ----
-// Uses getDirListForSection (the global category list) as the single source of truth.
+// Uses getActiveDirListForSection (filtered by current month's excluded dirs).
 // Input IDs are based on index within this list.
 function generateDirektoratInputs(section, gridId) {
     const grid = document.getElementById(gridId);
@@ -113,8 +123,8 @@ function generateDirektoratInputs(section, gridId) {
 
     grid.innerHTML = '';
 
-    // Always use the same list that save/load uses
-    const dirList = getDirListForSection(section);
+    // Use active list (filtered by current month's excluded dirs)
+    const dirList = getActiveDirListForSection(section);
 
     dirList.forEach((dir, idx) => {
         const div = document.createElement('div');
@@ -392,7 +402,7 @@ function updateDirChart(section) {
         values = entries.map(([, v]) => parseInt(v) || 0);
     } else {
         // Single month mode: use input elements, only show non-zero
-        const dirList = getDirListForSection(section);
+        const dirList = getActiveDirListForSection(section);
         const paired = dirList.map((dir, idx) => {
             const input = document.getElementById(`dir-${section}-${idx}`);
             return { label: dir, value: input ? (parseInt(input.value) || 0) : 0 };
@@ -429,7 +439,7 @@ function updateDirChart(section) {
 function renderDirektoratTags(section) {
     const container = document.getElementById('direktoratTagsContainer_' + section);
     if (!container) return;
-    const list = getDirListForSection(section);
+    const list = getActiveDirListForSection(section);
     container.innerHTML = '';
     list.forEach(dir => {
         const tag = document.createElement('span');
@@ -455,32 +465,45 @@ function handleAddDirektorat(section) {
     if (!input) return;
     const val = input.value.trim();
     if (!val) { showToast('Masukkan nama kategori tindak pidana', 'error'); return; }
-    if (addDirektorat(val, 'pra_' + section)) {
-        showToast('Kategori "' + val + '" berhasil ditambahkan', 'success');
-        input.value = '';
-        renderDirektoratTags(section);
-        rebuildSectionUI(section);
-    } else {
-        showToast('Kategori sudah ada atau tidak valid', 'error');
-    }
+
+    const bulan = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const storageKey = getPrapenStorageKey('all');
+
+    // Add to global list (if not already there)
+    addDirektorat(val, 'pra_' + section);
+
+    // Un-exclude for current month (in case it was previously excluded)
+    unexcludeDirForMonth(storageKey, section, val, bulan);
+
+    showToast('Kategori "' + val + '" berhasil ditambahkan', 'success');
+    input.value = '';
+    renderDirektoratTags(section);
+    rebuildSectionUI(section);
 }
 
 function handleDeleteDirektorat(section, label) {
     // Auto-save current unsaved data before delete & reload
     saveAllData(true);
 
-    const dirDataKey = section + 'Dir'; // 'spdpDir' or 'tahap1Dir'
+    const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
 
-    if (!confirm('Hapus kategori "' + label + '" dari semua data?')) return;
+    // Only allow delete when viewing single month
+    if (bulanAwal !== bulanAkhir) {
+        showToast('Untuk menghapus kategori, Bulan Awal dan Bulan Akhir harus sama.', 'error');
+        return;
+    }
 
-    // 1. Remove data for this category from ALL months
+    const bulan = bulanAwal;
+    const namaBulan = BULAN_NAMES[bulan - 1] || bulan;
+
+    if (!confirm('Hapus kategori "' + label + '" dari bulan ' + namaBulan + '?')) return;
+
+    // Exclude this category for the current month only (other months not affected)
     const storageKey = getPrapenStorageKey('all');
-    deleteDirektoratDataAllMonths(storageKey, dirDataKey, label);
+    excludeDirForMonth(storageKey, section, label, bulan);
 
-    // 2. Remove from global direktorat list
-    deleteDirektorat(label, 'pra_' + section);
-
-    showToast('Kategori "' + label + '" berhasil dihapus', 'success');
+    showToast('Kategori "' + label + '" berhasil dihapus dari bulan ' + namaBulan, 'success');
     renderDirektoratTags(section);
     rebuildSectionUI(section);
 }
@@ -509,10 +532,10 @@ function saveAllData(silent) {
 
     const bulan = bulanAwal;
 
-    // IMPORTANT: Use getDirListForSection (same source as generateDirektoratInputs)
+    // IMPORTANT: Use getActiveDirListForSection (same source as generateDirektoratInputs)
     // to ensure index-based IDs match the rendered input fields
-    const spdpDirList = getDirListForSection('spdp');
-    const tahap1DirList = getDirListForSection('tahap1');
+    const spdpDirList = getActiveDirListForSection('spdp');
+    const tahap1DirList = getActiveDirListForSection('tahap1');
 
     // Collect current card values
     const spdpData = {};
@@ -590,8 +613,8 @@ function loadAllData() {
     // Clear all fields first so stale data from previous month doesn't remain
     SPDP_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
     TAHAP1_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-    const _dl1 = getDirListForSection('spdp'); _dl1.forEach((d, i) => { const el = document.getElementById('dir-spdp-' + i); if (el) el.value = ''; });
-    const _dl2 = getDirListForSection('tahap1'); _dl2.forEach((d, i) => { const el = document.getElementById('dir-tahap1-' + i); if (el) el.value = ''; });
+    const _dl1 = getActiveDirListForSection('spdp'); _dl1.forEach((d, i) => { const el = document.getElementById('dir-spdp-' + i); if (el) el.value = ''; });
+    const _dl2 = getActiveDirListForSection('tahap1'); _dl2.forEach((d, i) => { const el = document.getElementById('dir-tahap1-' + i); if (el) el.value = ''; });
 
     const saved = localStorage.getItem(getPrapenStorageKey('all'));
     if (!saved) return;
@@ -672,10 +695,10 @@ function _setFields(obj, fieldIds) {
     });
 }
 // Helper: set direktorat field values
-// Uses getDirListForSection (same source as generateDirektoratInputs)
+// Uses getActiveDirListForSection (same source as generateDirektoratInputs)
 function _setDir(dirData, section) {
     if (!dirData) return;
-    const dirList = getDirListForSection(section);
+    const dirList = getActiveDirListForSection(section);
     const keys = Object.keys(dirData);
     const isLabel = keys.length > 0 && isNaN(parseInt(keys[0]));
     if (isLabel) {
@@ -715,12 +738,12 @@ function resetAllData() {
     });
 
     // Clear direktorat inputs
-    const dirList = getDirListForSection('spdp');
+    const dirList = getActiveDirListForSection('spdp');
     dirList.forEach((_, idx) => {
         const d1 = document.getElementById(`dir-spdp-${idx}`);
         if (d1) d1.value = '';
     });
-    const dirList2 = getDirListForSection('tahap1');
+    const dirList2 = getActiveDirListForSection('tahap1');
     dirList2.forEach((_, idx) => {
         const d2 = document.getElementById(`dir-tahap1-${idx}`);
         if (d2) d2.value = '';

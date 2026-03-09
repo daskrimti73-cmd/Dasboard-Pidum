@@ -13,6 +13,16 @@ function getTindakPidanaListWna() {
     return getDirektoratList('wna');
 }
 
+// ---- Get active dir list filtered by current month's excluded dirs ----
+function getActiveDirListWna() {
+    const fullList = getMergedDirList(getWnaStorageKey(), 'wna', 'dirValues');
+    const bulan = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulan);
+    if (bulan !== bulanAkhir) return fullList; // combined mode: show all
+    const excluded = getExcludedDirsForMonth(getWnaStorageKey(), 'wna', bulan);
+    return fullList.filter(d => !excluded.includes(d));
+}
+
 // ---- Country list (All 197 countries of the world 2026, sorted A-Z in Bahasa Indonesia) ----
 const COUNTRY_LIST = [
     { code: 'AF', name: 'Afghanistan' },
@@ -329,8 +339,8 @@ function generateDirInputs() {
     const grid = document.getElementById('wnaDirGrid');
     if (!grid) return;
     grid.innerHTML = '';
-    // Use merged list: global categories + categories from saved data (so no data is hidden)
-    const tpList = getMergedDirList(getWnaStorageKey(), 'wna', 'dirValues');
+    // Use active list: global categories + saved data categories, filtered by excluded dirs
+    const tpList = getActiveDirListWna();
     tpList.forEach((dir, idx) => {
         const div = document.createElement('div');
         div.className = 'dir-input-group';
@@ -699,7 +709,7 @@ function updateDirChart() {
         values = entries.map(([, v]) => parseInt(v) || 0);
     } else {
         // Single month mode: use input elements, only show non-zero
-        const tpList = getTindakPidanaListWna();
+        const tpList = getActiveDirListWna();
         const paired = tpList.map((dir, idx) => {
             const input = document.getElementById(`dir-wna-${idx}`);
             return { label: dir, value: input ? (parseInt(input.value) || 0) : 0 };
@@ -736,7 +746,7 @@ function saveAllData(silent) {
     ['wna-tersangka', 'wna-negara', 'wna-laki', 'wna-perempuan'].forEach(id => { const el = document.getElementById(id); if (el) monthData.cards[id] = el.value; });
     monthData.negaraData = negaraData;
     monthData.klasifikasiData = klasifikasiData;
-    getMergedDirList(getWnaStorageKey(), 'wna', 'dirValues').forEach((dir, idx) => { const el = document.getElementById('dir-wna-' + idx); if (el) monthData.dirValues[dir] = el.value; });
+    getActiveDirListWna().forEach((dir, idx) => { const el = document.getElementById('dir-wna-' + idx); if (el) monthData.dirValues[dir] = el.value; });
     const storageKey = getWnaStorageKey();
     let existing = {}; try { const s = localStorage.getItem(storageKey); if (s) existing = JSON.parse(s); } catch (e) { }
     if (!existing.perBulan) existing.perBulan = {};
@@ -768,7 +778,7 @@ function loadAllData() {
     ['wna-tersangka', 'wna-negara', 'wna-laki', 'wna-perempuan'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
     negaraData = []; renderNegaraList(); updateNegaraCount();
     klasifikasiData = []; renderKlasifikasiList();
-    const tpL = getTindakPidanaListWna(); tpL.forEach((d, i) => { const el = document.getElementById('dir-wna-' + i); if (el) el.value = ''; });
+    const tpL = getActiveDirListWna(); tpL.forEach((d, i) => { const el = document.getElementById('dir-wna-' + i); if (el) el.value = ''; });
 
     const saved = localStorage.getItem(getWnaStorageKey());
     if (!saved) return;
@@ -809,7 +819,7 @@ function loadAllData() {
             // Store combined data for chart (bypasses input elements)
             if (start !== end) combinedDirData = sumD;
             // Fill input elements for categories that exist in current list
-            const tpList = getTindakPidanaListWna(), ks = Object.keys(sumD), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
+            const tpList = getActiveDirListWna(), ks = Object.keys(sumD), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
             if (isL) { tpList.forEach((d, i) => { const el = document.getElementById('dir-wna-' + i); if (el && sumD[d] !== undefined) el.value = sumD[d]; }); }
             else { ks.forEach(i => { const el = document.getElementById('dir-wna-' + i); if (el) el.value = sumD[i]; }); }
             for (let m = 1; m <= 12; m++) { const md = data.perBulan[m]; const el = document.getElementById('monthly-tren-' + m); if (el) el.value = (md && md.trendValue !== undefined ? md.trendValue : (md && md.cards && md.cards['wna-tersangka'])) || ''; }
@@ -821,7 +831,7 @@ function loadAllData() {
         if (data.klasifikasiData) { klasifikasiData = data.klasifikasiData; renderKlasifikasiList(); }
         if (data.trenMonthly) { Object.keys(data.trenMonthly).forEach(idx => { const el = document.getElementById('monthly-tren-' + idx); if (el) el.value = data.trenMonthly[idx]; }); }
         if (data.dirValues) {
-            const tpList = getTindakPidanaListWna(), ks = Object.keys(data.dirValues), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
+            const tpList = getActiveDirListWna(), ks = Object.keys(data.dirValues), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
             if (isL) { tpList.forEach((d, i) => { const el = document.getElementById('dir-wna-' + i); if (el && data.dirValues[d] !== undefined) el.value = data.dirValues[d]; }); }
             else { ks.forEach(i => { const el = document.getElementById('dir-wna-' + i); if (el) el.value = data.dirValues[i]; }); }
         }
@@ -850,7 +860,7 @@ function resetAllData() {
     });
     updateTrendChart();
 
-    const tpListReset = getTindakPidanaListWna();
+    const tpListReset = getActiveDirListWna();
     tpListReset.forEach((_, idx) => {
         const el = document.getElementById(`dir-wna-${idx}`);
         if (el) el.value = '';
@@ -928,7 +938,7 @@ function resetFilters() {
 function renderDirektoratTags() {
     const container = document.getElementById('direktoratTagsContainer');
     if (!container) return;
-    const list = getTindakPidanaListWna();
+    const list = getActiveDirListWna();
     container.innerHTML = '';
     list.forEach(dir => {
         const tag = document.createElement('span');
@@ -949,30 +959,43 @@ function handleAddDirektorat() {
     if (!input) return;
     const val = input.value.trim();
     if (!val) { showToast('Masukkan nama kategori tindak pidana', 'error'); return; }
-    if (addDirektorat(val, 'wna')) {
-        showToast('Kategori "' + val + '" berhasil ditambahkan', 'success');
-        input.value = '';
-        renderDirektoratTags();
-        rebuildDirektoratUI();
-    } else {
-        showToast('Kategori sudah ada atau tidak valid', 'error');
-    }
+
+    const bulan = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const storageKey = getWnaStorageKey();
+
+    // Add to global list (if not already there)
+    addDirektorat(val, 'wna');
+
+    // Un-exclude for current month (in case it was previously excluded)
+    unexcludeDirForMonth(storageKey, 'wna', val, bulan);
+
+    showToast('Kategori "' + val + '" berhasil ditambahkan', 'success');
+    input.value = '';
+    renderDirektoratTags();
+    rebuildDirektoratUI();
 }
 
 function handleDeleteDirektorat(label) {
     // Auto-save current unsaved data before delete & reload
     saveAllData(true);
 
-    if (!confirm('Hapus kategori "' + label + '" dari semua data?')) return;
+    const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
 
-    // 1. Remove data for this category from ALL months
+    if (bulanAwal !== bulanAkhir) {
+        showToast('Untuk menghapus kategori, Bulan Awal dan Bulan Akhir harus sama.', 'error');
+        return;
+    }
+
+    const bulan = bulanAwal;
+    const namaBulan = BULAN_NAMES_WNA[bulan - 1] || bulan;
+
+    if (!confirm('Hapus kategori "' + label + '" dari bulan ' + namaBulan + '?')) return;
+
     const storageKey = getWnaStorageKey();
-    deleteDirektoratDataAllMonths(storageKey, 'dirValues', label);
+    excludeDirForMonth(storageKey, 'wna', label, bulan, 'dirValues');
 
-    // 2. Remove from global direktorat list
-    deleteDirektorat(label, 'wna');
-
-    showToast('Kategori "' + label + '" berhasil dihapus', 'success');
+    showToast('Kategori "' + label + '" berhasil dihapus dari bulan ' + namaBulan, 'success');
     renderDirektoratTags();
     rebuildDirektoratUI();
 }

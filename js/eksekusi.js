@@ -15,6 +15,16 @@ function getTindakPidanaListEks(key) {
     return getDirektoratList('eks_' + key);
 }
 
+// ---- Get active tindak pidana list filtered by current month's excluded dirs ----
+function getActiveTindakPidanaListEks(key) {
+    const fullList = getTindakPidanaListEks(key);
+    const bulan = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulan);
+    if (bulan !== bulanAkhir) return fullList; // combined mode: show all
+    const excluded = getExcludedDirsForMonth(getEksekusiStorageKey(), key, bulan);
+    return fullList.filter(d => !excluded.includes(d));
+}
+
 // Card field IDs
 const CARD_FIELDS = ['eks-p48', 'eks-ba17', 'eks-denda', 'eks-biaya'];
 
@@ -134,7 +144,7 @@ function generateDirInputs(key, gridId) {
     const grid = document.getElementById(gridId);
     if (!grid) return;
     grid.innerHTML = '';
-    const tpList = getTindakPidanaListEks(key);
+    const tpList = getActiveTindakPidanaListEks(key);
     tpList.forEach((dir, idx) => {
         const div = document.createElement('div');
         div.className = 'dir-input-group';
@@ -353,7 +363,7 @@ function updateDirChart(key) {
         labels = entries.map(([k]) => k);
         values = entries.map(([, v]) => parseInt(v) || 0);
     } else {
-        const tpList = getTindakPidanaListEks(key);
+        const tpList = getActiveTindakPidanaListEks(key);
         const paired = tpList.map((dir, idx) => {
             const input = document.getElementById(`dir-${key}-${idx}`);
             return { label: dir, value: input ? (parseInt(input.value) || 0) : 0 };
@@ -396,7 +406,7 @@ function saveAllData(silent) {
     CARD_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) monthData.cards[id] = el.value; });
     Object.keys(DIR_CHARTS).forEach(key => {
         monthData[key + 'Dir'] = {};
-        getMergedDirList(getEksekusiStorageKey(), 'eks_' + key, key + 'Dir').forEach((dir, idx) => { const el = document.getElementById('dir-' + key + '-' + idx); if (el) monthData[key + 'Dir'][dir] = el.value; });
+        getActiveTindakPidanaListEks(key).forEach((dir, idx) => { const el = document.getElementById('dir-' + key + '-' + idx); if (el) monthData[key + 'Dir'][dir] = el.value; });
     });
     const storageKey = getEksekusiStorageKey();
     let existing = {}; try { const s = localStorage.getItem(storageKey); if (s) existing = JSON.parse(s); } catch (e) { }
@@ -430,7 +440,7 @@ function loadAllData() {
 
     // Clear all fields first
     CARD_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-    Object.keys(DIR_CHARTS).forEach(key => { const dl = getTindakPidanaListEks(key); dl.forEach((d, i) => { const el = document.getElementById('dir-' + key + '-' + i); if (el) el.value = ''; }); });
+    Object.keys(DIR_CHARTS).forEach(key => { const dl = getActiveTindakPidanaListEks(key); dl.forEach((d, i) => { const el = document.getElementById('dir-' + key + '-' + i); if (el) el.value = ''; }); });
 
     const saved = localStorage.getItem(getEksekusiStorageKey());
     if (!saved) return;
@@ -450,7 +460,7 @@ function loadAllData() {
             }
             CARD_FIELDS.forEach(id => { const el = document.getElementById(id); if (el && sumC[id] !== undefined) el.value = sumC[id]; });
             Object.keys(DIR_CHARTS).forEach(key => {
-                const dl = getTindakPidanaListEks(key), ks = Object.keys(sumD[key]), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
+                const dl = getActiveTindakPidanaListEks(key), ks = Object.keys(sumD[key]), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
                 if (start !== end) combinedDirDataEks[key] = sumD[key];
                 if (isL) { dl.forEach((d, i) => { const el = document.getElementById('dir-' + key + '-' + i); if (el && sumD[key][d] !== undefined) el.value = sumD[key][d]; }); }
                 else { ks.forEach(i => { const el = document.getElementById('dir-' + key + '-' + i); if (el) el.value = sumD[key][i]; }); }
@@ -480,7 +490,7 @@ function loadAllData() {
         });
         Object.keys(DIR_CHARTS).forEach(key => {
             if (data[key + 'Dir']) {
-                const dl = getTindakPidanaListEks(key), ks = Object.keys(data[key + 'Dir']), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
+                const dl = getActiveTindakPidanaListEks(key), ks = Object.keys(data[key + 'Dir']), isL = ks.length > 0 && isNaN(parseInt(ks[0]));
                 if (isL) { dl.forEach((d, i) => { const el = document.getElementById('dir-' + key + '-' + i); if (el && data[key + 'Dir'][d] !== undefined) el.value = data[key + 'Dir'][d]; }); }
                 else { ks.forEach(i => { const el = document.getElementById('dir-' + key + '-' + i); if (el) el.value = data[key + 'Dir'][i]; }); }
             }
@@ -506,7 +516,7 @@ function resetAllData() {
     });
 
     Object.keys(DIR_CHARTS).forEach(key => {
-        const tpListReset = getTindakPidanaListEks(key);
+        const tpListReset = getActiveTindakPidanaListEks(key);
         tpListReset.forEach((_, idx) => {
             const el = document.getElementById(`dir-${key}-${idx}`);
             if (el) el.value = '';
@@ -585,7 +595,7 @@ function resetFilters() {
 function renderDirektoratTags(key) {
     const container = document.getElementById('direktoratTagsContainer_' + key);
     if (!container) return;
-    const list = getTindakPidanaListEks(key);
+    const list = getActiveTindakPidanaListEks(key);
     container.innerHTML = '';
     list.forEach(dir => {
         const tag = document.createElement('span');
@@ -610,32 +620,43 @@ function handleAddDirektorat(key) {
     if (!input) return;
     const val = input.value.trim();
     if (!val) { showToast('Masukkan nama kategori tindak pidana', 'error'); return; }
-    if (addDirektorat(val, 'eks_' + key)) {
-        showToast('Kategori "' + val + '" berhasil ditambahkan', 'success');
-        input.value = '';
-        renderDirektoratTags(key);
-        rebuildSectionUI(key);
-    } else {
-        showToast('Kategori sudah ada atau tidak valid', 'error');
-    }
+
+    const bulan = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const storageKey = getEksekusiStorageKey();
+
+    // Add to global list (if not already there)
+    addDirektorat(val, 'eks_' + key);
+
+    // Un-exclude for current month (in case it was previously excluded)
+    unexcludeDirForMonth(storageKey, key, val, bulan);
+
+    showToast('Kategori "' + val + '" berhasil ditambahkan', 'success');
+    input.value = '';
+    renderDirektoratTags(key);
+    rebuildSectionUI(key);
 }
 
 function handleDeleteDirektorat(key, label) {
     // Auto-save current unsaved data before delete & reload
     saveAllData(true);
 
-    const dirDataKey = key + 'Dir';
+    const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
+    const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
 
-    if (!confirm('Hapus kategori "' + label + '" dari semua data?')) return;
+    if (bulanAwal !== bulanAkhir) {
+        showToast('Untuk menghapus kategori, Bulan Awal dan Bulan Akhir harus sama.', 'error');
+        return;
+    }
 
-    // 1. Remove data for this category from ALL months
+    const bulan = bulanAwal;
+    const namaBulan = BULAN_NAMES_EKS[bulan - 1] || bulan;
+
+    if (!confirm('Hapus kategori "' + label + '" dari bulan ' + namaBulan + '?')) return;
+
     const storageKey = getEksekusiStorageKey();
-    deleteDirektoratDataAllMonths(storageKey, dirDataKey, label);
+    excludeDirForMonth(storageKey, key, label, bulan);
 
-    // 2. Remove from global direktorat list
-    deleteDirektorat(label, 'eks_' + key);
-
-    showToast('Kategori "' + label + '" berhasil dihapus', 'success');
+    showToast('Kategori "' + label + '" berhasil dihapus dari bulan ' + namaBulan, 'success');
     renderDirektoratTags(key);
     rebuildSectionUI(key);
 }

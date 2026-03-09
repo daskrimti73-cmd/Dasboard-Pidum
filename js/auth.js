@@ -263,35 +263,60 @@ function deleteDirektorat(label, sectionKey) {
     return true;
 }
 
-// ---- Delete direktorat data from ALL months ----
-// Removes the category's data from every month in perBulan.
-function deleteDirektoratDataAllMonths(storageKey, dirDataKeys, label) {
+// ---- Excluded dirs per month ----
+// Each month can have its own excluded categories, stored in perBulan[month].excludedDirs[section]
+// This allows deleting a category from one month without affecting other months.
+
+function excludeDirForMonth(storageKey, section, label, month, dirDataKey) {
     try {
         const saved = localStorage.getItem(storageKey);
-        if (!saved) return false;
+        if (!saved) return;
         const data = JSON.parse(saved);
-        if (!data.perBulan) return false;
+        if (!data.perBulan) data.perBulan = {};
+        if (!data.perBulan[month]) data.perBulan[month] = {};
+        if (!data.perBulan[month].excludedDirs) data.perBulan[month].excludedDirs = {};
+        if (!data.perBulan[month].excludedDirs[section]) data.perBulan[month].excludedDirs[section] = [];
 
-        const keys = Array.isArray(dirDataKeys) ? dirDataKeys : [dirDataKeys];
-        let changed = false;
-        for (let m = 1; m <= 12; m++) {
-            if (!data.perBulan[m]) continue;
-            keys.forEach(dk => {
-                if (data.perBulan[m][dk] && data.perBulan[m][dk][label] !== undefined) {
-                    delete data.perBulan[m][dk][label];
-                    changed = true;
-                }
-            });
+        const list = data.perBulan[month].excludedDirs[section];
+        if (!list.includes(label)) {
+            list.push(label);
         }
 
-        if (changed) {
-            localStorage.setItem(storageKey, JSON.stringify(data));
+        // Also delete the category's data from this month
+        const dk = dirDataKey || (section + 'Dir');
+        if (data.perBulan[month][dk] && data.perBulan[month][dk][label] !== undefined) {
+            delete data.perBulan[month][dk][label];
         }
-        return changed;
+
+        localStorage.setItem(storageKey, JSON.stringify(data));
     } catch (e) {
-        console.error('deleteDirektoratDataAllMonths error:', e);
-        return false;
+        console.error('excludeDirForMonth error:', e);
     }
+}
+
+function unexcludeDirForMonth(storageKey, section, label, month) {
+    try {
+        const saved = localStorage.getItem(storageKey);
+        if (!saved) return;
+        const data = JSON.parse(saved);
+        if (!data.perBulan || !data.perBulan[month] || !data.perBulan[month].excludedDirs) return;
+        const list = data.perBulan[month].excludedDirs[section];
+        if (!list) return;
+        data.perBulan[month].excludedDirs[section] = list.filter(d => d !== label);
+        localStorage.setItem(storageKey, JSON.stringify(data));
+    } catch (e) {
+        console.error('unexcludeDirForMonth error:', e);
+    }
+}
+
+function getExcludedDirsForMonth(storageKey, section, month) {
+    try {
+        const saved = localStorage.getItem(storageKey);
+        if (!saved) return [];
+        const data = JSON.parse(saved);
+        if (!data.perBulan || !data.perBulan[month] || !data.perBulan[month].excludedDirs) return [];
+        return data.perBulan[month].excludedDirs[section] || [];
+    } catch (e) { return []; }
 }
 
 // ---- Delete direktorat data for a SPECIFIC month only ----
