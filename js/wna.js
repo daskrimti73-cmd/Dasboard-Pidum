@@ -698,13 +698,14 @@ function updateDirChart() {
         labels = entries.map(([k]) => k);
         values = entries.map(([, v]) => parseInt(v) || 0);
     } else {
-        // Single month mode: use input elements
+        // Single month mode: use input elements, only show non-zero
         const tpList = getTindakPidanaListWna();
-        labels = tpList;
-        values = tpList.map((_, idx) => {
+        const paired = tpList.map((dir, idx) => {
             const input = document.getElementById(`dir-wna-${idx}`);
-            return input ? (parseInt(input.value) || 0) : 0;
-        });
+            return { label: dir, value: input ? (parseInt(input.value) || 0) : 0 };
+        }).filter(p => p.value > 0);
+        labels = paired.map(p => p.label);
+        values = paired.map(p => p.value);
     }
 
     const bgColors = labels.map((_, i) => barBg[i % barBg.length]);

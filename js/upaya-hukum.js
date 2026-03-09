@@ -314,11 +314,12 @@ function updateDirChartUH(section) {
         values = entries.map(([, v]) => parseInt(v) || 0);
     } else {
         const dirList = getDirektoratMapUH(section);
-        labels = dirList;
-        values = dirList.map((_, idx) => {
+        const paired = dirList.map((dir, idx) => {
             const input = document.getElementById(`dir-${section}-${idx}`);
-            return input ? (parseInt(input.value) || 0) : 0;
-        });
+            return { label: dir, value: input ? (parseInt(input.value) || 0) : 0 };
+        }).filter(p => p.value > 0);
+        labels = paired.map(p => p.label);
+        values = paired.map(p => p.value);
     }
 
     const bgColors = labels.map((_, i) => chartColorsUH.bar.backgroundColor[i % chartColorsUH.bar.backgroundColor.length]);
