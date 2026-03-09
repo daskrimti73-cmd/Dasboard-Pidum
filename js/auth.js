@@ -220,17 +220,7 @@ function deleteSatker2(value) {
 }
 
 // ---- Direktorat / Tindak Pidana Management (per-section) ----
-const DEFAULT_DIREKTORAT = [
-    'Direktorat A',
-    'Direktorat B',
-    'Direktorat C',
-    'Direktorat D',
-    'Direktorat E',
-    'Mnegtibum dan TPUL',
-    'Oharda',
-    'Terorisme',
-    'Narkotika'
-];
+const DEFAULT_DIREKTORAT = [];
 
 // Get list for a specific section. Each section has its own localStorage key.
 // sectionKey examples: 'pra_spdp', 'pra_tahap1', 'penuntutan_tahap2', 'eks_p48', etc.
@@ -241,10 +231,10 @@ function getDirektoratList(sectionKey) {
         const saved = localStorage.getItem(key);
         if (saved) {
             const list = JSON.parse(saved);
-            if (Array.isArray(list) && list.length > 0) return list;
+            if (Array.isArray(list)) return list;
         }
     } catch (e) { }
-    // First time: initialize from default
+    // First time: initialize empty (admin adds categories via Kelola Kategori)
     localStorage.setItem(key, JSON.stringify(DEFAULT_DIREKTORAT));
     return [...DEFAULT_DIREKTORAT];
 }
