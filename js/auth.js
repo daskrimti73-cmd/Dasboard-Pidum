@@ -331,9 +331,10 @@ function direktoratHasDataInAnyMonth(storageKey, dirDataKeys, label) {
     return false;
 }
 
-// ---- Get merged dir list: global list + categories from saved data (so no data is hidden) ----
-// This ensures that categories with saved data in any month are always shown,
+// ---- Get merged dir list: global list + categories from saved data that have actual values ----
+// This ensures that categories with actual (non-zero) saved data in any month are shown,
 // even if they've been removed from the global list.
+// Categories with value 0 or empty are NOT included (so they don't clutter the inputs/charts).
 // storageKey = the localStorage key for the page data (e.g., buildStorageKey('wna'))
 // sectionKey = the direktorat list section key (e.g., 'wna')
 // dirDataKey = the key inside perBulan[month] that holds dir data (e.g., 'dirValues', 'tpValues', 'tahap2Dir')
@@ -348,7 +349,7 @@ function getMergedDirList(storageKey, sectionKey, dirDataKeys) {
         const data = JSON.parse(saved);
         if (!data.perBulan) return merged;
 
-        // Collect all category names from ALL months' saved data
+        // Collect category names from ALL months' saved data, but ONLY if value > 0
         const keys = Array.isArray(dirDataKeys) ? dirDataKeys : [dirDataKeys];
         Object.values(data.perBulan).forEach(monthData => {
             if (!monthData) return;
@@ -358,6 +359,9 @@ function getMergedDirList(storageKey, sectionKey, dirDataKeys) {
                 Object.keys(dirObj).forEach(catName => {
                     // Only add string keys (category names, not numeric indices)
                     if (!isNaN(parseInt(catName))) return;
+                    // Only add if the value is non-zero (has actual data)
+                    const val = parseInt(dirObj[catName]);
+                    if (isNaN(val) || val <= 0) return;
                     if (!merged.some(m => m.toLowerCase() === catName.toLowerCase())) {
                         merged.push(catName);
                     }
