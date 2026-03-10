@@ -231,12 +231,13 @@ function getDirektoratList(sectionKey) {
         const saved = localStorage.getItem(key);
         if (saved) {
             const list = JSON.parse(saved);
-            if (Array.isArray(list)) return list;
+            if (Array.isArray(list)) return list.sort((a, b) => a.localeCompare(b, 'id'));
         }
     } catch (e) { }
     // First time: initialize empty (admin adds categories via Kelola Kategori)
-    localStorage.setItem(key, JSON.stringify(DEFAULT_DIREKTORAT));
-    return [...DEFAULT_DIREKTORAT];
+    const sorted = [...DEFAULT_DIREKTORAT].sort((a, b) => a.localeCompare(b, 'id'));
+    localStorage.setItem(key, JSON.stringify(sorted));
+    return sorted;
 }
 
 function saveDirektoratList(list, sectionKey) {
@@ -251,6 +252,7 @@ function addDirektorat(label, sectionKey) {
     const list = getDirektoratList(sectionKey);
     if (list.some(d => d.toLowerCase() === trimmed.toLowerCase())) return false;
     list.push(trimmed);
+    list.sort((a, b) => a.localeCompare(b, 'id'));
     saveDirektoratList(list, sectionKey);
     return true;
 }
