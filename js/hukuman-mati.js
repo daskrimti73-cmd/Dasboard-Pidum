@@ -27,6 +27,7 @@ function getActiveTindakPidanaListHm() {
 let chartTrendHm = null;
 let chartTindakPidanaHm = null;
 let combinedTpData = null; // holds merged tpValues when viewing combined months
+let _isShowingCombinedMonths = false; // true when loaded data is from multi-month range
 
 // ---- Chart colors ----
 const lineColorHm = {
@@ -264,6 +265,7 @@ function updateTpChartHm() {
 // SAVE & LOAD
 // ============================================
 function saveAllData(silent) {
+    if (_isShowingCombinedMonths) { if (!silent) showToast('Untuk menyimpan data, Bulan Awal dan Bulan Akhir harus sama.', 'error'); return; }
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
     const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
     if (bulanAwal !== bulanAkhir) { if (!silent) showToast('Untuk menyimpan data, Bulan Awal dan Bulan Akhir harus sama.', 'error'); return; }
@@ -301,6 +303,7 @@ function saveAllData(silent) {
 
 function loadAllDataHm() {
     combinedTpData = null; // reset
+    _isShowingCombinedMonths = false; // reset
 
     // Clear all fields first
     ['hm-pn', 'hm-pt', 'hm-ma'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
@@ -313,6 +316,7 @@ function loadAllDataHm() {
         const bA = parseInt(document.getElementById('filterBulan1')?.value || '1');
         const bB = parseInt(document.getElementById('filterBulan2')?.value || bA);
         const start = Math.min(bA, bB), end = Math.max(bA, bB);
+        _isShowingCombinedMonths = (start !== end);
         if (data.perBulan) {
             const sumC = {}, sumTp = {};
             for (let m = start; m <= end; m++) { const md = data.perBulan[m]; if (!md) continue; _sumHM(sumC, md.cards); _sumHM(sumTp, md.tpValues); }

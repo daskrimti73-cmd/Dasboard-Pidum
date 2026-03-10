@@ -246,6 +246,7 @@ let chartKlasifikasi = null;
 let chartTrend = null;
 let chartDir = null;
 let combinedDirData = null; // holds merged dirValues when viewing combined months
+let _isShowingCombinedMonths = false; // true when loaded data is from multi-month range
 
 // ---- Chart colors ----
 const lineColor = {
@@ -728,6 +729,7 @@ function updateDirChart() {
 // SAVE & LOAD
 // ============================================
 function saveAllData(silent) {
+    if (_isShowingCombinedMonths) { if (!silent) showToast('Untuk menyimpan data, Bulan Awal dan Bulan Akhir harus sama.', 'error'); return; }
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
     const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
     if (bulanAwal !== bulanAkhir) { if (!silent) showToast('Untuk menyimpan data, Bulan Awal dan Bulan Akhir harus sama.', 'error'); return; }
@@ -767,6 +769,7 @@ function saveAllData(silent) {
 
 function loadAllData() {
     combinedDirData = null; // reset combined data
+    _isShowingCombinedMonths = false; // reset
 
     // Clear all fields first
     ['wna-tersangka', 'wna-negara', 'wna-laki', 'wna-perempuan'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
@@ -781,6 +784,7 @@ function loadAllData() {
         const bA = parseInt(document.getElementById('filterBulan1')?.value || '1');
         const bB = parseInt(document.getElementById('filterBulan2')?.value || bA);
         const start = Math.min(bA, bB), end = Math.max(bA, bB);
+        _isShowingCombinedMonths = (start !== end);
         if (data.perBulan) {
             const sumC = {}, sumD = {};
             let mergedNeg = [], mergedKlas = [];

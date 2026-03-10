@@ -88,6 +88,7 @@ const chartColorsUH = {
 };
 
 let combinedDirDataUH = {}; // holds merged dirValues per section when viewing combined months
+let _isShowingCombinedMonths = false; // true when loaded data is from multi-month range
 
 // ---- Storage key ----
 function getUpayaHukumStorageKey() {
@@ -345,6 +346,7 @@ function updateDirChartUH(section) {
 // ============================================
 
 function saveAllData(silent) {
+    if (_isShowingCombinedMonths) { if (!silent) showToast('Untuk menyimpan data, Bulan Awal dan Bulan Akhir harus sama.', 'error'); return; }
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
     const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
     if (bulanAwal !== bulanAkhir) { if (!silent) showToast('Untuk menyimpan data, Bulan Awal dan Bulan Akhir harus sama.', 'error'); return; }
@@ -393,6 +395,7 @@ function saveAllData(silent) {
 
 function loadAllData() {
     combinedDirDataUH = {}; // reset
+    _isShowingCombinedMonths = false; // reset
 
     // Clear all fields first
     Object.keys(SECTIONS_UH).forEach(sec => {
@@ -407,6 +410,7 @@ function loadAllData() {
         const bA = parseInt(document.getElementById('filterBulan1')?.value || '1');
         const bB = parseInt(document.getElementById('filterBulan2')?.value || bA);
         const start = Math.min(bA, bB), end = Math.max(bA, bB);
+        _isShowingCombinedMonths = (start !== end);
         if (data.perBulan) {
             Object.keys(SECTIONS_UH).forEach(sec => {
                 const sumC = {}, sumD = {};
