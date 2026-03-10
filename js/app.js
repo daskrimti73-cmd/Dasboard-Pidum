@@ -288,9 +288,9 @@ function saveData() {
     }
 }
 
-// ---- Load Saved Data (localStorage + Supabase) ----
+// ---- Load Saved Data (from localStorage — already synced by supabase-sync.js) ----
 // restoreFilters = true only on initial page load, false when user clicks Terapkan
-async function loadSavedData(restoreFilters) {
+function loadSavedData(restoreFilters) {
     // Only restore filters on initial load, not when user manually changes them
     if (restoreFilters !== false) {
         let filters = null;
@@ -312,19 +312,14 @@ async function loadSavedData(restoreFilters) {
     // Clear all fields first
     clearDataFields();
 
-    // Load data for current filter combination
+    // Load from localStorage (supabase-sync.js already hydrates from Supabase on page load,
+    // and our __ts_/__del_ timestamp system protects against stale Supabase data overwriting
+    // newer local edits/deletes)
     const key = getStorageKey();
     let data = null;
-
-    // Try Supabase first
-    const sbData = await loadFromSupabase(key);
-    if (sbData) {
-        data = sbData;
-    } else {
-        const saved = localStorage.getItem(key);
-        if (saved) {
-            try { data = JSON.parse(saved); } catch (e) { }
-        }
+    const saved = localStorage.getItem(key);
+    if (saved) {
+        try { data = JSON.parse(saved); } catch (e) { }
     }
 
     if (data && data.perBulan) {
