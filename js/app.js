@@ -139,16 +139,13 @@ function navigateToPage(url, event) {
     }
     // Save current filter state to sessionStorage
     saveActiveFilters();
+    // Prevent "Leave site?" dialog — user intentionally navigates
+    hasUnsaved = false;
     // Also pass filter params via URL for reliability
     const params = getCurrentFilterParams();
     const separator = url.includes('?') ? '&' : '?';
     window.location.href = url + separator + params;
 }
-
-// Auto-save filters when leaving any page (covers sidebar links, back button, etc.)
-window.addEventListener('beforeunload', function () {
-    try { saveActiveFilters(); } catch (e) { }
-});
 
 // ---- Greeting based on time ----
 function setGreeting() {
