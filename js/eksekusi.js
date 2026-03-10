@@ -437,6 +437,7 @@ function saveAllData(silent) {
 function loadAllData() {
     combinedDirDataEks = {}; // reset
     _isShowingCombinedMonths = false; // reset
+    _loadedBulan = null;
 
     // Clear all fields first
     CARD_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });

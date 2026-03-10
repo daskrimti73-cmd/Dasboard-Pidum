@@ -1004,6 +1004,7 @@ function saveAllData(silent) {
 
 function loadAllData() {
     _isShowingCombinedMonths = false;
+    _loadedBulan = null;
     // Clear all fields first
     ['korban-perempuan', 'korban-anak'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
     perkaraPerempuanData = []; renderPerkaraPerempuanList();

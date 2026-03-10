@@ -772,6 +772,7 @@ function saveAllData(silent) {
 function loadAllData() {
     combinedDirData = null; // reset combined data
     _isShowingCombinedMonths = false; // reset
+    _loadedBulan = null;
 
     // Clear all fields first
     ['wna-tersangka', 'wna-negara', 'wna-laki', 'wna-perempuan'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });

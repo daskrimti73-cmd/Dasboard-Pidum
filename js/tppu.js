@@ -60,6 +60,7 @@ function saveAllData() {
 
 function loadAllData() {
     _isShowingCombinedMonths = false;
+    _loadedBulan = null;
     // Clear all fields first
     ['tppu-count', 'tpa-count'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
 

@@ -306,6 +306,7 @@ function saveAllData(silent) {
 function loadAllDataHm() {
     combinedTpData = null; // reset
     _isShowingCombinedMonths = false; // reset
+    _loadedBulan = null;
 
     // Clear all fields first
     ['hm-pn', 'hm-pt', 'hm-ma'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });

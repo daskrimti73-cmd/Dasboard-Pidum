@@ -620,6 +620,7 @@ function saveAllData(silent) {
 function loadAllData() {
     combinedDirData = {}; // reset
     _isShowingCombinedMonths = false; // reset
+    _loadedBulan = null;
 
     // Clear all fields first so stale data from previous month doesn't remain
     SPDP_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });

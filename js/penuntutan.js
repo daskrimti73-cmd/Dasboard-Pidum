@@ -482,6 +482,7 @@ function saveAllData(silent) {
 function loadAllData() {
     combinedDirDataP = {}; // reset
     _isShowingCombinedMonths = false; // reset
+    _loadedBulan = null;
 
     // Clear all fields first
     Object.keys(SECTIONS).forEach(sec => {
