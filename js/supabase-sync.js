@@ -190,22 +190,6 @@ if (_localNewerKeys.length > 0) {
 }
 
 
-// Process pending migration deletes from auth.js
-// auth.js runs BEFORE this script, so it stores keys on window._cmsMigrationDeletes.
-// Now that we have the overridden removeItem (which DELETEs from Supabase), process them.
-if (window._cmsMigrationDeletes && window._cmsMigrationDeletes.length > 0) {
-    (function () {
-        var delKeys = window._cmsMigrationDeletes;
-        console.log('[Supabase Sync] Processing ' + delKeys.length + ' migration deletes from Supabase');
-        for (var i = 0; i < delKeys.length; i++) {
-            var key = delKeys[i];
-            // Remove from localStorage using overridden method (triggers Supabase DELETE + sets __del_ marker)
-            localStorage.removeItem(key);
-        }
-        delete window._cmsMigrationDeletes;
-    })();
-}
-
 // Push ALL localStorage data to Supabase (for first-time sync)
 function syncAllToCloud() {
     var count = 0;

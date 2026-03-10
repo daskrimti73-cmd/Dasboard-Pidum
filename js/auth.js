@@ -16,55 +16,10 @@ const SATKER2_KEY = 'cms_satker2_list';
 const DIREKTORAT_KEY = 'cms_direktorat_list';
 const BULAN_KEY = 'cms_selected_bulan';
 
-// ---- One-time data migration ----
-// Clear page data that was corrupted by combined-month save bug.
-// Preserves: auth session, settings (tahun, satker, direktorat lists).
-// Increment _DATA_VERSION to trigger a new migration.
-const _DATA_VERSION = 3;
-const _DATA_VERSION_KEY = 'cms_data_version';
-
-(function migrateDataIfNeeded() {
-    try {
-        const currentVersion = parseInt(localStorage.getItem(_DATA_VERSION_KEY)) || 0;
-        if (currentVersion >= _DATA_VERSION) return;
-
-        // Page data prefixes from buildStorageKey():
-        // pidum_, prapen_, penuntutan_, eksekusi_, wna_, hm_, upayahukum_, korban_, korban_table_, tppu_
-        const pageDataPrefixes = ['pidum_', 'prapen_', 'penuntutan_', 'eksekusi_', 'wna_', 'hm_', 'upayahukum_', 'korban_', 'tppu_'];
-        const safeKeys = new Set([AUTH_KEY, TAHUN_KEY, SATKER1_KEY, SATKER2_KEY, BULAN_KEY, _DATA_VERSION_KEY]);
-        const keysToRemove = [];
-        const pageDataKeys = []; // keys to delete from Supabase
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (!key) continue;
-            if (safeKeys.has(key)) continue;
-            if (key.startsWith(DIREKTORAT_KEY)) continue;
-            // Check if this is a page data key or its timestamp/delete marker
-            let baseKey = key;
-            if (key.startsWith('__ts_')) baseKey = key.substring(5);
-            else if (key.startsWith('__del_')) baseKey = key.substring(6);
-            const isPageData = pageDataPrefixes.some(p => baseKey.startsWith(p));
-            if (!isPageData) continue;
-            keysToRemove.push(key);
-            // Track actual page data keys (not __ts_ or __del_ markers) for Supabase deletion
-            if (!key.startsWith('__ts_') && !key.startsWith('__del_')) {
-                pageDataKeys.push(key);
-            }
-        }
-        keysToRemove.forEach(key => {
-            localStorage.removeItem(key);
-            // Set __del_ marker so supabase-sync hydrate won't restore this key
-            if (!key.startsWith('__ts_') && !key.startsWith('__del_')) {
-                localStorage.setItem('__del_' + key, new Date().toISOString());
-            }
-        });
-        // Expose pending deletes so supabase-sync.js can delete them from Supabase
-        // (auth.js loads BEFORE supabase-sync.js, so we can't use the overridden removeItem here)
-        window._cmsMigrationDeletes = pageDataKeys;
-        localStorage.setItem(_DATA_VERSION_KEY, _DATA_VERSION.toString());
-        console.log('[CMS Migration] Cleared ' + keysToRemove.length + ' corrupted data entries (' + pageDataKeys.length + ' pending Supabase delete)');
-    } catch (e) { console.error('[CMS Migration] Error:', e); }
-})();
+// ---- Data protection note ----
+// Combined-month save bug is now prevented by _loadedBulan and
+// _isShowingCombinedMonths guards in each page JS file.
+// No migration needed — existing data is preserved as-is.
 
 // ---- Year Management ----
 function getTahunList() {
