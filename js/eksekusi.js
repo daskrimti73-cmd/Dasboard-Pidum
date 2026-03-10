@@ -77,6 +77,7 @@ const chartColorsEks = {
 
 let combinedDirDataEks = {}; // holds merged dirValues per key when viewing combined months
 let _isShowingCombinedMonths = false; // true when loaded data is from multi-month range
+let _loadedBulan = null; // tracks which month range the current form data belongs to
 
 // ---- Storage key ----
 function getEksekusiStorageKey() {
@@ -393,6 +394,7 @@ function saveAllData(silent) {
     if (_isShowingCombinedMonths) { if (!silent) showToast('Untuk menyimpan data, Bulan Awal dan Bulan Akhir harus sama.', 'error'); return; }
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
     const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
+    if (_loadedBulan && (bulanAwal !== _loadedBulan.start || bulanAkhir !== _loadedBulan.end)) return;
     if (bulanAwal !== bulanAkhir) { if (!silent) showToast('Untuk menyimpan data, Bulan Awal dan Bulan Akhir harus sama.', 'error'); return; }
     const bulan = bulanAwal;
     const monthData = { cards: {} };
@@ -448,6 +450,7 @@ function loadAllData() {
         const bB = parseInt(document.getElementById('filterBulan2')?.value || bA);
         const start = Math.min(bA, bB), end = Math.max(bA, bB);
         _isShowingCombinedMonths = (start !== end);
+        _loadedBulan = { start, end };
         if (data.perBulan) {
             const sumC = {};
             const sumD = {};

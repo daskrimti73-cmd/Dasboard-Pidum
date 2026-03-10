@@ -32,6 +32,7 @@ let chartTahap1Trend = null;
 let chartTahap1TindakPidana = null;
 let combinedDirData = {}; // holds merged dirValues per section when viewing combined months
 let _isShowingCombinedMonths = false; // true when loaded data is from multi-month range
+let _loadedBulan = null; // tracks which month range the current form data belongs to
 
 // ---- SPDP field IDs ----
 const SPDP_FIELDS = ['spdp-spdp', 'spdp-p18', 'spdp-p17', 'spdp-pengembalian', 'spdp-sp3'];
@@ -511,7 +512,6 @@ function rebuildSectionUI(section) {
 
 function saveAllData(silent) {
     // Block saving when currently showing combined multi-month data
-    // (prevents polluting single-month data with combined values)
     if (_isShowingCombinedMonths) {
         if (!silent) showToast('Untuk menyimpan data, Bulan Awal dan Bulan Akhir harus sama.', 'error');
         return;
@@ -520,6 +520,12 @@ function saveAllData(silent) {
     // Which month is admin saving? Use bulanAwal as the target month
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
     const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
+
+    // Block saving if filter has changed from what was loaded
+    // (prevents saving month A's data to month B when user changes filter)
+    if (_loadedBulan && (bulanAwal !== _loadedBulan.start || bulanAkhir !== _loadedBulan.end)) {
+        return; // silently skip — data belongs to a different month
+    }
 
     // Only allow saving when bulan awal = bulan akhir (single month mode)
     if (bulanAwal !== bulanAkhir) {
@@ -631,6 +637,7 @@ function loadAllData() {
         const start = Math.min(bulanAwal, bulanAkhir);
         const end = Math.max(bulanAwal, bulanAkhir);
         _isShowingCombinedMonths = (start !== end);
+        _loadedBulan = { start, end };
 
         // --- NEW PER-BULAN FORMAT ---
         if (data.perBulan) {

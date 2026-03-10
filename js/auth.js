@@ -46,7 +46,14 @@ const _DATA_VERSION_KEY = 'cms_data_version';
             if (!isPageData) continue;
             keysToRemove.push(key);
         }
-        keysToRemove.forEach(key => localStorage.removeItem(key));
+        keysToRemove.forEach(key => {
+            localStorage.removeItem(key);
+            // Set __del_ marker so supabase-sync hydrate won't restore this key
+            // (auth.js loads BEFORE supabase-sync.js, so we use native setItem)
+            if (!key.startsWith('__ts_') && !key.startsWith('__del_')) {
+                localStorage.setItem('__del_' + key, new Date().toISOString());
+            }
+        });
         localStorage.setItem(_DATA_VERSION_KEY, _DATA_VERSION.toString());
         console.log('[CMS Migration] Cleared ' + keysToRemove.length + ' corrupted data entries');
     } catch (e) { console.error('[CMS Migration] Error:', e); }
