@@ -137,9 +137,12 @@ function navigateToPage(url, event) {
     if (event.target.tagName === 'INPUT') {
         return;
     }
-    // Save current filter state so the target page can restore it
+    // Save current filter state to sessionStorage
     saveActiveFilters();
-    window.location.href = url;
+    // Also pass filter params via URL for reliability
+    const params = getCurrentFilterParams();
+    const separator = url.includes('?') ? '&' : '?';
+    window.location.href = url + separator + params;
 }
 
 // Auto-save filters when leaving any page (covers sidebar links, back button, etc.)

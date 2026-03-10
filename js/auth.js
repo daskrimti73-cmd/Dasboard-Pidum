@@ -1006,40 +1006,44 @@ function saveActiveFilters() {
     } catch (e) { }
 }
 
-// ---- Restore filters from localStorage OR URL params ----
+// ---- Restore filters from URL params, sessionStorage, or defaults ----
 function restoreViewFilters() {
     // Populate Tahun dropdown first (dynamic from localStorage)
     populateTahunDropdown();
 
-    // Set default Bulan Akhir to current month
+    // Set default Bulan Akhir
     initDefaultBulanFilter();
 
-    // For view mode: use URL params
-    if (isViewMode()) {
-        const filters = getViewFilterParams();
-        if (filters.wilayah) setSelectValueSafe('filterWilayah', filters.wilayah);
-        if (filters.satker1) setSelectValueSafe('filterSatker1', filters.satker1);
-        if (filters.satker2) setSelectValueSafe('filterSatker2', filters.satker2);
-        if (filters.tahun) setSelectValueSafe('filterTahun', filters.tahun);
-        if (filters.bulan1) setSelectValueSafe('filterBulan1', filters.bulan1);
-        if (filters.bulan2) setSelectValueSafe('filterBulan2', filters.bulan2);
+    // Priority 1: URL params (passed from navigateToPage or view mode)
+    const urlFilters = getViewFilterParams();
+    const hasUrlFilters = urlFilters.bulan1 || urlFilters.bulan2 || urlFilters.tahun || urlFilters.wilayah;
+    if (hasUrlFilters) {
+        if (urlFilters.wilayah) setSelectValueSafe('filterWilayah', urlFilters.wilayah);
+        if (urlFilters.satker1) setSelectValueSafe('filterSatker1', urlFilters.satker1);
+        if (urlFilters.satker2) setSelectValueSafe('filterSatker2', urlFilters.satker2);
+        if (urlFilters.tahun) setSelectValueSafe('filterTahun', urlFilters.tahun);
+        if (urlFilters.bulan1) setSelectValueSafe('filterBulan1', urlFilters.bulan1);
+        if (urlFilters.bulan2) setSelectValueSafe('filterBulan2', urlFilters.bulan2);
+        // Also save to sessionStorage so subsequent page navigations work
+        saveActiveFilters();
         return;
     }
 
-    // For ALL modes (admin & public): restore saved filters from sessionStorage
-    // When browser is closed, sessionStorage is cleared → defaults used (Jan-Feb)
-    try {
-        const saved = sessionStorage.getItem('cms_active_filters');
-        if (saved) {
-            const filters = JSON.parse(saved);
-            if (filters.wilayah) setSelectValueSafe('filterWilayah', filters.wilayah);
-            if (filters.satker1) setSelectValueSafe('filterSatker1', filters.satker1);
-            if (filters.satker2) setSelectValueSafe('filterSatker2', filters.satker2);
-            if (filters.tahun) setSelectValueSafe('filterTahun', filters.tahun);
-            if (filters.bulan1) setSelectValueSafe('filterBulan1', filters.bulan1);
-            if (filters.bulan2) setSelectValueSafe('filterBulan2', filters.bulan2);
-        }
-    } catch (e) { }
+    // Priority 2: sessionStorage (persists during browser session)
+    if (!isViewMode()) {
+        try {
+            const saved = sessionStorage.getItem('cms_active_filters');
+            if (saved) {
+                const filters = JSON.parse(saved);
+                if (filters.wilayah) setSelectValueSafe('filterWilayah', filters.wilayah);
+                if (filters.satker1) setSelectValueSafe('filterSatker1', filters.satker1);
+                if (filters.satker2) setSelectValueSafe('filterSatker2', filters.satker2);
+                if (filters.tahun) setSelectValueSafe('filterTahun', filters.tahun);
+                if (filters.bulan1) setSelectValueSafe('filterBulan1', filters.bulan1);
+                if (filters.bulan2) setSelectValueSafe('filterBulan2', filters.bulan2);
+            }
+        } catch (e) { }
+    }
 }
 
 function setSelectValueSafe(id, value) {
