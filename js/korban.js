@@ -79,6 +79,8 @@ let editingIndex = -1;
 let deleteIndex = -1;
 let sortColumn = -1;
 let sortDirection = 'asc';
+let _isShowingCombinedMonths = false;
+let _loadedBulan = null;
 
 // ---- Storage key ----
 function getKorbanStorageKey() {
@@ -953,8 +955,10 @@ function exportCSV() {
 // SAVE & LOAD (Charts + Cards)
 // ============================================
 function saveAllData(silent) {
+    if (_isShowingCombinedMonths) { if (!silent) showToast('Untuk menyimpan data, Bulan Awal dan Bulan Akhir harus sama.', 'error'); return; }
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
     const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
+    if (_loadedBulan && (bulanAwal !== _loadedBulan.start || bulanAkhir !== _loadedBulan.end)) return;
     if (bulanAwal !== bulanAkhir) { if (!silent) showToast('Untuk menyimpan data, Bulan Awal dan Bulan Akhir harus sama.', 'error'); return; }
     const bulan = bulanAwal;
     const monthData = { cards: {} };
@@ -999,6 +1003,7 @@ function saveAllData(silent) {
 }
 
 function loadAllData() {
+    _isShowingCombinedMonths = false;
     // Clear all fields first
     ['korban-perempuan', 'korban-anak'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
     perkaraPerempuanData = []; renderPerkaraPerempuanList();
@@ -1011,6 +1016,8 @@ function loadAllData() {
         const bA = parseInt(document.getElementById('filterBulan1')?.value || '1');
         const bB = parseInt(document.getElementById('filterBulan2')?.value || bA);
         const start = Math.min(bA, bB), end = Math.max(bA, bB);
+        _isShowingCombinedMonths = (start !== end);
+        _loadedBulan = { start, end };
         if (data.perBulan) {
             const sumC = {};
             let mergedPP = [], mergedPA = [];
