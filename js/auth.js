@@ -20,7 +20,7 @@ const BULAN_KEY = 'cms_selected_bulan';
 // Clear page data that was corrupted by combined-month save bug.
 // Preserves: auth session, settings (tahun, satker, direktorat lists).
 // Increment _DATA_VERSION to trigger a new migration.
-const _DATA_VERSION = 2;
+const _DATA_VERSION = 3;
 const _DATA_VERSION_KEY = 'cms_data_version';
 
 (function migrateDataIfNeeded() {
@@ -33,6 +33,7 @@ const _DATA_VERSION_KEY = 'cms_data_version';
         const pageDataPrefixes = ['pidum_', 'prapen_', 'penuntutan_', 'eksekusi_', 'wna_', 'hm_', 'upayahukum_', 'korban_', 'tppu_'];
         const safeKeys = new Set([AUTH_KEY, TAHUN_KEY, SATKER1_KEY, SATKER2_KEY, BULAN_KEY, _DATA_VERSION_KEY]);
         const keysToRemove = [];
+        const pageDataKeys = []; // keys to delete from Supabase
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
             if (!key) continue;
@@ -45,17 +46,23 @@ const _DATA_VERSION_KEY = 'cms_data_version';
             const isPageData = pageDataPrefixes.some(p => baseKey.startsWith(p));
             if (!isPageData) continue;
             keysToRemove.push(key);
+            // Track actual page data keys (not __ts_ or __del_ markers) for Supabase deletion
+            if (!key.startsWith('__ts_') && !key.startsWith('__del_')) {
+                pageDataKeys.push(key);
+            }
         }
         keysToRemove.forEach(key => {
             localStorage.removeItem(key);
             // Set __del_ marker so supabase-sync hydrate won't restore this key
-            // (auth.js loads BEFORE supabase-sync.js, so we use native setItem)
             if (!key.startsWith('__ts_') && !key.startsWith('__del_')) {
                 localStorage.setItem('__del_' + key, new Date().toISOString());
             }
         });
+        // Expose pending deletes so supabase-sync.js can delete them from Supabase
+        // (auth.js loads BEFORE supabase-sync.js, so we can't use the overridden removeItem here)
+        window._cmsMigrationDeletes = pageDataKeys;
         localStorage.setItem(_DATA_VERSION_KEY, _DATA_VERSION.toString());
-        console.log('[CMS Migration] Cleared ' + keysToRemove.length + ' corrupted data entries');
+        console.log('[CMS Migration] Cleared ' + keysToRemove.length + ' corrupted data entries (' + pageDataKeys.length + ' pending Supabase delete)');
     } catch (e) { console.error('[CMS Migration] Error:', e); }
 })();
 
