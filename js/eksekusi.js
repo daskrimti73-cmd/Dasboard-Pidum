@@ -551,10 +551,10 @@ function applyFilters() {
     });
 
     // Clear ALL inputs before loading new year data
+    CARD_FIELDS.forEach(id => {
+        const el = document.getElementById(id); if (el) el.value = '';
+    });
     Object.keys(TREND_CHARTS).forEach(key => {
-        TREND_CHARTS[key].fields.forEach(id => {
-            const el = document.getElementById(id); if (el) el.value = '';
-        });
         getSelectedMonths().forEach(m => {
             const el = document.getElementById(`monthly-${key}-${m.index}`);
             if (el) el.value = '';

@@ -4,6 +4,12 @@
    trend line chart, bar chart by tindak pidana
    ============================================ */
 
+function _escapeHtml(str) {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+}
+
 const BULAN_NAMES_WNA = [
     'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
@@ -406,10 +412,10 @@ function renderNegaraList() {
         const flagUrl = getFlagImg(n.code, 40);
         return `
             <div class="negara-item">
-                <img src="${flagUrl}" alt="${n.name}" class="negara-flag-img" onerror="this.style.display='none'">
-                <span class="negara-name">${n.name}</span>
-                <span class="negara-count">${n.jumlah} <small>(${pct}%)</small></span>
-                <button class="btn-remove" onclick="removeNegara('${n.code}')" title="Hapus">
+                <img src="${flagUrl}" alt="${_escapeHtml(n.name)}" class="negara-flag-img" onerror="this.style.display='none'">
+                <span class="negara-name">${_escapeHtml(n.name)}</span>
+                <span class="negara-count">${_escapeHtml(String(n.jumlah))} <small>(${pct}%)</small></span>
+                <button class="btn-remove" onclick="removeNegara('${_escapeHtml(n.code)}')" title="Hapus">
                     <i class="fas fa-trash-alt"></i>
                 </button>
             </div>
@@ -470,8 +476,8 @@ function renderKlasifikasiList() {
     }
     list.innerHTML = klasifikasiData.map((k, idx) => `
         <div class="klasifikasi-item">
-            <span class="klasifikasi-name">${k.nama}</span>
-            <span class="klasifikasi-count">${k.jumlah}</span>
+            <span class="klasifikasi-name">${_escapeHtml(k.nama)}</span>
+            <span class="klasifikasi-count">${_escapeHtml(String(k.jumlah))}</span>
             <button class="btn-remove" onclick="removeKlasifikasi(${idx})" title="Hapus">
                 <i class="fas fa-trash-alt"></i>
             </button>

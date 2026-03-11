@@ -208,6 +208,10 @@ function getStorageKey() {
 }
 
 // ---- Data Fields ----
+let _isShowingCombinedMonths = false;
+let _loadedBulan = null;
+let _loadedStorageKey = null;
+
 const dataFields = [
     'val-pra-penuntutan',
     'val-penuntutan',
@@ -221,8 +225,11 @@ const dataFields = [
 
 // ---- Save Data to localStorage + Supabase (per-bulan) ----
 function saveData() {
+    if (_isShowingCombinedMonths) { showToast('Untuk menyimpan data, Bulan Awal dan Bulan Akhir harus sama.', 'error'); return; }
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
     const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
+    if (_loadedBulan && (bulanAwal !== _loadedBulan.start || bulanAkhir !== _loadedBulan.end)) return;
+    if (_loadedStorageKey && getStorageKey() !== _loadedStorageKey) return;
 
     if (bulanAwal !== bulanAkhir) {
         showToast('Untuk menyimpan data, Bulan Awal dan Bulan Akhir harus sama.', 'error');
@@ -308,6 +315,9 @@ function loadSavedData(restoreFilters) {
 
     // Clear all fields first
     clearDataFields();
+    _isShowingCombinedMonths = false;
+    _loadedBulan = null;
+    _loadedStorageKey = null;
 
     // Load from localStorage (supabase-sync.js already hydrates from Supabase on page load,
     // and our __ts_/__del_ timestamp system protects against stale Supabase data overwriting
@@ -324,6 +334,9 @@ function loadSavedData(restoreFilters) {
         const bA = parseInt(document.getElementById('filterBulan1')?.value || '1');
         const bB = parseInt(document.getElementById('filterBulan2')?.value || bA);
         const start = Math.min(bA, bB), end = Math.max(bA, bB);
+        _isShowingCombinedMonths = (start !== end);
+        _loadedBulan = { start, end };
+        _loadedStorageKey = getStorageKey();
         const sumFields = {};
         for (let m = start; m <= end; m++) {
             const md = data.perBulan[m];

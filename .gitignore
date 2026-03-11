@@ -46,6 +46,7 @@ out/
 *.temp
 *.bak
 *.backup
+*Salin*
 *~
 
 # Cache

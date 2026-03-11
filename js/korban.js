@@ -208,8 +208,8 @@ function renderPerkaraPerempuanList() {
     }
     list.innerHTML = perkaraPerempuanData.map((p, idx) => `
         <div class="perkara-item">
-            <span class="perkara-name">${p.nama}</span>
-            <span class="perkara-count">${p.jumlah}</span>
+            <span class="perkara-name">${escapeHtml(p.nama)}</span>
+            <span class="perkara-count">${escapeHtml(String(p.jumlah))}</span>
             <button class="btn-remove" onclick="removePerkaraPerempuan(${idx})" title="Hapus">
                 <i class="fas fa-trash-alt"></i>
             </button>
@@ -263,8 +263,8 @@ function renderPerkaraAnakList() {
     }
     list.innerHTML = perkaraAnakData.map((p, idx) => `
         <div class="perkara-item">
-            <span class="perkara-name">${p.nama}</span>
-            <span class="perkara-count">${p.jumlah}</span>
+            <span class="perkara-name">${escapeHtml(p.nama)}</span>
+            <span class="perkara-count">${escapeHtml(String(p.jumlah))}</span>
             <button class="btn-remove" onclick="removePerkaraAnak(${idx})" title="Hapus">
                 <i class="fas fa-trash-alt"></i>
             </button>
