@@ -295,6 +295,35 @@
         const SATKER1_KEY = 'cms_satker1_list';
         const SATKER2_KEY = 'cms_satker2_list';
 
+        // Hierarchy: Satker 1 → sub-units for Satker 2
+        const SATKER_HIERARCHY = {
+            'kejati-kepri': [],
+            'kejari-tanjungpinang': [
+                { value: 'kejari-tanjungpinang', label: 'KEJAKSAAN NEGERI TANJUNGPINANG' }
+            ],
+            'kejari-batam': [
+                { value: 'kejari-batam', label: 'KEJAKSAAN NEGERI BATAM' }
+            ],
+            'kejari-karimun': [
+                { value: 'kejari-karimun', label: 'KEJAKSAAN NEGERI KARIMUN' },
+                { value: 'cabjari-tj-balai-karimun', label: 'CABANG KEJAKSAAN NEGERI TJ. BALAI KARIMUN DI TANJUNG BATU' },
+                { value: 'cabjari-karimun-moro', label: 'CABANG KEJAKSAAN NEGERI KARIMUN DI MORO' }
+            ],
+            'kejari-bintan': [
+                { value: 'kejari-bintan', label: 'KEJAKSAAN NEGERI BINTAN' }
+            ],
+            'kejari-lingga': [
+                { value: 'kejari-lingga', label: 'KEJAKSAAN NEGERI LINGGA' }
+            ],
+            'kejari-natuna': [
+                { value: 'kejari-natuna', label: 'KEJAKSAAN NEGERI NATUNA' },
+                { value: 'cabjari-natuna-tarempa', label: 'CABANG KEJAKSAAN NEGERI NATUNA DI TAREMPA' }
+            ],
+            'kejari-anambas': [
+                { value: 'kejari-anambas', label: 'KEJAKSAAN NEGERI ANAMBAS' }
+            ]
+        };
+
         function getDisplaySatkerList(key) {
             try {
                 const saved = localStorage.getItem(key);
@@ -326,13 +355,41 @@
                     opt.textContent = s.label;
                     select1.appendChild(opt);
                 });
+                // Cascading: when Satker 1 changes, update Satker 2
+                select1.addEventListener('change', function () {
+                    updateDisplaySatker2(satkers2);
+                });
             }
 
-            // Populate Satker 2
+            // Populate Satker 2 based on Satker 1
+            updateDisplaySatker2(satkers2);
+        }
+
+        function updateDisplaySatker2(allSatkers2) {
+            var select1 = document.getElementById('filterSatker1');
             var select2 = document.getElementById('filterSatker2');
-            if (select2) {
-                select2.innerHTML = '<option value="">SATUAN KERJA (SATKER) 2</option>';
-                satkers2.forEach(function (s) {
+            if (!select2) return;
+            var satker1Val = select1 ? select1.value : '';
+            select2.innerHTML = '<option value="">SATUAN KERJA (SATKER) 2</option>';
+            if (satker1Val && SATKER_HIERARCHY[satker1Val] !== undefined) {
+                var subUnits = SATKER_HIERARCHY[satker1Val];
+                if (subUnits.length === 0) {
+                    var opt = document.createElement('option');
+                    opt.value = '';
+                    opt.textContent = 'NO RESULT FOUND';
+                    opt.disabled = true;
+                    select2.appendChild(opt);
+                } else {
+                    subUnits.forEach(function (s) {
+                        var opt = document.createElement('option');
+                        opt.value = s.value;
+                        opt.textContent = s.label;
+                        select2.appendChild(opt);
+                    });
+                }
+            } else {
+                // No Satker 1 selected — show all
+                allSatkers2.forEach(function (s) {
                     var opt = document.createElement('option');
                     opt.value = s.value;
                     opt.textContent = s.label;
