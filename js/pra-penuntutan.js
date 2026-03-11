@@ -33,6 +33,7 @@ let chartTahap1TindakPidana = null;
 let combinedDirData = {}; // holds merged dirValues per section when viewing combined months
 let _isShowingCombinedMonths = false; // true when loaded data is from multi-month range
 let _loadedBulan = null; // tracks which month range the current form data belongs to
+let _loadedStorageKey = null; // tracks which year/satker storage key was loaded
 
 // ---- SPDP field IDs ----
 const SPDP_FIELDS = ['spdp-spdp', 'spdp-p18', 'spdp-p17', 'spdp-pengembalian', 'spdp-sp3'];
@@ -526,6 +527,10 @@ function saveAllData(silent) {
     if (_loadedBulan && (bulanAwal !== _loadedBulan.start || bulanAkhir !== _loadedBulan.end)) {
         return; // silently skip — data belongs to a different month
     }
+    // Block saving if year/satker has changed from what was loaded
+    if (_loadedStorageKey && getPrapenStorageKey('all') !== _loadedStorageKey) {
+        return; // silently skip — data belongs to a different year/satker
+    }
 
     // Only allow saving when bulan awal = bulan akhir (single month mode)
     if (bulanAwal !== bulanAkhir) {
@@ -621,6 +626,7 @@ function loadAllData() {
     combinedDirData = {}; // reset
     _isShowingCombinedMonths = false; // reset
     _loadedBulan = null;
+    _loadedStorageKey = null;
 
     // Clear all fields first so stale data from previous month doesn't remain
     SPDP_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
@@ -639,6 +645,7 @@ function loadAllData() {
         const end = Math.max(bulanAwal, bulanAkhir);
         _isShowingCombinedMonths = (start !== end);
         _loadedBulan = { start, end };
+        _loadedStorageKey = getPrapenStorageKey('all');
 
         // --- NEW PER-BULAN FORMAT ---
         if (data.perBulan) {

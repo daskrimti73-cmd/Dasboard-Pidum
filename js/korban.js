@@ -81,6 +81,7 @@ let sortColumn = -1;
 let sortDirection = 'asc';
 let _isShowingCombinedMonths = false;
 let _loadedBulan = null;
+let _loadedStorageKey = null;
 
 // ---- Storage key ----
 function getKorbanStorageKey() {
@@ -959,6 +960,7 @@ function saveAllData(silent) {
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
     const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
     if (_loadedBulan && (bulanAwal !== _loadedBulan.start || bulanAkhir !== _loadedBulan.end)) return;
+    if (_loadedStorageKey && getKorbanStorageKey() !== _loadedStorageKey) return;
     if (bulanAwal !== bulanAkhir) { if (!silent) showToast('Untuk menyimpan data, Bulan Awal dan Bulan Akhir harus sama.', 'error'); return; }
     const bulan = bulanAwal;
     const monthData = { cards: {} };
@@ -1005,6 +1007,7 @@ function saveAllData(silent) {
 function loadAllData() {
     _isShowingCombinedMonths = false;
     _loadedBulan = null;
+    _loadedStorageKey = null;
     // Clear all fields first
     ['korban-perempuan', 'korban-anak'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
     perkaraPerempuanData = []; renderPerkaraPerempuanList();
@@ -1019,6 +1022,7 @@ function loadAllData() {
         const start = Math.min(bA, bB), end = Math.max(bA, bB);
         _isShowingCombinedMonths = (start !== end);
         _loadedBulan = { start, end };
+        _loadedStorageKey = getKorbanStorageKey();
         if (data.perBulan) {
             const sumC = {};
             let mergedPP = [], mergedPA = [];

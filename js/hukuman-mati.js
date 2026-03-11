@@ -29,6 +29,7 @@ let chartTindakPidanaHm = null;
 let combinedTpData = null; // holds merged tpValues when viewing combined months
 let _isShowingCombinedMonths = false; // true when loaded data is from multi-month range
 let _loadedBulan = null; // tracks which month range the current form data belongs to
+let _loadedStorageKey = null; // tracks which year/satker storage key was loaded
 
 // ---- Chart colors ----
 const lineColorHm = {
@@ -270,6 +271,7 @@ function saveAllData(silent) {
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
     const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
     if (_loadedBulan && (bulanAwal !== _loadedBulan.start || bulanAkhir !== _loadedBulan.end)) return;
+    if (_loadedStorageKey && getHmStorageKey() !== _loadedStorageKey) return;
     if (bulanAwal !== bulanAkhir) { if (!silent) showToast('Untuk menyimpan data, Bulan Awal dan Bulan Akhir harus sama.', 'error'); return; }
     const bulan = bulanAwal;
     const monthData = { cards: {}, tpValues: {} };
@@ -307,6 +309,7 @@ function loadAllDataHm() {
     combinedTpData = null; // reset
     _isShowingCombinedMonths = false; // reset
     _loadedBulan = null;
+    _loadedStorageKey = null;
 
     // Clear all fields first
     ['hm-pn', 'hm-pt', 'hm-ma'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
@@ -321,6 +324,7 @@ function loadAllDataHm() {
         const start = Math.min(bA, bB), end = Math.max(bA, bB);
         _isShowingCombinedMonths = (start !== end);
         _loadedBulan = { start, end };
+        _loadedStorageKey = getHmStorageKey();
         if (data.perBulan) {
             const sumC = {}, sumTp = {};
             for (let m = start; m <= end; m++) { const md = data.perBulan[m]; if (!md) continue; _sumHM(sumC, md.cards); _sumHM(sumTp, md.tpValues); }

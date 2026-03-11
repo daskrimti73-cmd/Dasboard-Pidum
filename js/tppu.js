@@ -7,6 +7,7 @@
 // hasUnsaved is already declared in app.js — do NOT redeclare with let
 let _isShowingCombinedMonths = false;
 let _loadedBulan = null;
+let _loadedStorageKey = null;
 
 // ---- Storage key ----
 function getStorageKey() {
@@ -39,6 +40,7 @@ function saveAllData() {
     const bulanAwal = parseInt(document.getElementById('filterBulan1')?.value || '1');
     const bulanAkhir = parseInt(document.getElementById('filterBulan2')?.value || bulanAwal);
     if (_loadedBulan && (bulanAwal !== _loadedBulan.start || bulanAkhir !== _loadedBulan.end)) return;
+    if (_loadedStorageKey && getStorageKey() !== _loadedStorageKey) return;
     if (bulanAwal !== bulanAkhir) { showToast('Untuk menyimpan data, Bulan Awal dan Bulan Akhir harus sama.', 'error'); return; }
     const bulan = bulanAwal;
     const monthData = { cards: {} };
@@ -61,6 +63,7 @@ function saveAllData() {
 function loadAllData() {
     _isShowingCombinedMonths = false;
     _loadedBulan = null;
+    _loadedStorageKey = null;
     // Clear all fields first
     ['tppu-count', 'tpa-count'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
 
@@ -73,6 +76,7 @@ function loadAllData() {
         const start = Math.min(bA, bB), end = Math.max(bA, bB);
         _isShowingCombinedMonths = (start !== end);
         _loadedBulan = { start, end };
+        _loadedStorageKey = getStorageKey();
         if (data.perBulan) {
             const sumC = {};
             for (let m = start; m <= end; m++) { const md = data.perBulan[m]; if (!md) continue; _sumTppu(sumC, md.cards); }
