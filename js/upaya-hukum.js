@@ -428,7 +428,7 @@ function loadAllData() {
                 const dl = getActiveDirMapUH(sec), ks = Object.keys(sumD), isL = sec !== 'kasasi' && ks.length > 0 && isNaN(parseInt(ks[0]));
                 if (isL) { dl.forEach((d, i) => { const el = document.getElementById('dir-' + sec + '-' + i); if (el && sumD[d] !== undefined) el.value = sumD[d]; }); }
                 else { ks.forEach(i => { const el = document.getElementById('dir-' + sec + '-' + i); if (el) el.value = sumD[i]; }); }
-                for (let m = 1; m <= 12; m++) { const md = data.perBulan[m]; const mf = SECTIONS_UH[sec].fields[0]; const el = document.getElementById('monthly-' + sec + '-' + m); if (el) el.value = (md && md[sec + 'Cards'] && md[sec + 'Cards'][mf]) || ''; }
+                for (let m = 1; m <= 12; m++) { const md = data.perBulan[m]; const mf = SECTIONS_UH[sec].fields[0]; const el = document.getElementById('monthly-' + sec + '-' + m); if (el) el.value = (md && md[sec + 'Cards'] && md[sec + 'Cards'][mf]) || (md && md['trend_' + sec]) || ''; }
             });
             return;
         }

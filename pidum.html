@@ -5,12 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Pidana Umum (Pidum) - Kejaksaan RI</title>
-    <link rel="stylesheet" href="css/style.css?v=20260311e">
-    <link rel="stylesheet" href="css/detail.css?v=20260311e">
+    <link rel="stylesheet" href="css/style.css?v=20260313a">
+    <link rel="stylesheet" href="css/detail.css?v=20260313a">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="js/auth.js?v=20260311e"></script>
+    <script src="js/auth.js?v=20260313a"></script>
     <script>if (!isLoggedIn()) { window.location.href = 'login.html'; }</script>
-    <script src="js/supabase-sync.js?v=20260311e"></script>
+    <script src="js/supabase-sync.js?v=20260313a"></script>
 </head>
 
 <body>
@@ -309,7 +309,7 @@
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
-    <script src="js/app.js?v=20260311e"></script>
+    <script src="js/app.js?v=20260313a"></script>
     <script>
         setGreeting();
         setUpdateDate();
@@ -365,10 +365,15 @@
             satkers.forEach(s => {
                 const tag = document.createElement('span');
                 tag.className = 'year-tag';
-                const deleteBtn = s.value === 'kejati-kepri'
-                    ? ''
-                    : `<button class="year-tag-delete" onclick="handleDeleteSatker1('${s.value}')" title="Hapus ${s.label}">&times;</button>`;
-                tag.innerHTML = `${s.label} ${deleteBtn}`;
+                tag.appendChild(document.createTextNode(s.label + ' '));
+                if (s.value !== 'kejati-kepri') {
+                    const btn = document.createElement('button');
+                    btn.className = 'year-tag-delete';
+                    btn.title = 'Hapus ' + s.label;
+                    btn.textContent = '\u00D7';
+                    btn.onclick = function() { handleDeleteSatker1(s.value); };
+                    tag.appendChild(btn);
+                }
                 container.appendChild(tag);
             });
         }
@@ -381,10 +386,15 @@
             satkers.forEach(s => {
                 const tag = document.createElement('span');
                 tag.className = 'year-tag';
-                const deleteBtn = s.value === 'kejati-kepri'
-                    ? ''
-                    : `<button class="year-tag-delete" onclick="handleDeleteSatker2('${s.value}')" title="Hapus ${s.label}">&times;</button>`;
-                tag.innerHTML = `${s.label} ${deleteBtn}`;
+                tag.appendChild(document.createTextNode(s.label + ' '));
+                if (s.value !== 'kejati-kepri') {
+                    const btn = document.createElement('button');
+                    btn.className = 'year-tag-delete';
+                    btn.title = 'Hapus ' + s.label;
+                    btn.textContent = '\u00D7';
+                    btn.onclick = function() { handleDeleteSatker2(s.value); };
+                    tag.appendChild(btn);
+                }
                 container.appendChild(tag);
             });
         }
