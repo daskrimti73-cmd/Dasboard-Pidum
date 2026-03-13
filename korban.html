@@ -5,14 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Korban - Dashboard Kejaksaan RI</title>
-    <link rel="stylesheet" href="css/style.css?v=20260313b">
-    <link rel="stylesheet" href="css/detail.css?v=20260313b">
-    <link rel="stylesheet" href="css/korban.css?v=20260313b">
+    <link rel="stylesheet" href="css/style.css?v=20260313a">
+    <link rel="stylesheet" href="css/detail.css?v=20260313a">
+    <link rel="stylesheet" href="css/korban.css?v=20260313a">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <script src="js/auth.js?v=20260313b"></script>
+    <script src="js/auth.js?v=20260313a"></script>
     <script>if (!isLoggedIn()) { window.location.href = 'login.html'; }</script>
-    <script src="js/supabase-sync.js?v=20260313b"></script>
+    <script src="js/supabase-sync.js?v=20260313a"></script>
 </head>
 
 <body>
@@ -223,7 +223,7 @@
 
                 <!-- 1. Input Perkara Korban Perempuan (for horizontal bar) -->
                 <div class="monthly-detail">
-                    <div class="monthly-header">
+                    <div class="monthly-header" onclick="toggleAccordion('perkaraPerempuan')">
                         <h4><i class="fas fa-female"></i> Input Perkara Korban Perempuan <small>(untuk grafik bar
                                 horizontal)</small></h4>
                         <i class="fas fa-chevron-down toggle-icon" id="togglePerkaraPerempuan"></i>
@@ -248,7 +248,7 @@
 
                 <!-- 2. Input Perkara Korban Anak (for horizontal bar) -->
                 <div class="monthly-detail">
-                    <div class="monthly-header">
+                    <div class="monthly-header" onclick="toggleAccordion('perkaraAnak')">
                         <h4><i class="fas fa-child"></i> Input Perkara Korban Anak <small>(untuk grafik bar
                                 horizontal)</small></h4>
                         <i class="fas fa-chevron-down toggle-icon" id="togglePerkaraAnak"></i>
@@ -273,7 +273,7 @@
 
                 <!-- 3. Input Tren Korban Perempuan Per Bulan -->
                 <div class="monthly-detail">
-                    <div class="monthly-header">
+                    <div class="monthly-header" onclick="toggleAccordion('trenPerempuan')">
                         <h4><i class="fas fa-calendar-alt"></i> Input Tren Korban Perempuan Per Bulan <small>(untuk
                                 grafik tren)</small></h4>
                         <i class="fas fa-chevron-down toggle-icon" id="toggleTrenPerempuan"></i>
@@ -305,7 +305,7 @@
 
                 <!-- 4. Input Tren Korban Anak Per Bulan -->
                 <div class="monthly-detail">
-                    <div class="monthly-header">
+                    <div class="monthly-header" onclick="toggleAccordion('trenAnak')">
                         <h4><i class="fas fa-calendar-alt"></i> Input Tren Korban Anak Per Bulan <small>(untuk grafik
                                 tren)</small></h4>
                         <i class="fas fa-chevron-down toggle-icon" id="toggleTrenAnak"></i>
@@ -352,8 +352,8 @@
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
-    <script src="js/app.js?v=20260313b"></script>
-    <script src="js/korban.js?v=20260313b"></script>
+    <script src="js/app.js?v=20260313a"></script>
+    <script src="js/korban.js?v=20260313a"></script>
     <script>
         setGreeting();
         setUpdateDate();

@@ -5,14 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hukuman Mati - Dashboard Kejaksaan RI</title>
-    <link rel="stylesheet" href="css/style.css?v=20260313b">
-    <link rel="stylesheet" href="css/detail.css?v=20260313b">
-    <link rel="stylesheet" href="css/hukuman-mati.css?v=20260313b">
+    <link rel="stylesheet" href="css/style.css?v=20260313a">
+    <link rel="stylesheet" href="css/detail.css?v=20260313a">
+    <link rel="stylesheet" href="css/hukuman-mati.css?v=20260313a">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <script src="js/auth.js?v=20260313b"></script>
+    <script src="js/auth.js?v=20260313a"></script>
     <script>if (!isLoggedIn()) { window.location.href = 'login.html'; }</script>
-    <script src="js/supabase-sync.js?v=20260313b"></script>
+    <script src="js/supabase-sync.js?v=20260313a"></script>
 </head>
 
 <body>
@@ -208,7 +208,7 @@
 
                 <!-- 1. Input Tren Per Bulan -->
                 <div class="monthly-detail">
-                    <div class="monthly-header">
+                    <div class="monthly-header" onclick="toggleAccordion('tren')">
                         <h4><i class="fas fa-calendar-alt"></i> Input Data Hukuman Mati Per Bulan <small>(untuk grafik
                                 tren)</small></h4>
                         <i class="fas fa-chevron-down toggle-icon" id="toggleTren"></i>
@@ -240,7 +240,7 @@
 
                 <!-- 2. Input Per Tindak Pidana (bar chart) -->
                 <div class="monthly-detail">
-                    <div class="monthly-header">
+                    <div class="monthly-header" onclick="toggleAccordion('tindakPidana')">
                         <h4><i class="fas fa-balance-scale"></i> Input Data Per Tindak Pidana <small>(untuk grafik
                                 bar)</small></h4>
                         <i class="fas fa-chevron-down toggle-icon" id="toggleTindakPidana"></i>
@@ -295,8 +295,8 @@
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
-    <script src="js/app.js?v=20260313b"></script>
-    <script src="js/hukuman-mati.js?v=20260313b"></script>
+    <script src="js/app.js?v=20260313a"></script>
+    <script src="js/hukuman-mati.js?v=20260313a"></script>
     <script>
         setGreeting();
         setUpdateDate();

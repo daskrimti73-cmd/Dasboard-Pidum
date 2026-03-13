@@ -471,21 +471,3 @@ document.addEventListener('keydown', function (e) {
         }
     }
 });
-
-// ---- Universal Accordion Toggle (event delegation) ----
-// All .monthly-header clicks are handled here via event delegation.
-// This is more robust than inline onclick attributes because it works
-// even if page-specific JS fails to load or has a runtime error.
-document.addEventListener('click', function (e) {
-    const header = e.target.closest('.monthly-header');
-    if (!header) return;
-    const detail = header.closest('.monthly-detail');
-    if (!detail) return;
-    const body = detail.querySelector('.monthly-body');
-    const icon = header.querySelector('.toggle-icon');
-    if (body) {
-        const isHidden = body.style.display === 'none' || body.style.display === '';
-        body.style.display = isHidden ? 'block' : 'none';
-        if (icon) icon.classList.toggle('rotated', isHidden);
-    }
-});
