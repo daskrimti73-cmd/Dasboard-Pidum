@@ -5,13 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Penuntutan - Dashboard Kejaksaan RI</title>
-    <link rel="stylesheet" href="css/style.css?v=20260313a">
-    <link rel="stylesheet" href="css/detail.css?v=20260313a">
+    <link rel="stylesheet" href="css/style.css?v=20260313b">
+    <link rel="stylesheet" href="css/detail.css?v=20260313b">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <script src="js/auth.js?v=20260313a"></script>
+    <script src="js/auth.js?v=20260313b"></script>
     <script>if (!isLoggedIn()) { window.location.href = 'login.html'; }</script>
-    <script src="js/supabase-sync.js?v=20260313a"></script>
+    <script src="js/supabase-sync.js?v=20260313b"></script>
 </head>
 
 <body>
@@ -228,7 +228,7 @@
                 </div>
 
                 <div class="monthly-detail">
-                    <div class="monthly-header" onclick="toggleMonthlyDetail('tahap2')">
+                    <div class="monthly-header">
                         <h4><i class="fas fa-calendar-alt"></i> Input Data Tahap II Per Bulan <small>(untuk grafik
                                 tren)</small></h4>
                         <i class="fas fa-chevron-down toggle-icon" id="toggleTahap2"></i>
@@ -258,7 +258,7 @@
                     </div>
                 </div>
                 <div class="monthly-detail">
-                    <div class="monthly-header" onclick="toggleMonthlyDetail('tahap2Dir')">
+                    <div class="monthly-header">
                         <h4><i class="fas fa-building"></i> Input Data Tahap II Per Direktorat <small>(untuk grafik
                                 tindak pidana)</small></h4>
                         <i class="fas fa-chevron-down toggle-icon" id="toggleTahap2Dir"></i>
@@ -324,7 +324,7 @@
                 </div>
 
                 <div class="monthly-detail">
-                    <div class="monthly-header" onclick="toggleMonthlyDetail('pelimpahan')">
+                    <div class="monthly-header">
                         <h4><i class="fas fa-calendar-alt"></i> Input Data Pelimpahan Per Bulan <small>(untuk grafik
                                 tren)</small></h4>
                         <i class="fas fa-chevron-down toggle-icon" id="togglePelimpahan"></i>
@@ -354,7 +354,7 @@
                     </div>
                 </div>
                 <div class="monthly-detail">
-                    <div class="monthly-header" onclick="toggleMonthlyDetail('pelimpahanDir')">
+                    <div class="monthly-header">
                         <h4><i class="fas fa-building"></i> Input Data Pelimpahan Per Direktorat <small>(untuk grafik
                                 tindak pidana)</small></h4>
                         <i class="fas fa-chevron-down toggle-icon" id="togglePelimpahanDir"></i>
@@ -420,7 +420,7 @@
                 </div>
 
                 <div class="monthly-detail">
-                    <div class="monthly-header" onclick="toggleMonthlyDetail('tuntutan')">
+                    <div class="monthly-header">
                         <h4><i class="fas fa-calendar-alt"></i> Input Data Tuntutan Per Bulan <small>(untuk grafik
                                 tren)</small></h4>
                         <i class="fas fa-chevron-down toggle-icon" id="toggleTuntutan"></i>
@@ -450,7 +450,7 @@
                     </div>
                 </div>
                 <div class="monthly-detail">
-                    <div class="monthly-header" onclick="toggleMonthlyDetail('tuntutanDir')">
+                    <div class="monthly-header">
                         <h4><i class="fas fa-building"></i> Input Data Tuntutan Per Direktorat <small>(untuk grafik
                                 tindak pidana)</small></h4>
                         <i class="fas fa-chevron-down toggle-icon" id="toggleTuntutanDir"></i>
@@ -537,8 +537,8 @@
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
-    <script src="js/app.js?v=20260313a"></script>
-    <script src="js/penuntutan.js?v=20260313a"></script>
+    <script src="js/app.js?v=20260313b"></script>
+    <script src="js/penuntutan.js?v=20260313b"></script>
     <script>
         setGreeting();
         setUpdateDate();
