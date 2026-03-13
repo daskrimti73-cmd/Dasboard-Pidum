@@ -770,8 +770,13 @@ function resetAllData() {
         if (d2) d2.value = '';
     });
 
-    // Save empty values to localStorage + Supabase so reset persists
-    saveAllData(true);
+    // Remove data from localStorage + Supabase (same approach as resetData in app.js)
+    const storageKey = getPrapenStorageKey('all');
+    localStorage.removeItem(storageKey);
+    _loadedBulan = null;
+    _loadedStorageKey = null;
+    _isShowingCombinedMonths = false;
+    hasUnsaved = false;
 
     // Update all charts
     updateTrendChart('spdp');

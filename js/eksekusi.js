@@ -531,8 +531,13 @@ function resetAllData() {
         updateDirChart(key);
     });
 
-    // Save empty values to localStorage + Supabase so reset persists
-    saveAllData(true);
+    // Remove data from localStorage + Supabase
+    const storageKey = getEksekusiStorageKey();
+    localStorage.removeItem(storageKey);
+    _loadedBulan = null;
+    _loadedStorageKey = null;
+    _isShowingCombinedMonths = false;
+    hasUnsaved = false;
 
     showToast('Semua data telah dikosongkan', 'success');
 }
