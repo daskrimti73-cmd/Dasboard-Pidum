@@ -27,9 +27,9 @@ function getActiveTindakPidanaListHm() {
 let chartTrendHm = null;
 let chartTindakPidanaHm = null;
 let combinedTpData = null; // holds merged tpValues when viewing combined months
-let _isShowingCombinedMonths = false; // true when loaded data is from multi-month range
-let _loadedBulan = null; // tracks which month range the current form data belongs to
-let _loadedStorageKey = null; // tracks which year/satker storage key was loaded
+_isShowingCombinedMonths = false; // true when loaded data is from multi-month range
+_loadedBulan = null; // tracks which month range the current form data belongs to
+_loadedStorageKey = null; // tracks which year/satker storage key was loaded
 
 // ---- Chart colors ----
 const lineColorHm = {

@@ -5,9 +5,9 @@
    ============================================ */
 
 // hasUnsaved is already declared in app.js — do NOT redeclare with let
-let _isShowingCombinedMonths = false;
-let _loadedBulan = null;
-let _loadedStorageKey = null;
+_isShowingCombinedMonths = false;
+_loadedBulan = null;
+_loadedStorageKey = null;
 
 // ---- Storage key ----
 function getStorageKey() {

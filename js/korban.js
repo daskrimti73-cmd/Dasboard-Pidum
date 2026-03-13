@@ -79,9 +79,9 @@ let editingIndex = -1;
 let deleteIndex = -1;
 let sortColumn = -1;
 let sortDirection = 'asc';
-let _isShowingCombinedMonths = false;
-let _loadedBulan = null;
-let _loadedStorageKey = null;
+_isShowingCombinedMonths = false;
+_loadedBulan = null;
+_loadedStorageKey = null;
 
 // ---- Storage key ----
 function getKorbanStorageKey() {
