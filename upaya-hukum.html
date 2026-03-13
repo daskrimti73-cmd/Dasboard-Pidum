@@ -5,13 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upaya Hukum - Dashboard Kejaksaan RI</title>
-    <link rel="stylesheet" href="css/style.css?v=20260313a">
-    <link rel="stylesheet" href="css/detail.css?v=20260313a">
+    <link rel="stylesheet" href="css/style.css?v=20260313c">
+    <link rel="stylesheet" href="css/detail.css?v=20260313c">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <script src="js/auth.js?v=20260313a"></script>
+    <script src="js/auth.js?v=20260313c"></script>
     <script>if (!isLoggedIn()) { window.location.href = 'login.html'; }</script>
-    <script src="js/supabase-sync.js?v=20260313a"></script>
+    <script src="js/supabase-sync.js?v=20260313c"></script>
 </head>
 
 <body>
@@ -199,7 +199,7 @@
                 </div>
 
                 <div class="monthly-detail">
-                    <div class="monthly-header" onclick="toggleMonthlyDetail('banding')">
+                    <div class="monthly-header" onclick="var b=this.nextElementSibling;if(b){var h=b.style.display==='none';b.style.display=h?'block':'none';var i=this.querySelector('.toggle-icon');if(i)i.classList.toggle('rotated',h)}">
                         <h4><i class="fas fa-calendar-alt"></i> Input Data Banding Per Bulan <small>(untuk grafik
                                 tren)</small></h4>
                         <i class="fas fa-chevron-down toggle-icon" id="toggleBanding"></i>
@@ -229,7 +229,7 @@
                     </div>
                 </div>
                 <div class="monthly-detail">
-                    <div class="monthly-header" onclick="toggleMonthlyDetail('bandingDir')">
+                    <div class="monthly-header" onclick="var b=this.nextElementSibling;if(b){var h=b.style.display==='none';b.style.display=h?'block':'none';var i=this.querySelector('.toggle-icon');if(i)i.classList.toggle('rotated',h)}">
                         <h4><i class="fas fa-building"></i> Input Data Banding Per Direktorat <small>(untuk grafik
                                 tindak pidana)</small></h4>
                         <i class="fas fa-chevron-down toggle-icon" id="toggleBandingDir"></i>
@@ -288,7 +288,7 @@
                 </div>
 
                 <div class="monthly-detail">
-                    <div class="monthly-header" onclick="toggleMonthlyDetail('kasasi')">
+                    <div class="monthly-header" onclick="var b=this.nextElementSibling;if(b){var h=b.style.display==='none';b.style.display=h?'block':'none';var i=this.querySelector('.toggle-icon');if(i)i.classList.toggle('rotated',h)}">
                         <h4><i class="fas fa-calendar-alt"></i> Input Data Kasasi Per Bulan <small>(untuk grafik
                                 tren)</small></h4>
                         <i class="fas fa-chevron-down toggle-icon" id="toggleKasasi"></i>
@@ -318,7 +318,7 @@
                     </div>
                 </div>
                 <div class="monthly-detail">
-                    <div class="monthly-header" onclick="toggleMonthlyDetail('kasasiDir')">
+                    <div class="monthly-header" onclick="var b=this.nextElementSibling;if(b){var h=b.style.display==='none';b.style.display=h?'block':'none';var i=this.querySelector('.toggle-icon');if(i)i.classList.toggle('rotated',h)}">
                         <h4><i class="fas fa-building"></i> Input Data Kasasi Per Direktorat <small>(untuk grafik
                                 tindak pidana)</small></h4>
                         <i class="fas fa-chevron-down toggle-icon" id="toggleKasasiDir"></i>
@@ -403,8 +403,8 @@
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
-    <script src="js/app.js?v=20260313a"></script>
-    <script src="js/upaya-hukum.js?v=20260313a"></script>
+    <script src="js/app.js?v=20260313c"></script>
+    <script src="js/upaya-hukum.js?v=20260313c"></script>
     <script>
         setGreeting();
         setUpdateDate();
