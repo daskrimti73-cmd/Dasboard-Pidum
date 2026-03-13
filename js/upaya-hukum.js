@@ -467,6 +467,9 @@ function resetAllData() {
         updateDirChartUH(sec);
     });
 
+    // Save empty values to localStorage + Supabase so reset persists
+    saveAllData(true);
+
     showToast('Semua data telah dikosongkan', 'success');
 }
 

@@ -770,6 +770,9 @@ function resetAllData() {
         if (d2) d2.value = '';
     });
 
+    // Save empty values to localStorage + Supabase so reset persists
+    saveAllData(true);
+
     // Update all charts
     updateTrendChart('spdp');
     updateTrendChart('tahap1');
